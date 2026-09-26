@@ -90,7 +90,9 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
                 return;
             }
             if (NinjaUtils.availablePort(Config.getInstance().getPort())) {
-                new NinjaSchool(); ///  tắt giao diện khi chạy linux
+                if (!java.awt.GraphicsEnvironment.isHeadless()) {
+                    new NinjaSchool(); ///  tắt giao diện khi chạy linux
+                }
                 if (!Server.init()) {
                     System.out.println("Khoi tao that bai!");
                     return;
