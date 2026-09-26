@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-title Magic Avatar VM - SSH
+title NSO Server VM - SSH
 color 0A
 
 :: ==============================

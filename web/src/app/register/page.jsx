@@ -27,17 +27,17 @@ export default function RegisterPage() {
     setStatus({ type: '', message: '' });
 
     if (!formData.username || !formData.password || !formData.confirmPassword || !formData.otp) {
-      setStatus({ type: 'error', message: 'Vui lòng điền đầy đủ tất cả các trường!' });
+      setStatus({ type: 'error', message: 'Vui lòng điền đầy đủ các thông tin bên dưới.' });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setStatus({ type: 'error', message: 'Mật khẩu xác nhận không khớp!' });
+      setStatus({ type: 'error', message: 'Mật khẩu xác nhận không khớp.' });
       return;
     }
 
     if (formData.otp.length !== 6) {
-      setStatus({ type: 'error', message: 'Mã OTP cấp phép phải có đúng 6 chữ số!' });
+      setStatus({ type: 'error', message: 'Mã OTP cấp phép phải gồm đúng 6 chữ số.' });
       return;
     }
 
@@ -55,12 +55,12 @@ export default function RegisterPage() {
       if (!res.ok || !data.success) {
         setStatus({
           type: 'error',
-          message: data.error || 'Đăng ký không thành công. Vui lòng thử lại!',
+          message: data.error || 'Đăng ký không thành công. Vui lòng kiểm tra lại.',
         });
       } else {
         setStatus({
           type: 'success',
-          message: data.message || 'Đăng ký tài khoản thành công!',
+          message: data.message || 'Đăng ký tài khoản thành công! Bạn có thể vào game ngay bây giờ.',
         });
         setFormData({
           username: '',
@@ -72,7 +72,7 @@ export default function RegisterPage() {
     } catch (err) {
       setStatus({
         type: 'error',
-        message: 'Lỗi mạng hoặc máy chủ không phản hồi: ' + err.message,
+        message: 'Không thể kết nối máy chủ: ' + err.message,
       });
     } finally {
       setLoading(false);
@@ -91,13 +91,16 @@ export default function RegisterPage() {
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">ĐĂNG KÝ TÀI KHOẢN</h1>
           <p className="text-sm text-slate-400 mt-2">
-            Hệ thống yêu cầu mã OTP 6 số do Quản trị viên cấp phép
+            Nhập thông tin và mã OTP 6 số do{' '}
+            <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-bold underline">
+              Khánh (k.mio.io.vn)
+            </a>{' '}
+            cấp phép
           </p>
         </div>
 
         {/* Card Body */}
         <div className="bg-white/[0.03] border border-white/10 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl shadow-black/60 relative overflow-hidden">
-          {/* Subtle Glow inside card */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-orange-500/10 blur-3xl rounded-full pointer-events-none" />
 
           {/* Feedback Alert */}
@@ -134,7 +137,7 @@ export default function RegisterPage() {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="Ví dụ: ninja2026"
+                  placeholder="Ví dụ: naruto2026"
                   autoComplete="username"
                   required
                   className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
@@ -145,7 +148,7 @@ export default function RegisterPage() {
                   </svg>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mt-1">Chữ cái hoặc số, 3-15 ký tự, không dấu</p>
+              <p className="text-[11px] text-slate-500 mt-1">Từ 3 đến 15 ký tự (chữ cái hoặc số)</p>
             </div>
 
             {/* Password Input */}
@@ -211,7 +214,7 @@ export default function RegisterPage() {
                   </svg>
                   Mã Cấp Phép OTP (6 Số)
                 </label>
-                <span className="text-[11px] text-amber-400/90 font-medium">Hạn 90 phút</span>
+                <span className="text-[11px] text-amber-400/90 font-medium">Hạn dùng 90 phút</span>
               </div>
               <div className="relative">
                 <input
@@ -226,7 +229,7 @@ export default function RegisterPage() {
                 />
               </div>
               <p className="text-[11px] text-slate-400 mt-1.5">
-                Mã xác thực duy nhất do Admin cấp trực tiếp qua SSH backend. Chỉ dùng được 1 lần.
+                Mã xác thực duy nhất do Khánh cấp (dùng 1 lần).
               </p>
             </div>
 
@@ -253,10 +256,16 @@ export default function RegisterPage() {
 
         {/* Support Help Box */}
         <div className="mt-8 p-5 rounded-2xl bg-white/[0.02] border border-white/5 text-center text-xs text-slate-400">
-          Chưa có mã OTP 6 số?{' '}
-          <span className="text-orange-400 font-semibold">
-            Vui lòng liên hệ Admin qua kênh hỗ trợ để được cấp phép tạo tài khoản.
-          </span>
+          Chưa có mã OTP?{' '}
+          <a
+            href="https://k.mio.io.vn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-orange-400 font-bold underline hover:text-amber-300 transition-colors"
+          >
+            Liên hệ Khánh tại k.mio.io.vn
+          </a>{' '}
+          để nhận mã cấp phép tạo tài khoản.
         </div>
       </div>
     </div>

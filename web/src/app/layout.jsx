@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'NSO Ninja School Server - Cổng Đăng Ký & Nhận Giftcode',
-  description: 'Cổng thông tin máy chủ Ninja School Private chuẩn bản quyền, hệ thống bảo mật OTP 6 số, nhận Giftcode tân thủ và tải game miễn phí.',
+  title: 'NSO Custom Server - Modded by Khánh | k.mio.io.vn',
+  description: 'Máy chủ Ninja School Online Custom mod bởi Khánh. Hệ thống đăng ký bảo mật OTP 6 số, nhận Giftcode tân thủ và tải game miễn phí.',
 };
 
 export default function RootLayout({ children }) {
@@ -32,7 +32,10 @@ export default function RootLayout({ children }) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
             </span>
-            Hệ thống đăng ký tài khoản cần mã OTP 6 số được cấp bởi Quản trị viên máy chủ!
+            Máy chủ NSO Custom mod bởi Khánh • Nhận mã OTP cấp phép tại{' '}
+            <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="underline font-bold text-amber-300 hover:text-white transition-colors">
+              k.mio.io.vn
+            </a>
           </span>
         </div>
 
@@ -48,10 +51,10 @@ export default function RootLayout({ children }) {
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-200 to-orange-300 bg-clip-text text-transparent">
-                  NSO SERVER
+                  NSO CUSTOM
                 </span>
                 <span className="text-[10px] tracking-widest uppercase font-semibold text-orange-400/90 -mt-1">
-                  Ninja Legend Edition
+                  Mod by Khánh • k.mio.io.vn
                 </span>
               </div>
             </a>
@@ -80,7 +83,15 @@ export default function RootLayout({ children }) {
                 href="/#download"
                 className="px-4 py-2 rounded-full text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
               >
-                Tải Game
+                Tải Client
+              </a>
+              <a
+                href="https://k.mio.io.vn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-full text-sm font-semibold text-amber-300 hover:text-white hover:bg-amber-500/10 transition-colors"
+              >
+                Khánh (k.mio.io.vn) ↗
               </a>
             </nav>
 
@@ -115,14 +126,17 @@ export default function RootLayout({ children }) {
                 忍
               </div>
               <p className="text-sm">
-                © 2026 <span className="text-white font-semibold">NSO Private Server</span>. All rights reserved.
+                Bản Custom Server mod từ tựa game gốc bởi{' '}
+                <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-bold hover:underline">
+                  Khánh (k.mio.io.vn)
+                </a>.
               </p>
             </div>
             <div className="flex items-center gap-6 text-sm">
               <a href="/" className="hover:text-orange-400 transition-colors">Trang Chủ</a>
               <a href="/register" className="hover:text-orange-400 transition-colors">Đăng Ký</a>
               <a href="/giftcodes" className="hover:text-orange-400 transition-colors">Giftcode</a>
-              <a href="/#download" className="hover:text-orange-400 transition-colors">Tải Client</a>
+              <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="hover:text-amber-300 transition-colors font-medium">k.mio.io.vn</a>
             </div>
           </div>
         </footer>

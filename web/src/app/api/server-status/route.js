@@ -60,7 +60,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       server: {
-        serverName: 'NSO Legend Official',
+        serverName: 'NSO Custom (Mod by Khánh)',
         status: isOnline ? 'ONLINE' : 'OFFLINE',
         isOnline,
         totalUsers,
@@ -72,7 +72,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        server: { serverName: 'NSO Legend Official', status: 'OFFLINE', isOnline: false, totalUsers: 0, onlineUsers: 0 },
+        server: { serverName: 'NSO Custom (Mod by Khánh)', status: 'OFFLINE', isOnline: false, totalUsers: 0, onlineUsers: 0 },
       },
       { status: 500 }
     );

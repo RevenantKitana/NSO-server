@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-title Magic Avatar VM - Resource Monitor
+title NSO Server VM - Resource Monitor
 color 0A
 
 :: ==============================
