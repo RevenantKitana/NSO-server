@@ -1,12 +1,13 @@
-# Compiled class file
+# ==========================================
+# 1. JAVA & MAVEN BUILD ARTIFACTS
+# ==========================================
 *.class
-
-# Log files
-*.log
-logs/
-/logs/
-
-# Package & Build Files
+target/
+/target/
+build/
+/build/
+out/
+/out/
 *.jar
 *.war
 *.nar
@@ -15,16 +16,8 @@ logs/
 *.tar.gz
 *.rar
 app.jar
-target/
-/target/
-build/
-/build/
 
-# Virtual machine crash logs
-hs_err_pid*
-replay_pid*
-
-# Maven
+# Maven internal files
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -35,12 +28,82 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
+# Java Crash Logs
+hs_err_pid*
+replay_pid*
+
+# ==========================================
+# 2. NODE.JS & NEXT.JS (WEB APP)
+# ==========================================
+node_modules/
+/node_modules/
+web/node_modules/
+.next/
+web/.next/
+web/out/
+.vercel/
+
+# Next.js Environment & Secret files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+web/.env.local
+web/.env.development.local
+web/.env.test.local
+web/.env.production.local
+
+# npm & yarn logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ==========================================
+# 3. BACKUPS & DATABASE DUMPS
+# ==========================================
+backups/
+/backups/
+*.sql.gz
+*.sql.tar.gz
+*.dump
+*.bak
+
+# ==========================================
+# 4. LOGS
+# ==========================================
+*.log
+logs/
+/logs/
+
+# ==========================================
+# 5. SECURITY & SECRETS (SSH KEYS, CERTIFICATES)
+# ==========================================
+*.key
+*.key.pub
+*.pem
+*.pfx
+*.p12
+*.jks
+*.cer
+*.crt
+id_rsa*
+id_ed25519*
+VM/*.key
+VM/*.key.pub
+
+# ==========================================
+# 6. IDE & EDITORS
+# ==========================================
 # IntelliJ IDEA
 .idea/
 *.iws
 *.iml
 *.ipr
-out/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
 
 # Eclipse
 .apt_generated
@@ -59,21 +122,9 @@ out/
 /nbactions.xml
 /nb-configuration.xml
 
-# Visual Studio Code
-.vscode/
-
-VM/
-# Security & Secrets
-*.key
-*.key.pub
-*.pem
-*.pfx
-*.p12
-*.jks
-id_rsa*
-id_ed25519*
-
-# OS / System Files
+# ==========================================
+# 7. OS & SYSTEM FILES
+# ==========================================
 .DS_Store
 .DS_Store?
 ._*
@@ -81,6 +132,3 @@ id_ed25519*
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-*.key
-*.key.pub

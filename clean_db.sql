@@ -38,9 +38,23 @@ TRUNCATE TABLE `match_list`;
 -- 5. Logs & Tokens
 TRUNCATE TABLE `user_logs`;
 TRUNCATE TABLE `login_histories`;
-TRUNCATE TABLE `personal_access_tokens`;
 TRUNCATE TABLE `comments`;
 TRUNCATE TABLE `sql_backup`;
+
+-- 6. Registration OTPs (Authorization Table)
+CREATE TABLE IF NOT EXISTS `registration_otps` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `code` VARCHAR(6) NOT NULL UNIQUE,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` DATETIME NOT NULL,
+  `used` TINYINT DEFAULT 0,
+  `used_by` VARCHAR(50) DEFAULT NULL,
+  `used_at` DATETIME DEFAULT NULL,
+  INDEX `idx_code` (`code`),
+  INDEX `idx_expires` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+TRUNCATE TABLE `registration_otps`;
 
 SET FOREIGN_KEY_CHECKS = 1;
 

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSO Server - Quản Trị Giftcode & Cấp Phép OTP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #080a0f;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
+
+  <!-- Glow Backgrounds -->
+  <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+    <div class="absolute -top-40 left-1/3 w-[600px] h-[400px] bg-orange-600/10 blur-[130px] rounded-full"></div>
+    <div class="absolute top-[50%] -right-20 w-[450px] h-[450px] bg-amber-600/10 blur-[140px] rounded-full"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-white/10 bg-[#0d1117]/80 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center font-bold text-white shadow-lg shadow-orange-500/20">
+          忍
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold text-white tracking-wide">NSO ADMIN MANAGER</h1>
+          <p class="text-[11px] text-orange-400 font-medium -mt-0.5">Quản trị Giftcode &amp; Cấp phép OTP</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex items-center gap-2 bg-white/[0.04] p-1 rounded-2xl border border-white/5">
+        <button onclick="switchTab('giftcodes')" id="tab-btn-giftcodes" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-orange-500 text-white shadow-md">
+          🎁 Danh Sách Giftcode
+        </button>
+        <button onclick="switchTab('create-giftcode')" id="tab-btn-create-giftcode" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-white/5">
+          ➕ Tạo Giftcode
+        </button>
+        <button onclick="switchTab('otps')" id="tab-btn-otps" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-white/5">
+          🔑 Cấp Phép OTP
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Database Online
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none max-w-md p-4 rounded-2xl border shadow-2xl backdrop-blur-xl"></div>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: DANH SÁCH GIFTCODE -->
+    <!-- ============================================================ -->
+    <div id="tab-giftcodes" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-white">Danh Sách Giftcode Đang Hoạt Động</h2>
+          <p class="text-xs text-slate-400 mt-1">Xem, tìm kiếm và xóa các mã quà tặng trong hệ thống.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="loadGiftcodes()" class="px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 flex items-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Làm mới
+          </button>
+          <button onclick="switchTab('create-giftcode')" class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-xs font-bold text-white shadow-lg shadow-orange-500/20 flex items-center gap-2 transition-all">
+            ➕ Thêm Giftcode Mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Giftcode Table Container -->
+      <div class="bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-white/10 bg-white/[0.02] text-slate-400 font-bold uppercase tracking-wider">
+                <th class="py-3.5 px-4">ID</th>
+                <th class="py-3.5 px-4">Mã Code</th>
+                <th class="py-3.5 px-4">Loại Mã</th>
+                <th class="py-3.5 px-4">Phần Thưởng Tiền</th>
+                <th class="py-3.5 px-4">Vật Phẩm Kèm Theo</th>
+                <th class="py-3.5 px-4">Hạn Sử Dụng</th>
+                <th class="py-3.5 px-4 text-center">Hành Động</th>
+              </tr>
+            </thead>
+            <tbody id="giftcodes-table-body" class="divide-y divide-white/5">
+              <tr>
+                <td colspan="7" class="py-12 text-center text-slate-500">Đang tải dữ liệu...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: TẠO GIFTCODE MỚI -->
+    <!-- ============================================================ -->
+    <div id="tab-create-giftcode" class="hidden space-y-6 max-w-4xl mx-auto">
+      <div>
+        <h2 class="text-2xl font-black text-white">Tạo Giftcode Mới</h2>
+        <p class="text-xs text-slate-400 mt-1">Cấu hình mã giftcode, số tiền thưởng và chọn vật phẩm trực tiếp từ danh mục vật phẩm game.</p>
+      </div>
+
+      <div class="bg-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- Code Input -->
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Mã Giftcode</label>
+            <div class="flex gap-2">
+              <input type="text" id="gc-code" placeholder="Ví dụ: TANTHU2026" class="flex-1 px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white font-mono uppercase font-bold text-sm focus:outline-none focus:border-orange-500">
+              <button onclick="generateRandomCode()" class="px-3 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-orange-400 transition-all">
+                🎲 Ngẫu nhiên
+              </button>
+            </div>
+          </div>
+
+          <!-- Code Type -->
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Loại Giới Hạn</label>
+            <select id="gc-type" class="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500">
+              <option value="1">Mỗi nhân vật nhập 1 lần (Type 1 - Phổ biến cho tân thủ)</option>
+              <option value="0">Dùng chung toàn server 1 lần (Type 0 - Đua top/Event)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Currencies Grid -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-slate-300 uppercase">Phần Thưởng Tiền Tệ</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <span class="text-[11px] text-amber-400 font-semibold mb-1 block">Lượng (Gold)</span>
+              <input type="number" id="gc-gold" value="0" min="0" class="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-amber-300 font-bold text-sm focus:outline-none focus:border-amber-500">
+            </div>
+            <div>
+              <span class="text-[11px] text-yellow-400 font-semibold mb-1 block">Xu (Coin)</span>
+              <input type="number" id="gc-coin" value="0" min="0" class="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-yellow-300 font-bold text-sm focus:outline-none focus:border-yellow-500">
+            </div>
+            <div>
+              <span class="text-[11px] text-cyan-400 font-semibold mb-1 block">Yên (Yen)</span>
+              <input type="number" id="gc-yen" value="0" min="0" class="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-cyan-300 font-bold text-sm focus:outline-none focus:border-cyan-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Expiration Date -->
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Hạn Sử Dụng</label>
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-300 cursor-pointer">
+              <input type="radio" name="gc-expiry-option" value="never" checked onchange="toggleExpiryInput(false)" class="accent-orange-500">
+              Vô thời hạn (Không bao giờ hết hạn)
+            </label>
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-300 cursor-pointer">
+              <input type="radio" name="gc-expiry-option" value="days30" onchange="toggleExpiryInput(false, 30)" class="accent-orange-500">
+              30 Ngày
+            </label>
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-300 cursor-pointer">
+              <input type="radio" name="gc-expiry-option" value="custom" onchange="toggleExpiryInput(true)" class="accent-orange-500">
+              Chọn ngày cụ thể
+            </label>
+          </div>
+          <div id="custom-expiry-container" class="mt-3 hidden">
+            <input type="datetime-local" id="gc-expiry-custom" class="px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:outline-none focus:border-orange-500">
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ITEM PICKER SECTION -->
+        <!-- ============================================================ -->
+        <div class="border-t border-white/10 pt-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-black text-orange-400 uppercase tracking-wider flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+              Bộ Chọn Vật Phẩm Quà Tặng (Item Selector)
+            </h3>
+            <span id="selected-items-count" class="text-xs text-slate-400">Đã chọn 0 vật phẩm</span>
+          </div>
+
+          <!-- Search and Add Item Input -->
+          <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+              <!-- Item Search -->
+              <div class="sm:col-span-8 relative">
+                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Tìm Tên hoặc ID Vật Phẩm</label>
+                <input type="text" id="item-search-input" oninput="handleItemSearch(this.value)" placeholder="Gõ tên vật phẩm (ví dụ: Đá cấp 12, Đùi heo, Bí kíp...)" class="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:outline-none focus:border-orange-500">
+                <!-- Autocomplete Dropdown -->
+                <div id="item-autocomplete-list" class="absolute left-0 right-0 top-full mt-1 bg-[#121622] border border-white/15 rounded-xl shadow-2xl max-h-60 overflow-y-auto custom-scrollbar z-30 hidden"></div>
+              </div>
+
+              <!-- Quantity Input -->
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Số Lượng</label>
+                <input type="number" id="item-qty-input" value="1" min="1" max="9999" class="w-full px-3 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white font-bold text-xs text-center focus:outline-none focus:border-orange-500">
+              </div>
+
+              <!-- Add Button -->
+              <div class="sm:col-span-2">
+                <button type="button" onclick="addItemToSelection()" class="w-full py-2.5 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all">
+                  + Thêm
+                </button>
+              </div>
+            </div>
+
+            <!-- Selected Item Preview Tag -->
+            <div id="currently-selected-item-tag" class="hidden text-xs text-amber-300 font-medium"></div>
+          </div>
+
+          <!-- Selected Items Table -->
+          <div id="selected-items-table-container" class="hidden border border-white/10 rounded-2xl overflow-hidden bg-black/20">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-white/5 text-slate-400 font-semibold border-b border-white/5">
+                <tr>
+                  <th class="py-2.5 px-3">ID</th>
+                  <th class="py-2.5 px-3">Tên Vật Phẩm</th>
+                  <th class="py-2.5 px-3">Số Lượng</th>
+                  <th class="py-2.5 px-3 text-right">Xóa</th>
+                </tr>
+              </thead>
+              <tbody id="selected-items-tbody" class="divide-y divide-white/5"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Submit Create Button -->
+        <div class="pt-4 flex justify-end gap-3">
+          <button type="button" onclick="switchTab('giftcodes')" class="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-all">
+            Hủy Bỏ
+          </button>
+          <button type="button" onclick="submitCreateGiftcode()" id="submit-create-btn" class="px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm shadow-xl shadow-orange-500/25 transition-all">
+            🚀 Khởi Tạo Giftcode
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: CẤP PHÉP MÃ OTP -->
+    <!-- ============================================================ -->
+    <div id="tab-otps" class="hidden space-y-6 max-w-4xl mx-auto">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-white">Quản Lý Mã Cấp Phép Đăng Ký (OTP 6 Số)</h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Sinh mã OTP 6 số ngẫu nhiên cấp cho người chơi để đăng ký. Mã tự hủy sau 90 phút hoặc ngay khi dùng.
+          </p>
+        </div>
+        <button onclick="generateNewOtp()" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 text-white font-bold text-sm shadow-xl shadow-orange-500/25 flex items-center gap-2 transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Tạo 1 Mã OTP Mới Ngay
+        </button>
+      </div>
+
+      <!-- Live Generated OTP Display Box (if generated) -->
+      <div id="new-otp-display-box" class="hidden p-6 rounded-3xl bg-gradient-to-br from-orange-950/40 to-amber-950/20 border border-orange-500/40 text-center space-y-3">
+        <span class="text-xs font-bold text-orange-400 uppercase tracking-widest">MÃ OTP ĐĂNG KÝ VỪA ĐƯỢC TẠO</span>
+        <div id="new-otp-number" class="text-5xl font-black font-mono tracking-[0.3em] text-white my-2">------</div>
+        <p class="text-xs text-slate-300">Thời hạn: <strong class="text-amber-400">90 phút</strong> | Sử dụng: <strong class="text-amber-400">1 lần duy nhất</strong></p>
+        <button onclick="copyCurrentOtp()" class="mt-2 px-4 py-2 rounded-xl bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition-all">
+          📋 Sao Chép Mã OTP Này
+        </button>
+      </div>
+
+      <!-- Active OTPs Table -->
+      <div class="bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl">
+        <div class="p-4 border-b border-white/10 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-300 uppercase">Danh Sách Mã OTP Trong Cơ Sở Dữ Liệu</span>
+          <button onclick="loadOtps()" class="text-xs text-orange-400 hover:underline">Làm mới</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-white/10 bg-white/[0.02] text-slate-400 font-bold uppercase tracking-wider">
+                <th class="py-3 px-4">Mã OTP (6 Số)</th>
+                <th class="py-3 px-4">Thời Gian Tạo</th>
+                <th class="py-3 px-4">Hết Hạn Lúc</th>
+                <th class="py-3 px-4">Trạng Thái</th>
+                <th class="py-3 px-4 text-center">Xóa Mã</th>
+              </tr>
+            </thead>
+            <tbody id="otps-table-body" class="divide-y divide-white/5">
+              <tr>
+                <td colspan="5" class="py-8 text-center text-slate-500">Đang tải danh sách OTP...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let allItems = [];
+    let selectedItems = [];
+    let currentSelectedTemplate = null;
+    let latestGeneratedOtp = '';
+
+    // Switch Tabs
+    function switchTab(tab) {
+      ['giftcodes', 'create-giftcode', 'otps'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tab) {
+          btn.className = 'px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-orange-500 text-white shadow-md';
+        } else {
+          btn.className = 'px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-white/5';
+        }
+      });
+
+      if (tab === 'giftcodes') loadGiftcodes();
+      if (tab === 'otps') loadOtps();
+    }
+
+    // Show Toast Notification
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      toast.className = `fixed bottom-6 right-6 z-50 transform transition-all duration-300 translate-y-0 opacity-100 max-w-md p-4 rounded-2xl border shadow-2xl backdrop-blur-xl ${
+        isSuccess ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200' : 'bg-red-950/90 border-red-500/40 text-red-200'
+      }`;
+      toast.innerHTML = `<div class="flex items-center gap-2 font-medium text-xs sm:text-sm"><span>${isSuccess ? '✅' : '❌'}</span> <span>${msg}</span></div>`;
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 4000);
+    }
+
+    // Load Items for Selector
+    async function loadItemsData() {
+      try {
+        const res = await fetch(`${API_BASE}/api/items`);
+        const data = await res.json();
+        if (data.success) {
+          allItems = data.items || [];
+        }
+      } catch (e) {
+        console.error('Failed to load items data:', e);
+      }
+    }
+
+    // Handle Item Search Autocomplete
+    function handleItemSearch(query) {
+      const dropdown = document.getElementById('item-autocomplete-list');
+      const cleanQ = query.trim().toLowerCase();
+      if (!cleanQ || allItems.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      const matches = allItems.filter(it => 
+        String(it.id).includes(cleanQ) || 
+        it.codeName.toLowerCase().includes(cleanQ) || 
+        it.name.toLowerCase().includes(cleanQ)
+      ).slice(0, 20);
+
+      if (matches.length === 0) {
+        dropdown.innerHTML = '<div class="p-3 text-xs text-slate-500 text-center">Không tìm thấy vật phẩm phù hợp</div>';
+        dropdown.classList.remove('hidden');
+        return;
+      }
+
+      dropdown.innerHTML = matches.map(it => `
+        <div onclick="selectItemTemplate(${it.id}, '${it.name.replace(/'/g, "\\'")}')" class="px-3 py-2 text-xs hover:bg-orange-500/20 cursor-pointer flex items-center justify-between text-slate-200 hover:text-white border-b border-white/5 last:border-b-0">
+          <span><strong class="text-orange-400 font-mono">#${it.id}</strong> - ${it.name}</span>
+          <span class="text-[10px] text-slate-500 font-mono">${it.codeName}</span>
+        </div>
+      `).join('');
+      dropdown.classList.remove('hidden');
+    }
+
+    function selectItemTemplate(id, name) {
+      currentSelectedTemplate = { id, name };
+      document.getElementById('item-search-input').value = `#${id} - ${name}`;
+      document.getElementById('item-autocomplete-list').classList.add('hidden');
+      const tag = document.getElementById('currently-selected-item-tag');
+      tag.textContent = `Đã chọn: [ID: ${id}] ${name}`;
+      tag.classList.remove('hidden');
+    }
+
+    // Add Item to Selection List
+    function addItemToSelection() {
+      const searchVal = document.getElementById('item-search-input').value.trim();
+      const qty = parseInt(document.getElementById('item-qty-input').value) || 1;
+
+      let id = null;
+      let name = '';
+
+      if (currentSelectedTemplate) {
+        id = currentSelectedTemplate.id;
+        name = currentSelectedTemplate.name;
+      } else if (/^\d+$/.test(searchVal)) {
+        id = parseInt(searchVal);
+        const found = allItems.find(i => i.id === id);
+        name = found ? found.name : `Vật phẩm #${id}`;
+      }
+
+      if (id === null) {
+        showToast('Vui lòng chọn một vật phẩm từ danh sách tìm kiếm!', false);
+        return;
+      }
+
+      // Check if already in list
+      const existing = selectedItems.find(i => i.id === id);
+      if (existing) {
+        existing.quantity += qty;
+      } else {
+        selectedItems.push({ id, name, quantity: qty });
+      }
+
+      renderSelectedItems();
+      document.getElementById('item-search-input').value = '';
+      currentSelectedTemplate = null;
+      document.getElementById('currently-selected-item-tag').classList.add('hidden');
+      document.getElementById('item-qty-input').value = '1';
+    }
+
+    function removeItemFromSelection(index) {
+      selectedItems.splice(index, 1);
+      renderSelectedItems();
+    }
+
+    function renderSelectedItems() {
+      const container = document.getElementById('selected-items-table-container');
+      const tbody = document.getElementById('selected-items-tbody');
+      const countSpan = document.getElementById('selected-items-count');
+
+      countSpan.textContent = `Đã chọn ${selectedItems.length} vật phẩm`;
+
+      if (selectedItems.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      tbody.innerHTML = selectedItems.map((it, idx) => `
+        <tr class="hover:bg-white/[0.02]">
+          <td class="py-2 px-3 font-mono text-orange-400 font-bold">#${it.id}</td>
+          <td class="py-2 px-3 text-white font-medium">${it.name}</td>
+          <td class="py-2 px-3 font-bold text-amber-300">x${it.quantity}</td>
+          <td class="py-2 px-3 text-right">
+            <button onclick="removeItemFromSelection(${idx})" class="text-red-400 hover:text-red-300 font-bold">✕ Xóa</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleExpiryInput(showCustom, days = 0) {
+      const customDiv = document.getElementById('custom-expiry-container');
+      customDiv.classList.toggle('hidden', !showCustom);
+      if (days > 0) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        document.getElementById('gc-expiry-custom').value = d.toISOString().slice(0, 16);
+      }
+    }
+
+    function generateRandomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let result = 'NSO';
+      for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('gc-code').value = result;
+    }
+
+    // Submit New Giftcode
+    async function submitCreateGiftcode() {
+      const code = document.getElementById('gc-code').value.trim();
+      const type = parseInt(document.getElementById('gc-type').value);
+      const gold = parseInt(document.getElementById('gc-gold').value) || 0;
+      const coin = parseInt(document.getElementById('gc-coin').value) || 0;
+      const yen = parseInt(document.getElementById('gc-yen').value) || 0;
+
+      if (!code) {
+        showToast('Vui lòng nhập mã Giftcode!', false);
+        return;
+      }
+
+      let expires_at = null;
+      const expiryOption = document.querySelector('input[name="gc-expiry-option"]:checked').value;
+      if (expiryOption === 'days30') {
+        const d = new Date();
+        d.setDate(d.getDate() + 30);
+        expires_at = d.toISOString();
+      } else if (expiryOption === 'custom') {
+        const val = document.getElementById('gc-expiry-custom').value;
+        if (val) expires_at = new Date(val).toISOString();
+      }
+
+      const payload = {
+        code,
+        type,
+        gold,
+        coin,
+        yen,
+        items: selectedItems.map(i => ({ id: i.id, quantity: i.quantity })),
+        expires_at,
+      };
+
+      const btn = document.getElementById('submit-create-btn');
+      btn.disabled = true;
+      btn.textContent = 'Đang xử lý...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/giftcodes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, true);
+          // Reset form
+          document.getElementById('gc-code').value = '';
+          document.getElementById('gc-gold').value = '0';
+          document.getElementById('gc-coin').value = '0';
+          document.getElementById('gc-yen').value = '0';
+          selectedItems = [];
+          renderSelectedItems();
+          switchTab('giftcodes');
+        } else {
+          showToast(data.error || 'Tạo giftcode thất bại', false);
+        }
+      } catch (e) {
+        showToast('Lỗi server: ' + e.message, false);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 Khởi Tạo Giftcode';
+      }
+    }
+
+    // Load Giftcodes List
+    async function loadGiftcodes() {
+      const tbody = document.getElementById('giftcodes-table-body');
+      try {
+        const res = await fetch(`${API_BASE}/api/giftcodes`);
+        const data = await res.json();
+        if (data.success && data.giftcodes) {
+          if (data.giftcodes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-slate-500">Chưa có giftcode nào trong cơ sở dữ liệu.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.giftcodes.map(gc => {
+            const itemsDisplay = gc.parsedItems.length > 0 
+              ? gc.parsedItems.map(i => `<span class="inline-block px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-orange-300 mr-1 mb-1">#${i.id || i.item_id} (x${i.quantity || i.count || 1})</span>`).join('')
+              : '<span class="text-slate-600">Không có</span>';
+
+            return `
+              <tr class="hover:bg-white/[0.02]">
+                <td class="py-3 px-4 font-mono text-slate-500">${gc.id}</td>
+                <td class="py-3 px-4 font-mono font-bold text-amber-300 text-sm">${gc.code}</td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${gc.type === 1 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-blue-500/10 text-blue-400 border border-blue-500/30'}">
+                    ${gc.type === 1 ? 'Mỗi NV 1 Lần' : 'Dùng Chung'}
+                  </span>
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex gap-2">
+                    <span class="text-amber-400 font-bold">${(gc.gold || 0).toLocaleString()} <span class="text-[10px] font-normal text-slate-500">L</span></span>
+                    <span class="text-yellow-300 font-bold">${(gc.coin || 0).toLocaleString()} <span class="text-[10px] font-normal text-slate-500">Xu</span></span>
+                    <span class="text-cyan-300 font-bold">${(gc.yen || 0).toLocaleString()} <span class="text-[10px] font-normal text-slate-500">Yên</span></span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 max-w-xs">${itemsDisplay}</td>
+                <td class="py-3 px-4 text-slate-400">
+                  ${gc.expires_at ? new Date(gc.expires_at).toLocaleString('vi-VN') : 'Vô thời hạn'}
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <button onclick="confirmDeleteGiftcode(${gc.id}, '${gc.code}')" class="px-2.5 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-bold transition-all">
+                    🗑 Xóa
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-red-400">Không thể kết nối cơ sở dữ liệu: ${e.message}</td></tr>`;
+      }
+    }
+
+    // Delete Giftcode with Cascade references
+    async function confirmDeleteGiftcode(id, code) {
+      if (!confirm(`BẠN CÓ CHẮC MUỐN XÓA GIFTCODE "${code}"?\n\nLƯU Ý: Hành động này sẽ tự động xóa tất cả dữ liệu lịch sử liên quan trong bảng gift_code_histories!`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/giftcodes`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, code }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, true);
+          loadGiftcodes();
+        } else {
+          showToast(data.error || 'Xóa thất bại', false);
+        }
+      } catch (e) {
+        showToast('Lỗi: ' + e.message, false);
+      }
+    }
+
+    // ==========================================
+    // OTP MANAGEMENT FUNCTIONS
+    // ==========================================
+    async function generateNewOtp() {
+      try {
+        const res = await fetch(`${API_BASE}/api/generate-otp`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success && data.otp) {
+          latestGeneratedOtp = data.otp;
+          document.getElementById('new-otp-number').textContent = data.otp;
+          document.getElementById('new-otp-display-box').classList.remove('hidden');
+          showToast(data.message, true);
+          loadOtps();
+        } else {
+          showToast(data.error || 'Tạo OTP thất bại', false);
+        }
+      } catch (e) {
+        showToast('Lỗi: ' + e.message, false);
+      }
+    }
+
+    function copyCurrentOtp() {
+      if (latestGeneratedOtp) {
+        navigator.clipboard.writeText(latestGeneratedOtp);
+        showToast(`Đã sao chép mã OTP: ${latestGeneratedOtp}`);
+      }
+    }
+
+    async function loadOtps() {
+      const tbody = document.getElementById('otps-table-body');
+      try {
+        const res = await fetch(`${API_BASE}/api/otps`);
+        const data = await res.json();
+        if (data.success && data.otps) {
+          if (data.otps.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-500">Chưa có mã OTP nào trong hàng đợi. Nhấn "Tạo 1 Mã OTP Mới" ở trên để tạo.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.otps.map(otp => {
+            const isExpired = new Date(otp.expires_at) < new Date();
+            return `
+              <tr class="hover:bg-white/[0.02]">
+                <td class="py-3 px-4 font-mono font-bold text-orange-400 text-sm tracking-wider">${otp.code}</td>
+                <td class="py-3 px-4 text-slate-400">${new Date(otp.created_at).toLocaleString('vi-VN')}</td>
+                <td class="py-3 px-4 text-slate-400">${new Date(otp.expires_at).toLocaleString('vi-VN')}</td>
+                <td class="py-3 px-4">
+                  ${otp.used === 1 
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/20 text-slate-400 border border-slate-500/30">Đã Dùng (${otp.used_by || 'Unknown'})</span>`
+                    : isExpired 
+                    ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">Hết Hạn</span>'
+                    : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Sẵn Sàng</span>'
+                  }
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <button onclick="deleteOtp('${otp.code}')" class="text-red-400 hover:text-red-300 font-bold text-xs">✕ Xóa</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-red-400">Lỗi tải OTP: ${e.message}</td></tr>`;
+      }
+    }
+
+    async function deleteOtp(code) {
+      try {
+        const res = await fetch(`${API_BASE}/api/otps`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, true);
+          loadOtps();
+        }
+      } catch (e) {
+        showToast('Lỗi: ' + e.message, false);
+      }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      loadItemsData();
+      loadGiftcodes();
+    });
+  </script>
+</body>
+</html>
