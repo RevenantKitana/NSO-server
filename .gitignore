@@ -62,6 +62,7 @@ out/
 # Visual Studio Code
 .vscode/
 
+VM/
 # Security & Secrets
 *.key
 *.key.pub
