@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Mascot from '../components/Mascot';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -85,8 +84,10 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         {/* Card Header */}
         <div className="text-center mb-8">
-          <div className="inline-block mb-3">
-            <Mascot size={64} />
+          <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 p-0.5 shadow-xl shadow-orange-500/20 mb-4">
+            <div className="w-full h-full bg-[#0d1117] rounded-[14px] flex items-center justify-center text-xl font-black text-orange-400">
+              忍
+            </div>
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">ĐĂNG KÝ TÀI KHOẢN</h1>
           <p className="text-sm text-slate-400 mt-2">

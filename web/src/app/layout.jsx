@@ -50,8 +50,8 @@ export default function RootLayout({ children }) {
         <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#07090e]/85 border-b border-white/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             {/* Mascot & Brand Logo */}
-            <div className="flex items-center gap-3">
-              <Mascot size={46} />
+            <div className="flex items-center gap-3.5">
+              <Mascot size={58} />
               <a href="/" className="flex flex-col group">
                 <span className="text-xl font-black tracking-wider bg-gradient-to-r from-white via-slate-100 to-orange-300 bg-clip-text text-transparent group-hover:to-orange-400 transition-colors">
                   NSO PRIVATE
@@ -133,7 +133,9 @@ export default function RootLayout({ children }) {
         <footer className="border-t border-white/5 bg-[#05070a] mt-20 py-12 px-4 sm:px-6 lg:px-8 text-slate-400">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <Mascot size={36} />
+              <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-sm shrink-0">
+                忍
+              </div>
               <p className="text-sm">
                 Máy chủ Ninja School Online Private phi lợi nhuận • Tùy biến và duy trì bởi{' '}
                 <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-bold hover:underline">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Mascot from './components/Mascot';
 
 export default function HomePage() {
   const [serverStatus, setServerStatus] = useState({
@@ -35,7 +34,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
       {/* Hero Section */}
-      <section className="relative w-full max-w-7xl pt-12 pb-16 md:pt-16 md:pb-20 text-center flex flex-col items-center">
+      <section className="relative w-full max-w-7xl pt-14 pb-16 md:pt-20 md:pb-20 text-center flex flex-col items-center">
         {/* Live Server Status Badge */}
         <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-900/80 border border-white/10 shadow-inner backdrop-blur-md mb-8">
           <span className="relative flex h-3 w-3">
@@ -59,18 +58,11 @@ export default function HomePage() {
           </span>
         </div>
 
-        {/* Mascot in Hero */}
-        <div className="mb-6 flex flex-col items-center">
-          <Mascot size={90} showSpeechBubble={false} />
-          <p className="text-[11px] text-slate-500 mt-2">Di chuột hoặc nhấp để tương tác cùng Mascot</p>
-        </div>
-
         {/* Title */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-5xl leading-tight">
-          NINJA SCHOOL ONLINE
-          <br />
+          NINJA SCHOOL{' '}
           <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-red-500 bg-clip-text text-transparent">
-            MÁY CHỦ PRIVATE PHI LỢI NHUẬN
+            ONLINE
           </span>
         </h1>
 
