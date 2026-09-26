@@ -41,13 +41,13 @@ export default function GiftcodesPage() {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
           </svg>
-          Quà Tặng Từ Khánh
+          Hỗ Trợ Tân Thủ Phi Lợi Nhuận
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
           DANH SÁCH <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">GIFTCODE</span>
         </h1>
         <p className="mt-4 text-slate-400 text-sm sm:text-base">
-          Sao chép mã bên dưới và nhập tại NPC Okanehashi trong game để nhận phần thưởng khởi đầu!
+          Sao chép mã bên dưới và nhập tại NPC Okanehashi trong game để nhận phần thưởng tân thủ khởi đầu!
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function GiftcodesPage() {
           </div>
           <h3 className="text-lg font-bold text-white">Hiện chưa có Giftcode công khai</h3>
           <p className="text-xs text-slate-400 mt-2">
-            Khánh sẽ cập nhật thêm các mã quà tặng sự kiện tại đây. Hãy theo dõi thường xuyên nhé!
+            <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-semibold underline">[Khánh]</a> sẽ cập nhật thêm các mã quà tặng sự kiện tại đây. Hãy theo dõi thường xuyên nhé!
           </p>
         </div>
       ) : (

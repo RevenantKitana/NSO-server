@@ -1,8 +1,9 @@
 import './globals.css';
+import Mascot from './components/Mascot';
 
 export const metadata = {
-  title: 'NSO Custom Server - Modded by Khánh | k.mio.io.vn',
-  description: 'Máy chủ Ninja School Online Custom mod bởi Khánh. Hệ thống đăng ký bảo mật OTP 6 số, nhận Giftcode tân thủ và tải game miễn phí.',
+  title: 'NSO Private Server - Phi Lợi Nhuận | Mod bởi [Khánh]',
+  description: 'Máy chủ Ninja School Online Private phi lợi nhuận tùy biến bởi [Khánh]. Không nạp thẻ, cày cuốc hoài niệm, nhận Giftcode tân thủ và tải game miễn phí.',
 };
 
 export default function RootLayout({ children }) {
@@ -32,32 +33,42 @@ export default function RootLayout({ children }) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
             </span>
-            Máy chủ NSO Custom mod bởi Khánh • Nhận mã OTP cấp phép tại{' '}
-            <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="underline font-bold text-amber-300 hover:text-white transition-colors">
-              k.mio.io.vn
-            </a>
+            Máy chủ NSO Private Phi Lợi Nhuận • Liên hệ{' '}
+            <a
+              href="https://k.mio.io.vn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-bold text-amber-300 hover:text-white transition-colors"
+            >
+              [Khánh]
+            </a>{' '}
+            để nhận mã OTP cấp phép đăng ký
           </span>
         </div>
 
         {/* Navigation Bar */}
-        <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#07090e]/80 border-b border-white/5">
+        <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#07090e]/85 border-b border-white/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            {/* Logo */}
-            <a href="/" className="group flex items-center gap-3 transition-transform duration-200 hover:scale-[1.02]">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 p-0.5 shadow-lg shadow-orange-500/20 flex items-center justify-center">
-                <div className="w-full h-full bg-[#0d1117] rounded-[10px] flex items-center justify-center font-serif text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-amber-200">
-                  忍
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-200 to-orange-300 bg-clip-text text-transparent">
-                  NSO CUSTOM
+            {/* Mascot & Brand Logo */}
+            <div className="flex items-center gap-3">
+              <Mascot size={46} />
+              <a href="/" className="flex flex-col group">
+                <span className="text-xl font-black tracking-wider bg-gradient-to-r from-white via-slate-100 to-orange-300 bg-clip-text text-transparent group-hover:to-orange-400 transition-colors">
+                  NSO PRIVATE
                 </span>
-                <span className="text-[10px] tracking-widest uppercase font-semibold text-orange-400/90 -mt-1">
-                  Mod by Khánh • k.mio.io.vn
+                <span className="text-[11px] tracking-wider uppercase font-semibold text-orange-400/90 -mt-0.5">
+                  Phi lợi nhuận • Mod bởi{' '}
+                  <a
+                    href="https://k.mio.io.vn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline text-amber-300 font-bold"
+                  >
+                    [Khánh]
+                  </a>
                 </span>
-              </div>
-            </a>
+              </a>
+            </div>
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-1 bg-white/[0.03] border border-white/5 px-3 py-1.5 rounded-full backdrop-blur-md">
@@ -83,7 +94,7 @@ export default function RootLayout({ children }) {
                 href="/#download"
                 className="px-4 py-2 rounded-full text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
               >
-                Tải Client
+                Tải Game
               </a>
               <a
                 href="https://k.mio.io.vn"
@@ -91,7 +102,7 @@ export default function RootLayout({ children }) {
                 rel="noopener noreferrer"
                 className="px-4 py-2 rounded-full text-sm font-semibold text-amber-300 hover:text-white hover:bg-amber-500/10 transition-colors"
               >
-                Khánh (k.mio.io.vn) ↗
+                Liên hệ [Khánh] ↗
               </a>
             </nav>
 
@@ -122,13 +133,11 @@ export default function RootLayout({ children }) {
         <footer className="border-t border-white/5 bg-[#05070a] mt-20 py-12 px-4 sm:px-6 lg:px-8 text-slate-400">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-sm">
-                忍
-              </div>
+              <Mascot size={36} />
               <p className="text-sm">
-                Bản Custom Server mod từ tựa game gốc bởi{' '}
+                Máy chủ Ninja School Online Private phi lợi nhuận • Tùy biến và duy trì bởi{' '}
                 <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-bold hover:underline">
-                  Khánh (k.mio.io.vn)
+                  [Khánh]
                 </a>.
               </p>
             </div>
@@ -136,7 +145,8 @@ export default function RootLayout({ children }) {
               <a href="/" className="hover:text-orange-400 transition-colors">Trang Chủ</a>
               <a href="/register" className="hover:text-orange-400 transition-colors">Đăng Ký</a>
               <a href="/giftcodes" className="hover:text-orange-400 transition-colors">Giftcode</a>
-              <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="hover:text-amber-300 transition-colors font-medium">k.mio.io.vn</a>
+              <a href="/#download" className="hover:text-orange-400 transition-colors">Tải Client</a>
+              <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="hover:text-amber-300 transition-colors font-medium">[Khánh]</a>
             </div>
           </div>
         </footer>

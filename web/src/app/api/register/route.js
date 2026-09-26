@@ -57,7 +57,7 @@ export async function POST(request) {
 
     if (otpRows.length === 0) {
       return NextResponse.json(
-        { error: 'Mã OTP không hợp lệ! Vui lòng liên hệ Khánh tại k.mio.io.vn để nhận mã cấp phép.' },
+        { error: 'Mã OTP không hợp lệ! Vui lòng liên hệ [Khánh] để nhận mã cấp phép.' },
         { status: 400 }
       );
     }
@@ -72,7 +72,7 @@ export async function POST(request) {
 
     if (new Date(otpRecord.expires_at) < new Date()) {
       return NextResponse.json(
-        { error: 'Mã OTP này đã hết hạn (quá 90 phút)! Vui lòng liên hệ Khánh tại k.mio.io.vn để nhận mã mới.' },
+        { error: 'Mã OTP này đã hết hạn (quá 90 phút)! Vui lòng liên hệ [Khánh] để nhận mã mới.' },
         { status: 400 }
       );
     }

@@ -9,6 +9,10 @@ build/
 out/
 /out/
 *.jar
+!web/public/*.jar
+!web/public/**/*.jar
+!web/assets/**/*
+!web/public/assets/**/*
 *.war
 *.nar
 *.ear

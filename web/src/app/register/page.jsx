@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Mascot from '../components/Mascot';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -60,7 +61,7 @@ export default function RegisterPage() {
       } else {
         setStatus({
           type: 'success',
-          message: data.message || 'Đăng ký tài khoản thành công! Bạn có thể vào game ngay bây giờ.',
+          message: data.message || 'Đăng ký tài khoản thành công! Bạn có thể tải game và đăng nhập ngay.',
         });
         setFormData({
           username: '',
@@ -84,18 +85,16 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         {/* Card Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 p-0.5 shadow-xl shadow-orange-500/20 mb-4">
-            <div className="w-full h-full bg-[#0d1117] rounded-[14px] flex items-center justify-center text-2xl font-black text-orange-400">
-              忍
-            </div>
+          <div className="inline-block mb-3">
+            <Mascot size={64} />
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">ĐĂNG KÝ TÀI KHOẢN</h1>
           <p className="text-sm text-slate-400 mt-2">
-            Nhập thông tin và mã OTP 6 số do{' '}
-            <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-bold underline">
-              Khánh (k.mio.io.vn)
+            Hệ thống máy chủ Private phi lợi nhuận. Nhập mã OTP do{' '}
+            <a href="https://k.mio.io.vn" target="_blank" rel="noopener noreferrer" className="text-orange-400 font-bold underline hover:text-white">
+              [Khánh]
             </a>{' '}
-            cấp phép
+            cấp phép để kích hoạt tài khoản.
           </p>
         </div>
 
@@ -229,7 +228,7 @@ export default function RegisterPage() {
                 />
               </div>
               <p className="text-[11px] text-slate-400 mt-1.5">
-                Mã xác thực duy nhất do Khánh cấp (dùng 1 lần).
+                Mã xác thực duy nhất do [Khánh] cấp (mỗi mã dùng 1 lần).
               </p>
             </div>
 
@@ -263,9 +262,9 @@ export default function RegisterPage() {
             rel="noopener noreferrer"
             className="text-orange-400 font-bold underline hover:text-amber-300 transition-colors"
           >
-            Liên hệ Khánh tại k.mio.io.vn
+            Liên hệ [Khánh]
           </a>{' '}
-          để nhận mã cấp phép tạo tài khoản.
+          để nhận mã cấp phép tạo tài khoản hoàn toàn miễn phí.
         </div>
       </div>
     </div>
