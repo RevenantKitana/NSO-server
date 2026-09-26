@@ -1,5 +1,6 @@
 -- ========================================================
 -- CLEANUP SCRIPT: RESET ALL USER & DYNAMIC PLAYER DATA
+-- ZERO USERS / ZERO PLAYERS (100% PRISTINE CLEAN STATE)
 -- PRESERVES ALL GAME METADATA, MAPS, SKILLS, ITEMS, SHOPS
 -- ========================================================
 
@@ -57,24 +58,3 @@ CREATE TABLE IF NOT EXISTS `registration_otps` (
 TRUNCATE TABLE `registration_otps`;
 
 SET FOREIGN_KEY_CHECKS = 1;
-
--- 6. Insert Default Accounts:
--- Account 1: user: admin / pass: admin (role 1 - Admin)
-INSERT INTO `users` (
-  `id`, `username`, `password`, `activated`, `balance`, `luong`, `tongnap`, 
-  `point_vip`, `role`, `status`, `online`, `nap`, `tanthu`, `level`, 
-  `created_at`, `updated_at`
-) VALUES (
-  1, 'admin', '$2a$12$9wxCjB6YABL2IgqJkGS/LeNoiSDAeCkl/MMjYcIuXVphhv5Lqn2eO', 
-  1, 1000000, 1000000, 0, 0, 1, 0, 0, 0, 1, 'admin', NOW(), NOW()
-);
-
--- Account 2: user: test / pass: 123456 (role 0 - Member)
-INSERT INTO `users` (
-  `id`, `username`, `password`, `activated`, `balance`, `luong`, `tongnap`, 
-  `point_vip`, `role`, `status`, `online`, `nap`, `tanthu`, `level`, 
-  `created_at`, `updated_at`
-) VALUES (
-  2, 'test', '$2a$12$5xcWOyFmSN7gJ/r1E12t4.8QiQbOjFhMTe5IBxrGvp8aIUwaJwmaK', 
-  1, 100000, 100000, 0, 0, 0, 0, 0, 0, 1, 'member', NOW(), NOW()
-);

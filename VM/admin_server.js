@@ -153,7 +153,7 @@ const server = http.createServer(async (req, res) => {
 
       const [result] = await db.query(
         `INSERT INTO gift_codes (code, type, server_id, gold, coin, yen, items, status, expires_at, created_at, updated_at)
-         VALUES (?, ?, -1, ?, ?, ?, ?, 0, ?, NOW(), NOW())`,
+         VALUES (?, ?, 0, ?, ?, ?, ?, 0, ?, NOW(), NOW())`,
         [cleanCode, codeType, rewardGold, rewardCoin, rewardYen, itemsJson, expireDate]
       );
 
