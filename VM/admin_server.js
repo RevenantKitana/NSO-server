@@ -1,7 +1,19 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const mysql = require('mysql2/promise');
+
+let mysql;
+try {
+  mysql = require('mysql2/promise');
+} catch (e1) {
+  try {
+    const webNodeModulesPath = path.resolve(__dirname, '../web/node_modules/mysql2/promise');
+    mysql = require(webNodeModulesPath);
+  } catch (e2) {
+    console.error('Lỗi: Không tìm thấy thư viện mysql2. Hãy chạy `npm install` trong thư mục web/ trước.');
+    process.exit(1);
+  }
+}
 
 const PORT = 4000;
 const DB_CONFIG = {

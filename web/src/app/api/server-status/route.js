@@ -49,18 +49,18 @@ export async function GET() {
          FROM users`
       );
       if (stats.length > 0) {
-        totalUsers = stats[0].total || 0;
-        onlineUsers = stats[0].online || 0;
+        totalUsers = Number(stats[0].total) || 0;
+        onlineUsers = Number(stats[0].online) || 0;
       }
     } catch (dbErr) {
       console.warn('DB stats query error in status:', dbErr.message);
     }
 
+    // Never expose raw IP or Port to the client/frontend
     return NextResponse.json({
       success: true,
       server: {
-        host: serverHost,
-        port: serverPort,
+        serverName: 'NSO Legend Official',
         status: isOnline ? 'ONLINE' : 'OFFLINE',
         isOnline,
         totalUsers,
@@ -72,8 +72,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: error.message,
-        server: { status: 'UNKNOWN', isOnline: false },
+        server: { serverName: 'NSO Legend Official', status: 'OFFLINE', isOnline: false, totalUsers: 0, onlineUsers: 0 },
       },
       { status: 500 }
     );

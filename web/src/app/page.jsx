@@ -4,10 +4,9 @@ import { useState, useEffect } from 'react';
 
 export default function HomePage() {
   const [serverStatus, setServerStatus] = useState({
+    serverName: 'NSO Legend Official',
     status: 'CHECKING',
     isOnline: false,
-    host: '161.118.202.174',
-    port: 14444,
     totalUsers: 0,
     onlineUsers: 0,
   });
@@ -49,7 +48,7 @@ export default function HomePage() {
             )}
           </span>
           <span className="text-xs font-semibold text-slate-300">
-            Máy Chủ: <span className="text-white font-bold">{serverStatus.host}:{serverStatus.port}</span>
+            Máy Chủ: <span className="text-white font-bold">{serverStatus.serverName || 'NSO SERVER #1'}</span>
           </span>
           <span className="text-xs px-2 py-0.5 rounded bg-white/10 font-bold text-amber-400 uppercase tracking-wider">
             {loading ? 'Đang kiểm tra...' : serverStatus.isOnline ? 'ONLINE' : 'BẢO TRÌ'}
@@ -200,7 +199,7 @@ export default function HomePage() {
             TẢI CLIENT MÁY CHỦ
           </h2>
           <p className="mt-2 text-slate-400 text-sm">
-            Client đã được cài đặt sẵn địa chỉ kết nối tới máy chủ <span className="text-orange-400 font-semibold">{serverStatus.host}:{serverStatus.port}</span>
+            Client chính thức đã được cấu hình sẵn sàng kết nối, chỉ cần tải về và đăng nhập để trải nghiệm!
           </p>
         </div>
 
@@ -213,7 +212,7 @@ export default function HomePage() {
               </div>
               <div>
                 <h4 className="font-bold text-white">Bản JAR Chuẩn</h4>
-                <p className="text-xs text-slate-400">Dành cho PC (MicroEmulator / Kemulator) & Android (J2meLoader)</p>
+                <p className="text-xs text-slate-400">Dành cho PC (MicroEmulator / Kemulator) &amp; Android (J2meLoader)</p>
               </div>
             </div>
             <a
