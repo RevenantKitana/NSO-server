@@ -3,28 +3,29 @@ set -e
 
 BACKUP_SOURCE_DIR="/home/ubuntu/nso-server/backups/sources"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_ARCHIVE="${BACKUP_SOURCE_DIR}/source_backup_${TIMESTAMP}.tar.gz"
+BACKUP_ARCHIVE="${BACKUP_SOURCE_DIR}/source_backup_${TIMESTAMP}.tar"
 
 mkdir -p "$BACKUP_SOURCE_DIR"
 
 echo "=================================================="
 echo " 1. SAO LUU SOURCE & RUNTIME HIEN TAI (MAX 3 BAN) "
 echo "=================================================="
-echo "Dang tao ban sao luu: $BACKUP_ARCHIVE ..."
-tar -czf "$BACKUP_ARCHIVE" \
+echo "Dang tao ban sao luu nhanh: $BACKUP_ARCHIVE ..."
+# Su dung tar khong nen de hoan tat trong 2-3s, tranh bi Cloud bop CPU (CPU throttling)
+tar -cf "$BACKUP_ARCHIVE" \
     -C /home/ubuntu/nso-server \
     Nso-jar-with-dependencies.jar config.properties mysql.properties Data \
     2>/dev/null || true
 
 # Xoay vong toi da 3 ban backup source moi nhat
-OLD_SOURCE_BACKUPS=$(ls -1t "$BACKUP_SOURCE_DIR"/source_backup_*.tar.gz 2>/dev/null | tail -n +4)
+OLD_SOURCE_BACKUPS=$(ls -1t "$BACKUP_SOURCE_DIR"/source_backup_*.tar* 2>/dev/null | tail -n +4)
 if [ -n "$OLD_SOURCE_BACKUPS" ]; then
     echo "$OLD_SOURCE_BACKUPS" | while read -r old_file; do
         rm -f "$old_file"
         echo "Da xoa ban backup source cu: $(basename "$old_file")"
     done
 fi
-CURRENT_COUNT=$(ls -1 "$BACKUP_SOURCE_DIR"/source_backup_*.tar.gz 2>/dev/null | wc -l)
+CURRENT_COUNT=$(ls -1 "$BACKUP_SOURCE_DIR"/source_backup_*.tar* 2>/dev/null | wc -l)
 echo "Da sao luu thanh cong! So ban backup source hien co: $CURRENT_COUNT/3"
 
 echo "=================================================="
@@ -38,7 +39,8 @@ echo "=================================================="
 echo " 3. SYNCING DATA ASSETS (MAP, LANG, IMG)          "
 echo "=================================================="
 if [ -d /home/ubuntu/src/Data ]; then
-    cp -rf /home/ubuntu/src/Data/* /home/ubuntu/nso-server/Data/ 2>/dev/null || true
+    echo "Dang dong bo nhanh du lieu Data (rsync)..."
+    rsync -a /home/ubuntu/src/Data/ /home/ubuntu/nso-server/Data/ 2>/dev/null || cp -ru /home/ubuntu/src/Data/* /home/ubuntu/nso-server/Data/ 2>/dev/null || true
 fi
 
 if [ -f /home/ubuntu/src/VM/check_status.sh ]; then
@@ -49,6 +51,7 @@ fi
 echo "=================================================="
 echo " 4. COMPILING AND BUILDING JAR WITH MAVEN         "
 echo "=================================================="
+echo "Dang bien dich ma nguon bang Maven (khoang 30-60s)..."
 mvn clean package -DskipTests
 
 echo "=================================================="
