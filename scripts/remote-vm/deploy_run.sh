@@ -14,8 +14,18 @@ mv -f mysql.properties.prod mysql.properties
 mkdir -p logs
 
 echo "3. Importing Database..."
-mariadb -u root nso_test < nso_test.sql
-echo "Database imported successfully."
+if [ -f init_nso_clean.sql ]; then
+    mariadb -u root nso_test < init_nso_clean.sql
+    echo "Database imported successfully from init_nso_clean.sql."
+elif [ -f nso_clean.sql ]; then
+    mariadb -u root nso_test < nso_clean.sql
+    echo "Database imported successfully from nso_clean.sql."
+elif [ -f nso_test.sql ]; then
+    mariadb -u root nso_test < nso_test.sql
+    echo "Database imported successfully from nso_test.sql."
+else
+    echo "Database file not found, skipping initial import."
+fi
 
 echo "4. Setting up Systemd Service..."
 sudo cp -f nso-server.service /etc/systemd/system/nso-server.service

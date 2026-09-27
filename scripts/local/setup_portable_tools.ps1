@@ -5,7 +5,7 @@
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$ProjectRoot = (Get-Item "$PSScriptRoot\..").FullName
+$ProjectRoot = (Get-Item "$PSScriptRoot\..\..").FullName
 $ToolsDir = "$ProjectRoot\tools"
 $JdkDir = "$ToolsDir\jdk"
 $MavenDir = "$ToolsDir\maven"
@@ -93,5 +93,3 @@ Write-Host ""
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host "   HOAN TAT THIET LAP MOI TRUONG BUILD CUC BO (PORTABLE)!   " -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
-Write-Host "Bay gio ban co the chay file 'build_and_deploy_local.bat'!" -ForegroundColor White
-Write-Host ""

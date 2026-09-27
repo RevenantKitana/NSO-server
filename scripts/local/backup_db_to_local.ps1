@@ -3,13 +3,33 @@
 # Independent of auto-backup retention
 # ==========================================================
 
-$VM_IP = "161.118.202.174"
-$VM_USER = "ubuntu"
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-$KeyPath = Join-Path $ScriptDir "ssh-key-2026-09-26.key"
-$ProjectRoot = Split-Path -Parent $ScriptDir
-$LocalBackupDir = Join-Path $ProjectRoot "backups"
+$ProjectRoot = (Get-Item "$PSScriptRoot\..\..").FullName
+$ConfigFile = Join-Path $ProjectRoot "config\server_config.ini"
 
+$Config = @{}
+if (Test-Path $ConfigFile) {
+    Get-Content $ConfigFile | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -and -not $line.StartsWith("#")) {
+            $parts = $line.Split("=", 2)
+            if ($parts.Length -eq 2) {
+                $Config[$parts[0].Trim()] = $parts[1].Trim()
+            }
+        }
+    }
+}
+
+$VM_IP = if ($Config["VM_IP"]) { $Config["VM_IP"] } else { "161.118.202.174" }
+$VM_USER = if ($Config["VM_USER"]) { $Config["VM_USER"] } else { "ubuntu" }
+$KeyRel = if ($Config["SSH_KEY"]) { $Config["SSH_KEY"] } else { "config/ssh-key-2026-09-26.key" }
+$KeyPath = [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot $KeyRel))
+
+if (!(Test-Path $KeyPath)) {
+    Write-Host "[LOI] Khong tim thay file SSH Key tai: $KeyPath" -ForegroundColor Red
+    exit 1
+}
+
+$LocalBackupDir = Join-Path $ProjectRoot "backups"
 if (!(Test-Path $LocalBackupDir)) {
     New-Item -ItemType Directory -Path $LocalBackupDir -Force | Out-Null
 }
@@ -19,7 +39,7 @@ $LocalFileName = "manual_db_backup_$Timestamp.sql.gz"
 $LocalFilePath = Join-Path $LocalBackupDir $LocalFileName
 $RemoteTempPath = "/tmp/manual_db_backup_$Timestamp.sql.gz"
 
-Write-Host "[1/3] Dang tao ban dump co so du lieu tren VM qua SSH..." -ForegroundColor Cyan
+Write-Host "[1/3] Dang tao ban dump co so du lieu tren VM ($VM_IP) qua SSH..." -ForegroundColor Cyan
 
 $dumpCmd = "sudo mariadb-dump --single-transaction --routines --triggers nso_test | gzip > $RemoteTempPath && sudo chmod 644 $RemoteTempPath"
 $sshProcess = Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"$dumpCmd`"" -Wait -NoNewWindow -PassThru

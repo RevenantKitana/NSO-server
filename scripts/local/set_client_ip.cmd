@@ -9,15 +9,25 @@ REM -------------------------------------------------------------
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
-if exist "%SCRIPT_DIR%\.client" (
-    set "ROOT_DIR=%SCRIPT_DIR%"
-    set "CLIENT_DIR=%SCRIPT_DIR%\.client"
-) else if exist "%SCRIPT_DIR%\PatchClient.java" (
-    set "ROOT_DIR=%SCRIPT_DIR%\.."
-    set "CLIENT_DIR=%SCRIPT_DIR%"
-) else (
-    set "ROOT_DIR=%SCRIPT_DIR%"
-    set "CLIENT_DIR=%SCRIPT_DIR%\.client"
+set "ROOT_DIR=%SCRIPT_DIR%\..\.."
+pushd "%ROOT_DIR%"
+set "ROOT_DIR=%CD%"
+popd
+
+set "CLIENT_DIR=%ROOT_DIR%\.client"
+
+REM Doc cau hinh mac dinh tu config\server_config.ini
+set "VM_IP=161.118.202.174"
+set "VM_PORT=14444"
+if exist "%ROOT_DIR%\config\server_config.ini" (
+    for /f "usebackq tokens=1,* delims==" %%A in ("%ROOT_DIR%\config\server_config.ini") do (
+        set "KEY=%%A"
+        set "VAL=%%B"
+        if not "!KEY:~0,1!"=="#" (
+            if /i "!KEY!"=="VM_IP" set "VM_IP=!VAL!"
+            if /i "!KEY!"=="VM_PORT" set "VM_PORT=!VAL!"
+        )
+    )
 )
 
 REM Tim kiem Java runtime
@@ -41,7 +51,7 @@ if exist "%ROOT_DIR%\tools\jdk\bin\java.exe" (
 if "%JAVA_CMD%"=="" (
     echo ============================================================
     echo [LOI] Khong tim thay Java!
-    echo Vui long chay: VM\setup_portable_tools.bat de tai Java 17.
+    echo Vui long mo manage.bat va chon thiet lap JDK 17 Portable.
     echo ============================================================
     if "%~1"=="" pause
     exit /b 1
@@ -71,20 +81,20 @@ if /i "%ARG1%"=="restore" goto :DO_RESTORE
 if /i "%ARG1%"=="bak" goto :DO_RESTORE
 
 if /i "%ARG1%"=="vm" (
-    set "TARGET_IP=161.118.202.174"
-    set "TARGET_PORT=14444"
+    set "TARGET_IP=%VM_IP%"
+    set "TARGET_PORT=%VM_PORT%"
     goto :DO_PATCH
 )
 
 if /i "%ARG1%"=="local" (
     set "TARGET_IP=127.0.0.1"
-    set "TARGET_PORT=14444"
+    set "TARGET_PORT=%VM_PORT%"
     goto :DO_PATCH
 )
 
 set "TARGET_IP=%~1"
 set "TARGET_PORT=%~2"
-if "%TARGET_PORT%"=="" set "TARGET_PORT=14444"
+if "%TARGET_PORT%"=="" set "TARGET_PORT=%VM_PORT%"
 goto :DO_PATCH
 
 :MENU
@@ -93,8 +103,8 @@ echo ============================================================
 echo         CAU HINH IP / PORT CHO CLIENT JAR (NSO)
 echo ============================================================
 echo.
-echo   [1] Ket noi Cloud VM     (161.118.202.174 : 14444)
-echo   [2] Ket noi Localhost    (127.0.0.1       : 14444)
+echo   [1] Ket noi Cloud VM     (%VM_IP% : %VM_PORT%)
+echo   [2] Ket noi Localhost    (127.0.0.1       : %VM_PORT%)
 echo   [3] Nhap IP va Port tuy chinh (Custom IP/Port)
 echo   [4] Khoi phuc Client goc tu file Backup (.bak)
 echo   [0] Thoat
@@ -103,13 +113,13 @@ echo ============================================================
 set /p "CHOICE=>> Nhap lua chon cua ban [1-4, 0]: "
 
 if "%CHOICE%"=="1" (
-    set "TARGET_IP=161.118.202.174"
-    set "TARGET_PORT=14444"
+    set "TARGET_IP=%VM_IP%"
+    set "TARGET_PORT=%VM_PORT%"
     goto :DO_PATCH
 )
 if "%CHOICE%"=="2" (
     set "TARGET_IP=127.0.0.1"
-    set "TARGET_PORT=14444"
+    set "TARGET_PORT=%VM_PORT%"
     goto :DO_PATCH
 )
 if "%CHOICE%"=="3" (
@@ -120,8 +130,8 @@ if "%CHOICE%"=="3" (
         timeout /t 2 >nul
         goto :MENU
     )
-    set /p "TARGET_PORT=>> Nhap Port Server (Mac dinh 14444): "
-    if "!TARGET_PORT!"=="" set "TARGET_PORT=14444"
+    set /p "TARGET_PORT=>> Nhap Port Server (Mac dinh %VM_PORT%): "
+    if "!TARGET_PORT!"=="" set "TARGET_PORT=%VM_PORT%"
     goto :DO_PATCH
 )
 if "%CHOICE%"=="4" (
