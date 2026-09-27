@@ -36,6 +36,10 @@ buildNumber.properties
 hs_err_pid*
 replay_pid*
 
+# Portable JDK and Maven tools
+tools/
+/tools/
+
 # ==========================================
 # 2. NODE.JS & NEXT.JS (WEB APP)
 # ==========================================
