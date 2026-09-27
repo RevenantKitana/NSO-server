@@ -123,13 +123,15 @@ Write-Host ""
 Write-Host "[BUOC 6/6] Dang dang ky nso-server.service va cronjob sao luu tu dong..." -ForegroundColor Cyan
 $ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service"
 $AutoBackup = Join-Path $ProjectRoot "scripts\remote-vm\auto_backup_db.sh"
+$CheckStatus = Join-Path $ProjectRoot "scripts\remote-vm\check_status.sh"
 
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$ServiceFile`" $VM_USER@$VM_IP`:/tmp/nso-server.service" -Wait -NoNewWindow | Out-Null
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$AutoBackup`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/auto_backup_db.sh" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$CheckStatus`" $VM_USER@$VM_IP`:/home/ubuntu/check_status.sh" -Wait -NoNewWindow | Out-Null
 
 $setupSystemCmd = "sudo cp /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
                   "rm -f /tmp/nso-server.service && " +
-                  "chmod +x /home/ubuntu/nso-server/auto_backup_db.sh && " +
+                  "chmod +x /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
                   "sudo systemctl daemon-reload && " +
                   "sudo systemctl enable nso-server.service && " +
                   "mkdir -p /home/ubuntu/nso-server/logs && " +

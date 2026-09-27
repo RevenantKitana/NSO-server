@@ -157,18 +157,18 @@ echo ===========================================================================
 set "OPT="
 set /p "OPT=>> Nhap lua chon cua ban [0-11]: "
 
-if "%OPT%"=="1" goto :DEPLOY_VM
-if "%OPT%"=="2" goto :VM_CONTROL
-if "%OPT%"=="3" goto :SSH_SHELL
-if "%OPT%"=="4" goto :VM_MONITOR
-if "%OPT%"=="5" goto :BACKUP_DB
-if "%OPT%"=="6" goto :ADMIN_PORTAL
-if "%OPT%"=="7" goto :BOOTSTRAP_VM
-if "%OPT%"=="8" goto :PATCH_CLIENT
-if "%OPT%"=="9" goto :SETUP_TOOLS
-if "%OPT%"=="10" goto :LOCAL_BUILD
-if "%OPT%"=="11" goto :EDIT_CONFIG
-if "%OPT%"=="0" exit /b 0
+if "!OPT!"=="1" goto :DEPLOY_VM
+if "!OPT!"=="2" goto :VM_CONTROL
+if "!OPT!"=="3" goto :SSH_SHELL
+if "!OPT!"=="4" goto :VM_MONITOR
+if "!OPT!"=="5" goto :BACKUP_DB
+if "!OPT!"=="6" goto :ADMIN_PORTAL
+if "!OPT!"=="7" goto :BOOTSTRAP_VM
+if "!OPT!"=="8" goto :PATCH_CLIENT
+if "!OPT!"=="9" goto :SETUP_TOOLS
+if "!OPT!"=="10" goto :LOCAL_BUILD
+if "!OPT!"=="11" goto :EDIT_CONFIG
+if "!OPT!"=="0" exit /b 0
 
 echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 11.
 timeout /t 2 >nul
@@ -239,7 +239,7 @@ if not exist "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" (
 
 echo.
 echo [BUOC 2/4] Sao luu ban JAR cu tren VM...
-ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/backups; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_\$(date +%%Y%%m%%d_%%H%%M%%S).jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
+ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/backups; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
 
 echo.
 echo [BUOC 3/4] Tai file JAR moi len VM (!VM_IP!)...
@@ -252,7 +252,7 @@ if errorlevel 1 (
 
 echo.
 echo [BUOC 4/4] Khoi dong lai dich vu nso-server tren VM...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tulnp | grep -E '14444|8020|3306'"
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
 
 echo.
 echo ===============================================================================
@@ -261,106 +261,112 @@ echo ===========================================================================
 echo.
 pause
 goto :MAIN_MENU
-
-:: ===============================================================================
-:: 2. VM CONTROL MENU
-:: ===============================================================================
-:VM_CONTROL
-cls
-if not exist "!KEY_PATH!" (
-    echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
-    pause
-    goto :MAIN_MENU
-)
-
-icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
-
-echo ===============================================================================
-echo            DANG KIEM TRA TRANG THAI MAY CHU: !VM_USER!@!VM_IP!
-echo ===============================================================================
-echo.
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=8 !VM_USER!@!VM_IP! "if [ -f /home/ubuntu/check_status.sh ]; then /home/ubuntu/check_status.sh; else bash -c 'echo \"=== 1. SYSTEMD SERVICE ===\"; sudo systemctl status nso-server.service --no-pager; echo \"=== 2. PORTS ===\"; sudo ss -tulnp | grep -E \"14444|8020|3306\"; echo \"=== 3. RAM & DISK ===\"; free -h; df -h /; echo \"=== 4. LOGS ===\"; tail -n 10 /home/ubuntu/nso-server/logs/service.log 2>/dev/null || true'; fi"
-
-:VM_SUBMENU
-echo.
-echo ===============================================================================
-echo                           THAO TAC NHANH VOI VM
-echo ===============================================================================
-echo   [1] Lam moi / Kiem tra lai trang thai
-echo   [2] Xem Live Log may chu (tail -f logs/service.log)
-echo   [3] Khoi dong lai Server Game (Restart nso-server.service)
-echo   [4] Bat Server Game (Start nso-server.service)
-echo   [5] Dung Server Game (Stop nso-server.service)
-echo   [0] Quay lai Menu chinh
-echo ===============================================================================
-set "VM_OPT="
-set /p "VM_OPT=>> Nhap lua chon [0-5]: "
-
-if "%VM_OPT%"=="1" goto :VM_CONTROL
-if "%VM_OPT%"=="2" (
+    
+    :: ===============================================================================
+    :: 2. VM CONTROL MENU
+    :: ===============================================================================
+    :VM_CONTROL
     cls
-    echo [*] Dang theo doi Live Log (Nhan Ctrl+C de dung va quay lai)...
+    if not exist "!KEY_PATH!" (
+        echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
+        pause
+        goto :MAIN_MENU
+    )
+    
+    icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+    
+    echo ===============================================================================
+    echo            DANG KIEM TRA TRANG THAI MAY CHU: !VM_USER!@!VM_IP!
+    echo ===============================================================================
+    echo.
+    ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=8 !VM_USER!@!VM_IP! "if [ -f /home/ubuntu/check_status.sh ]; then /home/ubuntu/check_status.sh; elif [ -f /home/ubuntu/nso-server/check_status.sh ]; then /home/ubuntu/nso-server/check_status.sh; else echo '=== 1. SYSTEMD SERVICE ===' && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== 2. OPEN PORTS ===' && sudo ss -tuln && echo '' && echo '=== 3. RAM & DISK ===' && free -h && echo '' && df -h /; fi"
+    
+    :VM_SUBMENU
+    echo.
+    echo ===============================================================================
+    echo                           THAO TAC NHANH VOI VM
+    echo ===============================================================================
+    echo   [1] Lam moi / Kiem tra lai trang thai
+    echo   [2] Xem Live Log may chu [tail -f logs/service.log]
+    echo   [3] Khoi dong lai Server Game [Restart nso-server.service]
+    echo   [4] Bat Server Game [Start nso-server.service]
+    echo   [5] Dung Server Game [Stop nso-server.service]
+    echo   [0] Quay lai Menu chinh
+    echo ===============================================================================
+    set "VM_OPT="
+    set /p "VM_OPT=>> Nhap lua chon [0-5]: "
+    
+    if "!VM_OPT!"=="1" goto :VM_CONTROL
+    if "!VM_OPT!"=="2" goto :VM_VIEW_LOGS
+    if "!VM_OPT!"=="3" goto :VM_RESTART_SVC
+    if "!VM_OPT!"=="4" goto :VM_START_SVC
+    if "!VM_OPT!"=="5" goto :VM_STOP_SVC
+    if "!VM_OPT!"=="0" goto :MAIN_MENU
+    
+    goto :VM_SUBMENU
+    
+    :VM_VIEW_LOGS
+    cls
+    echo [*] Dang theo doi Live Log [Nhan Ctrl+C de dung va quay lai]...
+    echo.
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "if [ -f /home/ubuntu/nso-server/logs/service.log ]; then tail -f /home/ubuntu/nso-server/logs/service.log; else sudo journalctl -u nso-server.service -f; fi"
     goto :VM_CONTROL
-)
-if "%VM_OPT%"=="3" (
+    
+    :VM_RESTART_SVC
     echo.
     echo [*] Dang restart nso-server.service...
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl restart nso-server.service && sleep 2"
     goto :VM_CONTROL
-)
-if "%VM_OPT%"=="4" (
+    
+    :VM_START_SVC
     echo.
     echo [*] Dang start nso-server.service...
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl start nso-server.service && sleep 2"
     goto :VM_CONTROL
-)
-if "%VM_OPT%"=="5" (
+    
+    :VM_STOP_SVC
     echo.
     echo [*] Dang stop nso-server.service...
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl stop nso-server.service"
+    echo.
     pause
     goto :VM_CONTROL
-)
-if "%VM_OPT%"=="0" goto :MAIN_MENU
-
-goto :VM_SUBMENU
-
-:: ===============================================================================
-:: 3. SSH SHELL
-:: ===============================================================================
-:SSH_SHELL
-cls
-if not exist "!KEY_PATH!" (
-    echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
-    pause
+    
+    :: ===============================================================================
+    :: 3. SSH SHELL
+    :: ===============================================================================
+    :SSH_SHELL
+    cls
+    if not exist "!KEY_PATH!" (
+        echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
+        pause
+        goto :MAIN_MENU
+    )
+    icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+    echo ===============================================================================
+    echo   DANG MO SSH TERMINAL TOI !VM_USER!@!VM_IP!... (Go 'exit' de thoat)
+    echo ===============================================================================
+    echo.
+    ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP!
     goto :MAIN_MENU
-)
-icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
-echo ===============================================================================
-echo   DANG MO SSH TERMINAL TOI !VM_USER!@!VM_IP!... (Go 'exit' de thoat)
-echo ===============================================================================
-echo.
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP!
-goto :MAIN_MENU
-
-:: ===============================================================================
-:: 4. VM RESOURCE MONITOR
-:: ===============================================================================
-:VM_MONITOR
-cls
-if not exist "!KEY_PATH!" (
-    echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
-    pause
+    
+    :: ===============================================================================
+    :: 4. VM RESOURCE MONITOR
+    :: ===============================================================================
+    :VM_MONITOR
+    cls
+    if not exist "!KEY_PATH!" (
+        echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
+        pause
+        goto :MAIN_MENU
+    )
+    icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+    echo ===============================================================================
+    echo   THEO DOI TAI NGUYEN VM THOI GIAN THUC (Nhan Ctrl+C de thoat)
+    echo ===============================================================================
+    echo.
+    ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "while true; do clear; echo '=================================================='; echo ' VM: '$(hostname)' - TIME: '$(date '+%%Y-%%m-%%d %%H:%%M:%%S'); echo '=================================================='; echo '--- 1. RAM & SWAP ---'; free -h; echo ''; echo '--- 2. DISK ROOT ---'; df -h /; echo ''; echo '--- 3. UPTIME & LOAD ---'; uptime; echo ''; echo '--- 4. PORTS ---'; sudo ss -tuln; echo ''; echo '[Lam moi moi 3s - Nhan Ctrl+C de dung]'; sleep 3; done"
     goto :MAIN_MENU
-)
-icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
-echo ===============================================================================
-echo   THEO DOI TAI NGUYEN VM THOI GIAN THUC (Nhan Ctrl+C de thoat)
-echo ===============================================================================
-echo.
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "while true; do clear; echo '=================================================='; echo \" VM: \$(hostname) | TIME: \$(date '+%Y-%m-%d %H:%M:%S')\"; echo '=================================================='; echo '--- 1. RAM & SWAP ---'; free -h; echo; echo '--- 2. DISK ROOT ---'; df -h /; echo; echo '--- 3. UPTIME & LOAD ---'; uptime; echo; echo '--- 4. NSO PROCESS & PORTS ---'; sudo ss -tulnp | grep -E '14444|8020|3306'; echo; echo '[Lam moi moi 3s - Nhan Ctrl+C de dung]'; sleep 3; done"
-goto :MAIN_MENU
 
 :: ===============================================================================
 :: 5. BACKUP DB
