@@ -37,6 +37,9 @@ if (!(Test-Path $KeyPath)) {
     exit 1
 }
 
+# Tu dong fix quyen file SSH Key tren Windows
+cmd.exe /c "icacls `"$KeyPath`" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1"
+
 $LocalBackupDir = Join-Path $ProjectRoot "backups"
 if (!(Test-Path $LocalBackupDir)) {
     New-Item -ItemType Directory -Path $LocalBackupDir -Force | Out-Null

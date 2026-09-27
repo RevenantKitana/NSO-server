@@ -47,6 +47,9 @@ if (!(Test-Path $KeyPath)) {
     exit 1
 }
 
+# Tu dong fix quyen file SSH Key tren Windows (Tranh loi Bad permissions)
+cmd.exe /c "icacls `"$KeyPath`" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1"
+
 # ------------------------------------------------------------
 # 1. TEST KET NOI SSH
 # ------------------------------------------------------------

@@ -66,13 +66,72 @@ if "!HAS_CONFIG_ERROR!"=="1" (
 
 set "KEY_PATH=%ROOT_DIR%\!SSH_KEY_REL!"
 
+REM Tu dong thiet lap quyen doc bao mat cho SSH Key tren Windows
+if exist "!KEY_PATH!" (
+    icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+)
+
 :MAIN_MENU
 cls
+
+REM ------------------------------------------------------------
+REM KIEM TRA TRANG THAI CAC THANH PHAN HE THONG (FIRST SETUP CHECK)
+REM ------------------------------------------------------------
+set "STATUS_JDK=[CHUA CO - Hay chon 9 de tai]"
+if exist "%ROOT_DIR%\tools\jdk\bin\javac.exe" (
+    set "STATUS_JDK=[OK - Da cai dat Portable]"
+) else (
+    where javac >nul 2>&1
+    if !errorlevel! equ 0 set "STATUS_JDK=[OK - San co tren Windows]"
+)
+
+set "STATUS_MVN=[CHUA CO - Hay chon 9 de tai]"
+if exist "%ROOT_DIR%\tools\maven\bin\mvn.cmd" (
+    set "STATUS_MVN=[OK - Da cai dat Portable]"
+) else (
+    where mvn >nul 2>&1
+    if !errorlevel! equ 0 set "STATUS_MVN=[OK - San co tren Windows]"
+)
+
+set "STATUS_JAR=[CHUA BUILD - Hay chon 1 hoac 10]"
+if exist "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" (
+    set "STATUS_JAR=[OK - Da build san sang deploy]"
+)
+
+set "STATUS_KEY=[LOI - Khong tim thay file key]"
+if exist "!KEY_PATH!" (
+    set "STATUS_KEY=[OK - Da co key]"
+)
+
+set "STATUS_DATA=[THIEU - Thu muc Data trong]"
+if exist "%ROOT_DIR%\Data" (
+    set "STATUS_DATA=[OK - Da san sang]"
+)
+
+set "STATUS_DB=[THIEU - Chua co file SQL]"
+if exist "%ROOT_DIR%\database\init_nso_clean.sql" (
+    set "STATUS_DB=[OK - Da san sang]"
+)
+
+set "STATUS_NODE=[CHUA CAI - Can cho Web Admin]"
+where node >nul 2>&1
+if !errorlevel! equ 0 (
+    set "STATUS_NODE=[OK - Da cai dat tren Windows]"
+)
+
 echo ===============================================================================
 echo                NSO SERVER - BANG DIEU KHIEN CLOUD VM CHUYEN NGHIEP
 echo ===============================================================================
-echo   Cloud VM: !VM_USER!@!VM_IP! ^| Game Port: !VM_PORT!
-echo   SSH Key : !SSH_KEY_REL!
+echo   Cloud VM : !VM_USER!@!VM_IP! ^| Game Port: !VM_PORT!
+echo   SSH Key  : !SSH_KEY_REL! !STATUS_KEY!
+echo.
+echo   [ TRANG THAI TAI NGUYEN VA MOI TRUONG - FIRST SETUP CHECK ]
+echo   - JDK 17 Compiler     : !STATUS_JDK!
+echo   - Apache Maven        : !STATUS_MVN!
+echo   - File JAR Game Server: !STATUS_JAR!
+echo   - Du lieu Game (Data) : !STATUS_DATA!
+echo   - Database sach (SQL) : !STATUS_DB!
+echo   - Node.js (Web Admin) : !STATUS_NODE!
 echo ===============================================================================
 echo.
 echo   --- [ VAN HANH VA TRIEN KHAI CLOUD VM ] ---
@@ -83,7 +142,7 @@ echo   [4]  Theo doi tai nguyen VM thoi gian thuc (CPU / RAM / Disk / Uptime)
 echo   [5]  Tai ban sao luu Database tu VM ve may ca nhan (Thu muc backups/)
 echo   [6]  Khoi chay Web Quan tri Admin (Tao Giftcode va Ma OTP qua Web)
 echo.
-echo   --- [ THIET LAP MAY CHU MOI ] ---
+echo   --- [ THIET LAP MAY CHU MOI (FIRST SETUP) ] ---
 echo   [7]  Cai dat VM moi tinh tu A-Z (Cai Java, MariaDB, Swap, Database, Data)
 echo.
 echo   --- [ CONG CU CLIENT VA MOI TRUONG BUILD ] ---
@@ -152,8 +211,8 @@ cls
 echo ===============================================================================
 echo            QUY TRINH 1-CLICK BUILD VA DEPLOY LEN VM CLOUD
 echo ===============================================================================
-echo   >> May chu dich : !VM_USER!@!VM_IP!
-echo   >> Key xac thuc : !KEY_PATH!
+echo   -- May chu dich : !VM_USER!@!VM_IP!
+echo   -- Key xac thuc : !KEY_PATH!
 echo ===============================================================================
 echo.
 
@@ -164,6 +223,8 @@ if not exist "!KEY_PATH!" (
     pause
     goto :MAIN_MENU
 )
+
+icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
 
 echo [BUOC 1/4] Bien dich du an tren may ca nhan...
 call :CHECK_LOCAL_ENV
@@ -212,6 +273,8 @@ if not exist "!KEY_PATH!" (
     goto :MAIN_MENU
 )
 
+icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+
 echo ===============================================================================
 echo            DANG KIEM TRA TRANG THAI MAY CHU: !VM_USER!@!VM_IP!
 echo ===============================================================================
@@ -242,19 +305,19 @@ if "%VM_OPT%"=="2" (
 )
 if "%VM_OPT%"=="3" (
     echo.
-    echo >> Dang restart nso-server.service...
+    echo [*] Dang restart nso-server.service...
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl restart nso-server.service && sleep 2"
     goto :VM_CONTROL
 )
 if "%VM_OPT%"=="4" (
     echo.
-    echo >> Dang start nso-server.service...
+    echo [*] Dang start nso-server.service...
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl start nso-server.service && sleep 2"
     goto :VM_CONTROL
 )
 if "%VM_OPT%"=="5" (
     echo.
-    echo >> Dang stop nso-server.service...
+    echo [*] Dang stop nso-server.service...
     ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo systemctl stop nso-server.service"
     pause
     goto :VM_CONTROL
@@ -273,6 +336,7 @@ if not exist "!KEY_PATH!" (
     pause
     goto :MAIN_MENU
 )
+icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
 echo ===============================================================================
 echo   DANG MO SSH TERMINAL TOI !VM_USER!@!VM_IP!... (Go 'exit' de thoat)
 echo ===============================================================================
@@ -290,6 +354,7 @@ if not exist "!KEY_PATH!" (
     pause
     goto :MAIN_MENU
 )
+icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
 echo ===============================================================================
 echo   THEO DOI TAI NGUYEN VM THOI GIAN THUC (Nhan Ctrl+C de thoat)
 echo ===============================================================================
@@ -342,8 +407,8 @@ cls
 echo ===============================================================================
 echo    CAI DAT TOAN DIEN MAY CHU CLOUD VM MOI TINH (BOOTSTRAP TU A-Z)
 echo ===============================================================================
-echo   >> May chu dich : !VM_USER!@!VM_IP!
-echo   >> Canh bao     : Thao tac nay se cai Java 17, MariaDB, Swap, upload Data
+echo   -- May chu dich : !VM_USER!@!VM_IP!
+echo   -- Canh bao     : Thao tac nay se cai Java 17, MariaDB, Swap, upload Data
 echo                     va nap Database sach lan dau len VM.
 echo ===============================================================================
 echo.
