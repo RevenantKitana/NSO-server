@@ -6,22 +6,30 @@
 $ProjectRoot = (Get-Item "$PSScriptRoot\..\..").FullName
 $ConfigFile = Join-Path $ProjectRoot "config\server_config.ini"
 
+if (!(Test-Path $ConfigFile)) {
+    Write-Host "[LOI] Khong tim thay file cau hinh: $ConfigFile" -ForegroundColor Red
+    exit 1
+}
+
 $Config = @{}
-if (Test-Path $ConfigFile) {
-    Get-Content $ConfigFile | ForEach-Object {
-        $line = $_.Trim()
-        if ($line -and -not $line.StartsWith("#")) {
-            $parts = $line.Split("=", 2)
-            if ($parts.Length -eq 2) {
-                $Config[$parts[0].Trim()] = $parts[1].Trim()
-            }
+Get-Content $ConfigFile | ForEach-Object {
+    $line = $_.Trim()
+    if ($line -and -not $line.StartsWith("#")) {
+        $parts = $line.Split("=", 2)
+        if ($parts.Length -eq 2) {
+            $Config[$parts[0].Trim()] = $parts[1].Trim()
         }
     }
 }
 
-$VM_IP = if ($Config["VM_IP"]) { $Config["VM_IP"] } else { "161.118.202.174" }
-$VM_USER = if ($Config["VM_USER"]) { $Config["VM_USER"] } else { "ubuntu" }
-$KeyRel = if ($Config["SSH_KEY"]) { $Config["SSH_KEY"] } else { "config/ssh-key-2026-09-26.key" }
+if (!$Config["VM_IP"] -or !$Config["VM_USER"] -or !$Config["SSH_KEY"]) {
+    Write-Host "[LOI] File config/server_config.ini thieu cac thong so bat buoc (VM_IP, VM_USER, SSH_KEY)!" -ForegroundColor Red
+    exit 1
+}
+
+$VM_IP = $Config["VM_IP"]
+$VM_USER = $Config["VM_USER"]
+$KeyRel = $Config["SSH_KEY"]
 $KeyPath = [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot $KeyRel))
 
 if (!(Test-Path $KeyPath)) {

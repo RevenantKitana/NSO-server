@@ -16,18 +16,35 @@ popd
 
 set "CLIENT_DIR=%ROOT_DIR%\.client"
 
-REM Doc cau hinh mac dinh tu config\server_config.ini
-set "VM_IP=161.118.202.174"
-set "VM_PORT=14444"
-if exist "%ROOT_DIR%\config\server_config.ini" (
-    for /f "usebackq tokens=1,* delims==" %%A in ("%ROOT_DIR%\config\server_config.ini") do (
-        set "KEY=%%A"
-        set "VAL=%%B"
-        if not "!KEY:~0,1!"=="#" (
-            if /i "!KEY!"=="VM_IP" set "VM_IP=!VAL!"
-            if /i "!KEY!"=="VM_PORT" set "VM_PORT=!VAL!"
-        )
+REM Doc cau hinh bat buoc tu config\server_config.ini
+set "VM_IP="
+set "VM_PORT="
+set "CONFIG_FILE=%ROOT_DIR%\config\server_config.ini"
+
+if not exist "%CONFIG_FILE%" (
+    echo [LOI] Khong tim thay file cau hinh: %CONFIG_FILE%
+    if "%~1"=="" pause
+    exit /b 1
+)
+
+for /f "usebackq tokens=1,* delims==" %%A in ("%CONFIG_FILE%") do (
+    set "KEY=%%A"
+    set "VAL=%%B"
+    if not "!KEY:~0,1!"=="#" (
+        if /i "!KEY!"=="VM_IP" set "VM_IP=!VAL!"
+        if /i "!KEY!"=="VM_PORT" set "VM_PORT=!VAL!"
     )
+)
+
+if "%VM_IP%"=="" (
+    echo [LOI] Thieu truong VM_IP trong file config\server_config.ini!
+    if "%~1"=="" pause
+    exit /b 1
+)
+if "%VM_PORT%"=="" (
+    echo [LOI] Thieu truong VM_PORT trong file config\server_config.ini!
+    if "%~1"=="" pause
+    exit /b 1
 )
 
 REM Tim kiem Java runtime
