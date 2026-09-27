@@ -8,7 +8,11 @@ build/
 /build/
 out/
 /out/
+dist/
+/dist/
 *.jar
+!.client/*.jar
+!/.client/*.jar
 !web/public/*.jar
 !web/public/**/*.jar
 !web/assets/**/*
@@ -20,6 +24,9 @@ out/
 *.tar.gz
 *.rar
 app.jar
+*.tmp
+.client/*.tmp
+
 
 # Maven internal files
 pom.xml.tag
