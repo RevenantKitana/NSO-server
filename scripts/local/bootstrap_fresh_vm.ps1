@@ -81,29 +81,29 @@ Write-Host "  >> Cai dat he thong & database thanh cong!" -ForegroundColor Green
 # ------------------------------------------------------------
 Write-Host ""
 Write-Host "[BUOC 3/6] Dang dong goi va upload thu muc Data/ (Hinh anh, Map, Item, Mob)..." -ForegroundColor Cyan
-$DataDir = Join-Path $ProjectRoot "Data"
-$DataZip = Join-Path $ProjectRoot "Data_upload.zip"
+$DataTar = Join-Path $ProjectRoot "Data_upload.tar.gz"
 
-if (Test-Path $DataZip) { Remove-Item -Force $DataZip }
+if (Test-Path $DataTar) { Remove-Item -Force $DataTar }
 
-Write-Host "  >> Dang nen thu muc Data/..." -ForegroundColor Gray
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-[System.IO.Compression.ZipFile]::CreateFromDirectory($DataDir, $DataZip, [System.IO.Compression.CompressionLevel]::Fastest, $false)
+Write-Host "  >> [1/3] Dang nen thu muc Data/ (260 MB) bang tar sieu toc..." -ForegroundColor Gray
+cmd.exe /c "tar -czf `"$DataTar`" -C `"$ProjectRoot`" Data"
 
 # Dam bao thu muc /home/ubuntu/nso-server ton tai tren VM truoc khi upload
-Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"mkdir -p /home/ubuntu/nso-server`"" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 $VM_USER@$VM_IP `"mkdir -p /home/ubuntu/nso-server`"" -Wait -NoNewWindow | Out-Null
 
-Write-Host "  >> Dang upload Data_upload.zip sang VM..." -ForegroundColor Gray
-$resScpData = Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$DataZip`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/Data.zip" -Wait -NoNewWindow -PassThru
+$tarSizeMB = [math]::Round((Get-Item $DataTar).Length / 1MB, 2)
+Write-Host "  >> [2/3] Dang upload Data ($tarSizeMB MB) sang VM (Vui long doi khoang 1-2 phut tuy toc do mang)..." -ForegroundColor Gray
+$resScpData = Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=60 `"$DataTar`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/Data.tar.gz" -Wait -NoNewWindow -PassThru
 
-Remove-Item -Force $DataZip -ErrorAction SilentlyContinue
+Remove-Item -Force $DataTar -ErrorAction SilentlyContinue
 
 if ($resScpData.ExitCode -ne 0) {
-    Write-Host "[LOI] Khong the upload Data.zip sang /home/ubuntu/nso-server/!" -ForegroundColor Red
+    Write-Host "[LOI] Khong the upload Data.tar.gz sang /home/ubuntu/nso-server/!" -ForegroundColor Red
     exit 1
 }
 
-Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"cd /home/ubuntu/nso-server && unzip -q -o Data.zip && rm -f Data.zip`"" -Wait -NoNewWindow | Out-Null
+Write-Host "  >> [3/3] Dang giai nen du lieu Data tren VM..." -ForegroundColor Gray
+Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=20 $VM_USER@$VM_IP `"cd /home/ubuntu/nso-server && tar -xzf Data.tar.gz && rm -f Data.tar.gz`"" -Wait -NoNewWindow | Out-Null
 Write-Host "  >> Upload va giai nen Data/ thanh cong tren VM!" -ForegroundColor Green
 
 # ------------------------------------------------------------

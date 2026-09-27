@@ -38,6 +38,21 @@ root soft nofile 65535
 root hard nofile 65535
 EOF
 
+# Limit journal log size to save RAM and Disk
+mkdir -p /etc/systemd/journald.conf.d
+cat <<'EOF' > /etc/systemd/journald.conf.d/99-nso-journald.conf
+[Journal]
+SystemMaxUse=50M
+RuntimeMaxUse=20M
+EOF
+systemctl restart systemd-journald 2>/dev/null || true
+
+# Disable unnecessary background bloat services for Cloud VM
+systemctl stop fwupd.service fwupd-refresh.timer 2>/dev/null || true
+systemctl disable fwupd.service fwupd-refresh.timer 2>/dev/null || true
+systemctl mask fwupd.service fwupd-refresh.timer 2>/dev/null || true
+
+
 echo "======================================================"
 echo " 2. INSTALLING PACKAGES (JAVA 17 & MARIADB)           "
 echo "======================================================"
@@ -82,12 +97,15 @@ mariadb -e "GRANT ALL PRIVILEGES ON nso_test.* TO 'nso_user'@'localhost';"
 mariadb -e "FLUSH PRIVILEGES;"
 
 echo "======================================================"
-echo " 4. FIREWALL SETUP                                    "
+echo " 4. FIREWALL SETUP (OCI COMPATIBLE IPTABLES)          "
 echo "======================================================"
-ufw allow 22/tcp comment 'SSH'
-ufw allow 14444/tcp comment 'NSO Game Port'
-ufw allow 8020/tcp comment 'NSO Web / API'
-ufw --force enable
+# On Oracle Cloud (OCI), UFW conflicts with OCI VNIC virtual routing and causes SSH lockouts.
+# We disable UFW and use iptables / rely on Oracle Cloud Security Lists.
+ufw disable >/dev/null 2>&1 || true
+iptables -I INPUT -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT -p tcp --dport 14444 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true
+
 
 echo "======================================================"
 echo " 5. ENVIRONMENT READY                                 "
