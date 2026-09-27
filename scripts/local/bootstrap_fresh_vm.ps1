@@ -87,7 +87,8 @@ $DataZip = Join-Path $ProjectRoot "Data_upload.zip"
 if (Test-Path $DataZip) { Remove-Item -Force $DataZip }
 
 Write-Host "  >> Dang nen thu muc Data/..." -ForegroundColor Gray
-Compress-Archive -Path "$DataDir\*" -DestinationPath $DataZip -Force
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::CreateFromDirectory($DataDir, $DataZip, [System.IO.Compression.CompressionLevel]::Fastest, $false)
 
 # Dam bao thu muc /home/ubuntu/nso-server ton tai tren VM truoc khi upload
 Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"mkdir -p /home/ubuntu/nso-server`"" -Wait -NoNewWindow | Out-Null
@@ -124,8 +125,8 @@ Write-Host "[BUOC 5/6] Dang dong bo file cau hinh config.properties & mysql.prop
 $CfgProp = Join-Path $ProjectRoot "config\config.properties.prod"
 $MyProp = Join-Path $ProjectRoot "config\mysql.properties.prod"
 
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$CfgProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/config.properties" -Wait -NoNewWindow | Out-Null
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$MyProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/mysql.properties" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$CfgProp`" `"$MyProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 $VM_USER@$VM_IP `"mv -f /home/ubuntu/nso-server/config.properties.prod /home/ubuntu/nso-server/config.properties; mv -f /home/ubuntu/nso-server/mysql.properties.prod /home/ubuntu/nso-server/mysql.properties`"" -Wait -NoNewWindow | Out-Null
 Write-Host "  >> Cau hinh Production da duoc thiet lap tren VM!" -ForegroundColor Green
 
 # ------------------------------------------------------------
@@ -137,20 +138,19 @@ $ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service"
 $AutoBackup = Join-Path $ProjectRoot "scripts\remote-vm\auto_backup_db.sh"
 $CheckStatus = Join-Path $ProjectRoot "scripts\remote-vm\check_status.sh"
 
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$ServiceFile`" $VM_USER@$VM_IP`:/tmp/nso-server.service" -Wait -NoNewWindow | Out-Null
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$AutoBackup`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/auto_backup_db.sh" -Wait -NoNewWindow | Out-Null
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$CheckStatus`" $VM_USER@$VM_IP`:/home/ubuntu/check_status.sh" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ServiceFile`" `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
 
-$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh 2>/dev/null || true && " +
-                  "sudo cp /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
-                  "rm -f /tmp/nso-server.service && " +
+$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /tmp/auto_backup_db.sh /tmp/check_status.sh 2>/dev/null || true && " +
+                  "sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
+                  "mv -f /tmp/auto_backup_db.sh /home/ubuntu/nso-server/auto_backup_db.sh && " +
+                  "mv -f /tmp/check_status.sh /home/ubuntu/check_status.sh && " +
                   "chmod +x /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
                   "sudo systemctl daemon-reload && " +
                   "sudo systemctl enable nso-server.service && " +
                   "mkdir -p /home/ubuntu/nso-server/logs && " +
                   "(crontab -l 2>/dev/null | grep -v 'auto_backup_db.sh'; echo '0 */12 * * * /home/ubuntu/nso-server/auto_backup_db.sh >/dev/null 2>&1') | crontab -"
 
-Start-Process -FilePath "ssh" -ArgumentList "-t -i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"$setupSystemCmd`"" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "ssh" -ArgumentList "-t -i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 $VM_USER@$VM_IP `"$setupSystemCmd`"" -Wait -NoNewWindow | Out-Null
 
 Write-Host ""
 Write-Host "===============================================================================" -ForegroundColor Green
