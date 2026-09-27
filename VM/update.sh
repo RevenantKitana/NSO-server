@@ -41,6 +41,11 @@ if [ -d /home/ubuntu/src/Data ]; then
     cp -rf /home/ubuntu/src/Data/* /home/ubuntu/nso-server/Data/ 2>/dev/null || true
 fi
 
+if [ -f /home/ubuntu/src/VM/check_status.sh ]; then
+    cp -f /home/ubuntu/src/VM/check_status.sh /home/ubuntu/check_status.sh
+    chmod +x /home/ubuntu/check_status.sh
+fi
+
 echo "=================================================="
 echo " 4. COMPILING AND BUILDING JAR WITH MAVEN         "
 echo "=================================================="
