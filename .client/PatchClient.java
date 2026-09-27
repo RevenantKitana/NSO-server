@@ -2,32 +2,127 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.*;
+import java.util.regex.*;
 import java.util.zip.*;
 
 public class PatchClient {
 
-    public static void main(String[] args) throws Exception {
-        File originalJar = new File("e:/TT/SETUP_LOCAL/SRC_GAME/.client/JAR_local.jar");
-        File patchedJar = new File("e:/TT/SETUP_LOCAL/SRC_GAME/.client/NSO_161.118.202.174.jar");
-        File backupJar = new File("e:/TT/SETUP_LOCAL/SRC_GAME/.client/JAR_local.jar.bak");
+    private static final Set<String> KNOWN_HOSTS = new HashSet<>(Arrays.asList(
+            "127.0.0.1",
+            "localhost",
+            "161.118.202.174",
+            "222.255.214.211",
+            "sv.nsoblue.com",
+            "nsoblue.com"
+    ));
 
-        if (!backupJar.exists()) {
-            copyFile(originalJar, backupJar);
-            System.out.println("Created backup: " + backupJar.getAbsolutePath());
+    private static final Pattern IPV4_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
+    private static final Pattern SOCKET_PATTERN = Pattern.compile("^socket://([^:/]+)(?::(\\d+))?(.*)$");
+
+    public static void main(String[] args) {
+        try {
+            String targetHost = "161.118.202.174";
+            String targetPort = "14444";
+            File baseDir = new File(PatchClient.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+            if (baseDir == null || !baseDir.exists()) {
+                baseDir = new File(".");
+            }
+
+            if (args.length >= 1 && !args[0].trim().isEmpty()) {
+                targetHost = args[0].trim();
+            }
+            if (args.length >= 2 && !args[1].trim().isEmpty()) {
+                targetPort = args[1].trim();
+            }
+
+            System.out.println("============================================================");
+            System.out.println("   NSO CLIENT JAR PATCHER - NSO AUTO IP & PORT CONFIG");
+            System.out.println("============================================================");
+            System.out.println(" Target IP/Host: " + targetHost);
+            System.out.println(" Target Port   : " + targetPort);
+            System.out.println(" Working Dir   : " + baseDir.getCanonicalPath());
+            System.out.println("------------------------------------------------------------");
+
+            // Look for jars to patch
+            List<File> targetJars = new ArrayList<>();
+            if (args.length >= 3) {
+                targetJars.add(new File(args[2]));
+            } else {
+                File jarLocal = new File(baseDir, "JAR_local.jar");
+                File nsoJar = new File(baseDir, "NSO.jar");
+                if (jarLocal.exists()) targetJars.add(jarLocal);
+                if (nsoJar.exists() && !targetJars.contains(nsoJar)) targetJars.add(nsoJar);
+                
+                // If baseDir didn't have them, check .client/ subfolder or parent
+                if (targetJars.isEmpty()) {
+                    File clientSubdir = new File(baseDir, ".client");
+                    if (clientSubdir.exists()) {
+                        File j1 = new File(clientSubdir, "JAR_local.jar");
+                        File j2 = new File(clientSubdir, "NSO.jar");
+                        if (j1.exists()) targetJars.add(j1);
+                        if (j2.exists()) targetJars.add(j2);
+                    }
+                }
+            }
+
+            if (targetJars.isEmpty()) {
+                System.err.println("ERROR: No client JAR file found to patch (JAR_local.jar / NSO.jar).");
+                System.exit(1);
+            }
+
+            for (File jarFile : targetJars) {
+                System.out.println("\n[*] Processing: " + jarFile.getName() + " (" + jarFile.length() + " bytes)");
+
+                // 1. Ensure backup exists
+                File backupFile = new File(jarFile.getParentFile(), jarFile.getName() + ".bak");
+                if (!backupFile.exists()) {
+                    copyFile(jarFile, backupFile);
+                    System.out.println("    [+] Created backup: " + backupFile.getName());
+                } else {
+                    System.out.println("    [*] Backup already exists: " + backupFile.getName());
+                }
+
+                // 2. Perform patching into temp file
+                File tempPatched = new File(jarFile.getParentFile(), jarFile.getName() + ".tmp");
+                int replaceCount = patchJar(jarFile, tempPatched, targetHost, targetPort);
+
+                // 3. Replace original file
+                if (replaceCount > 0) {
+                    if (jarFile.delete()) {
+                        if (tempPatched.renameTo(jarFile)) {
+                            System.out.println("    [OK] Successfully updated: " + jarFile.getName() + " (" + replaceCount + " replacements)");
+                        } else {
+                            copyFile(tempPatched, jarFile);
+                            tempPatched.delete();
+                            System.out.println("    [OK] Successfully copied to: " + jarFile.getName());
+                        }
+                    } else {
+                        copyFile(tempPatched, jarFile);
+                        tempPatched.delete();
+                        System.out.println("    [OK] Successfully overwritten: " + jarFile.getName());
+                    }
+
+                    // Also create a dedicated named copy for distribution: NSO_<host>.jar
+                    String safeHostName = targetHost.replace(":", "_").replace("/", "_");
+                    File namedJar = new File(jarFile.getParentFile(), "NSO_" + safeHostName + ".jar");
+                    copyFile(jarFile, namedJar);
+                    System.out.println("    [+] Created export copy: " + namedJar.getName());
+                } else {
+                    tempPatched.delete();
+                    System.out.println("    [!] No replacement needed or no matching host strings found.");
+                }
+            }
+
+            System.out.println("\n============================================================");
+            System.out.println(" [SUCCESS] Client JAR configuration completed!");
+            System.out.println(" IP: " + targetHost + " | Port: " + targetPort);
+            System.out.println("============================================================\n");
+
+        } catch (Exception e) {
+            System.err.println("ERROR: Failed to patch client JAR: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
         }
-
-        Map<String, String> replacements = new LinkedHashMap<>();
-        replacements.put("socket://127.0.0.1:14444", "socket://161.118.202.174:14444");
-        replacements.put("127.0.0.1", "161.118.202.174");
-        replacements.put("sv.nsoblue.com", "161.118.202.174");
-        replacements.put("222.255.214.211", "161.118.202.174");
-
-        patchJar(originalJar, patchedJar, replacements);
-        System.out.println("SUCCESS: Patched client saved to: " + patchedJar.getAbsolutePath());
-
-        // Also update JAR_local.jar in place
-        copyFile(patchedJar, originalJar);
-        System.out.println("SUCCESS: Updated JAR_local.jar in place.");
     }
 
     private static void copyFile(File src, File dst) throws IOException {
@@ -40,7 +135,8 @@ public class PatchClient {
         }
     }
 
-    public static void patchJar(File inJar, File outJar, Map<String, String> replacements) throws Exception {
+    public static int patchJar(File inJar, File outJar, String targetHost, String targetPort) throws Exception {
+        int totalReplaced = 0;
         try (ZipFile zipIn = new ZipFile(inJar);
              JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(outJar))) {
 
@@ -57,14 +153,14 @@ public class PatchClient {
                 }
 
                 if (name.endsWith(".class")) {
-                    byte[] patched = patchClassBytecode(data, name, replacements);
-                    if (patched != data) {
-                        System.out.println("Patched class: " + name);
+                    PatchResult res = patchClassBytecode(data, name, targetHost, targetPort);
+                    if (res.modified) {
+                        data = res.bytecode;
+                        totalReplaced += res.replacementCount;
                     }
-                    data = patched;
                 }
 
-                // Create clean ZipEntry without Zip64 or extra corrupt fields
+                // Clean ZipEntry
                 ZipEntry newEntry = new ZipEntry(name);
                 newEntry.setTime(entry.getTime());
                 jarOut.putNextEntry(newEntry);
@@ -72,6 +168,7 @@ public class PatchClient {
                 jarOut.closeEntry();
             }
         }
+        return totalReplaced;
     }
 
     private static byte[] readAllBytes(InputStream is) throws IOException {
@@ -84,11 +181,22 @@ public class PatchClient {
         return baos.toByteArray();
     }
 
-    public static byte[] patchClassBytecode(byte[] classBytes, String className, Map<String, String> replacements) throws Exception {
+    private static class PatchResult {
+        boolean modified;
+        int replacementCount;
+        byte[] bytecode;
+    }
+
+    public static PatchResult patchClassBytecode(byte[] classBytes, String className, String targetHost, String targetPort) throws Exception {
+        PatchResult result = new PatchResult();
+        result.bytecode = classBytes;
+        result.modified = false;
+        result.replacementCount = 0;
+
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(classBytes));
         int magic = dis.readInt();
         if (magic != 0xCAFEBABE) {
-            return classBytes; // not a class file
+            return result; // not a valid class file
         }
 
         int minor = dis.readUnsignedShort();
@@ -97,16 +205,6 @@ public class PatchClient {
 
         ByteArrayOutputStream cpBaos = new ByteArrayOutputStream();
         DataOutputStream cpDos = new DataOutputStream(cpBaos);
-
-        boolean modified = false;
-
-        // Write magic and version
-        ByteArrayOutputStream finalBaos = new ByteArrayOutputStream();
-        DataOutputStream finalDos = new DataOutputStream(finalBaos);
-        finalDos.writeInt(magic);
-        finalDos.writeShort(minor);
-        finalDos.writeShort(major);
-        finalDos.writeShort(cpCount);
 
         for (int i = 1; i < cpCount; i++) {
             int tag = dis.readUnsignedByte();
@@ -119,13 +217,15 @@ public class PatchClient {
                     dis.readFully(strBytes);
                     String str = new String(strBytes, StandardCharsets.UTF_8);
 
-                    if (replacements.containsKey(str)) {
-                        String newStr = replacements.get(str);
-                        byte[] newBytes = newStr.getBytes(StandardCharsets.UTF_8);
+                    String replaced = computeReplacement(str, targetHost, targetPort);
+
+                    if (replaced != null && !replaced.equals(str)) {
+                        byte[] newBytes = replaced.getBytes(StandardCharsets.UTF_8);
                         cpDos.writeShort(newBytes.length);
                         cpDos.write(newBytes);
-                        modified = true;
-                        System.out.println("  [" + className + "] Replaced: '" + str + "' -> '" + newStr + "'");
+                        result.modified = true;
+                        result.replacementCount++;
+                        System.out.println("      [" + className + "] '" + str + "' -> '" + replaced + "'");
                     } else {
                         cpDos.writeShort(len);
                         cpDos.write(strBytes);
@@ -181,17 +281,53 @@ public class PatchClient {
             }
         }
 
-        if (!modified) {
-            return classBytes;
+        if (!result.modified) {
+            return result;
         }
 
-        // Write new constant pool
+        // Reconstruct class bytecode
+        ByteArrayOutputStream finalBaos = new ByteArrayOutputStream();
+        DataOutputStream finalDos = new DataOutputStream(finalBaos);
+        finalDos.writeInt(magic);
+        finalDos.writeShort(minor);
+        finalDos.writeShort(major);
+        finalDos.writeShort(cpCount);
         finalDos.write(cpBaos.toByteArray());
 
-        // Copy remaining class file attributes (interfaces, fields, methods, attributes)
+        // Copy remaining class file bytes (interfaces, fields, methods, attributes)
         byte[] remainder = readAllBytes(dis);
         finalDos.write(remainder);
 
-        return finalBaos.toByteArray();
+        result.bytecode = finalBaos.toByteArray();
+        return result;
+    }
+
+    private static String computeReplacement(String str, String targetHost, String targetPort) {
+        if (str == null || str.isEmpty()) {
+            return null;
+        }
+
+        // 1. Socket URL matching: socket://<host>:<port> or socket://<host>
+        Matcher socketMatcher = SOCKET_PATTERN.matcher(str);
+        if (socketMatcher.matches()) {
+            String suffix = socketMatcher.group(3);
+            if (suffix == null) suffix = "";
+            return "socket://" + targetHost + ":" + targetPort + suffix;
+        }
+
+        // 2. Exact match in known hosts
+        if (KNOWN_HOSTS.contains(str)) {
+            return targetHost;
+        }
+
+        // 3. IPv4 address format (avoid matching version numbers like 1.0.0.0 by ensuring standard IP patterns)
+        if (IPV4_PATTERN.matcher(str).matches()) {
+            // Check if it's not a common version string
+            if (!str.equals("0.0.0.0") && !str.equals("255.255.255.255")) {
+                return targetHost;
+            }
+        }
+
+        return null;
     }
 }
