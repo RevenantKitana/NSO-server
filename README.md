@@ -15,6 +15,8 @@ Nhấp đúp vào **`manage.bat`** (ở thư mục gốc) để mở giao diện
 
 ## 📁 Cấu trúc thư mục
 - `manage.bat`: Bảng điều khiển quản trị viên duy nhất.
+- `CHARACTER_STATS_AND_ITEM_OPTIONS_GUIDE.md`: **Tài liệu toàn diện về toàn bộ chỉ số Nhân vật & 162 Option Trang bị (ID 0 - 161)**.
+- `DATABASE_AND_GAME_BALANCE_GUIDE.md`: **Hướng dẫn chi tiết về Cơ sở dữ liệu và Cân bằng Game**.
 - `database/`: Database sạch chuẩn (`init_nso_clean.sql`) và script reset mùa/người chơi (`reset_player_data.sql`).
 - `config/`: Cấu hình hệ thống tập trung (`server_config.ini`), file SSH key và file cấu hình production.
 - `scripts/local/`: Script hỗ trợ trên máy cá nhân (setup JDK/Maven portable, tải backup DB, patch client).
