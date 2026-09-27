@@ -1,20 +1,18 @@
 [Unit]
 Description=NSO Game Server Emulator
 After=network.target mariadb.service
-Requires=mariadb.service
+Wants=mariadb.service
 
 [Service]
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/nso-server
 ExecStart=/usr/bin/java -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms256M -Xmx400M -Xss256k -XX:+UseSerialGC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/ubuntu/nso-server/logs/oom.hprof -jar /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
-Restart=always
-RestartSec=5s
+Restart=on-failure
+RestartSec=5
 StandardOutput=append:/home/ubuntu/nso-server/logs/service.log
 StandardError=append:/home/ubuntu/nso-server/logs/service_error.log
 LimitNOFILE=65535
-LimitNPROC=infinity
-TasksMax=infinity
 
 [Install]
 WantedBy=multi-user.target

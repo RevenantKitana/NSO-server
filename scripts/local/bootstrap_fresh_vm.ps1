@@ -69,7 +69,11 @@ Write-Host "[BUOC 2/6] Cai dat moi truong he thong (Java 17, MariaDB, Swap 4GB, 
 $SetupScriptLocal = Join-Path $ProjectRoot "scripts\remote-vm\setup_vm.sh"
 
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$SetupScriptLocal`" $VM_USER@$VM_IP`:/tmp/setup_vm.sh" -Wait -NoNewWindow | Out-Null
-Start-Process -FilePath "ssh" -ArgumentList "-t -i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"sudo bash /tmp/setup_vm.sh && rm -f /tmp/setup_vm.sh`"" -Wait -NoNewWindow | Out-Null
+$resSetup = Start-Process -FilePath "ssh" -ArgumentList "-t -i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"sudo sed -i 's/\r$//' /tmp/setup_vm.sh && sudo bash /tmp/setup_vm.sh && rm -f /tmp/setup_vm.sh`"" -Wait -NoNewWindow -PassThru
+if ($resSetup.ExitCode -ne 0) {
+    Write-Host "[LOI] Cai dat setup_vm.sh tren VM that bai!" -ForegroundColor Red
+    exit 1
+}
 Write-Host "  >> Cai dat he thong & database thanh cong!" -ForegroundColor Green
 
 # ------------------------------------------------------------
@@ -85,10 +89,18 @@ if (Test-Path $DataZip) { Remove-Item -Force $DataZip }
 Write-Host "  >> Dang nen thu muc Data/..." -ForegroundColor Gray
 Compress-Archive -Path "$DataDir\*" -DestinationPath $DataZip -Force
 
+# Dam bao thu muc /home/ubuntu/nso-server ton tai tren VM truoc khi upload
+Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"mkdir -p /home/ubuntu/nso-server`"" -Wait -NoNewWindow | Out-Null
+
 Write-Host "  >> Dang upload Data_upload.zip sang VM..." -ForegroundColor Gray
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$DataZip`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/Data.zip" -Wait -NoNewWindow | Out-Null
+$resScpData = Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$DataZip`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/Data.zip" -Wait -NoNewWindow -PassThru
 
 Remove-Item -Force $DataZip -ErrorAction SilentlyContinue
+
+if ($resScpData.ExitCode -ne 0) {
+    Write-Host "[LOI] Khong the upload Data.zip sang /home/ubuntu/nso-server/!" -ForegroundColor Red
+    exit 1
+}
 
 Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no $VM_USER@$VM_IP `"cd /home/ubuntu/nso-server && unzip -q -o Data.zip && rm -f Data.zip`"" -Wait -NoNewWindow | Out-Null
 Write-Host "  >> Upload va giai nen Data/ thanh cong tren VM!" -ForegroundColor Green
@@ -129,7 +141,8 @@ Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChe
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$AutoBackup`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/auto_backup_db.sh" -Wait -NoNewWindow | Out-Null
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$CheckStatus`" $VM_USER@$VM_IP`:/home/ubuntu/check_status.sh" -Wait -NoNewWindow | Out-Null
 
-$setupSystemCmd = "sudo cp /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
+$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh 2>/dev/null || true && " +
+                  "sudo cp /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
                   "rm -f /tmp/nso-server.service && " +
                   "chmod +x /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
                   "sudo systemctl daemon-reload && " +
@@ -145,7 +158,7 @@ Write-Host "   HOAN TAT THIET LAP MAY CHU CLOUD VM MOI TINH THANH CONG 100%!    
 Write-Host "===============================================================================" -ForegroundColor Green
 Write-Host "  - Moi truong Java 17 + MariaDB + Swap 4GB + Firewall da san sang." -ForegroundColor Yellow
 Write-Host "  - Du lieu Game (Data/) va Database sach (nso_test) da duoc khoi tao." -ForegroundColor Yellow
-Write-Host "  - Dịch vu nso-server.service da duoc dang ky tu bat khi khoi dong VM." -ForegroundColor Yellow
+Write-Host "  - Dich vu nso-server.service da duoc dang ky tu bat khi khoi dong VM." -ForegroundColor Yellow
 Write-Host ""
 Write-Host ">> Bay gio ban chi can chon: [1] 1-Click Build & Deploy len VM de bat server!" -ForegroundColor Cyan
 Write-Host "===============================================================================" -ForegroundColor Green
