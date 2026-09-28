@@ -8,7 +8,7 @@ Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/nso-server
 ExecStart=/usr/bin/java -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms256M -Xmx400M -Xss256k -XX:+UseSerialGC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/ubuntu/nso-server/logs/oom.hprof -jar /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
-Restart=on-failure
+Restart=always
 RestartSec=5
 StandardOutput=append:/home/ubuntu/nso-server/logs/service.log
 StandardError=append:/home/ubuntu/nso-server/logs/service_error.log

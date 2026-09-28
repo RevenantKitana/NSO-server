@@ -84,16 +84,19 @@ max_connections = 50
 key_buffer_size = 16M
 table_open_cache = 400
 thread_cache_size = 8
-bind-address = 127.0.0.1
+bind-address = 0.0.0.0
 EOF
 
 systemctl restart mariadb
 systemctl enable mariadb
 
-# Setup database & user
+# Setup database & users
 mariadb -e "CREATE DATABASE IF NOT EXISTS nso_test CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 mariadb -e "CREATE USER IF NOT EXISTS 'nso_user'@'localhost' IDENTIFIED BY 'NsoGame2026!@#';"
 mariadb -e "GRANT ALL PRIVILEGES ON nso_test.* TO 'nso_user'@'localhost';"
+mariadb -e "CREATE USER IF NOT EXISTS 'nso_web'@'%' IDENTIFIED BY 'NsoWebDb2026!@#';"
+mariadb -e "ALTER USER 'nso_web'@'%' IDENTIFIED BY 'NsoWebDb2026!@#';"
+mariadb -e "GRANT SELECT, INSERT, UPDATE, DELETE ON nso_test.* TO 'nso_web'@'%';"
 mariadb -e "FLUSH PRIVILEGES;"
 
 echo "======================================================"
@@ -105,6 +108,8 @@ ufw disable >/dev/null 2>&1 || true
 iptables -I INPUT -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
 iptables -I INPUT -p tcp --dport 14444 -j ACCEPT 2>/dev/null || true
 iptables -I INPUT -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 1 -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true
+iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
 
 
 echo "======================================================"

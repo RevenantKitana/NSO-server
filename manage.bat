@@ -144,6 +144,7 @@ echo   [6]  Khoi chay Web Quan tri Admin (Tao Giftcode va Ma OTP qua Web)
 echo.
 echo   --- [ THIET LAP MAY CHU MOI (FIRST SETUP) ] ---
 echo   [7]  Cai dat VM moi tinh tu A-Z (Cai Java, MariaDB, Swap, Database, Data)
+echo   [12] Cau hinh / Mo ket noi Web Database (Port 3306 ^& User nso_web)
 echo.
 echo   --- [ CONG CU CLIENT VA MOI TRUONG BUILD ] ---
 echo   [8]  Cau hinh IP / Port cho Game Client JAR (.client/)
@@ -155,7 +156,7 @@ echo   [11] Chinh sua cau hinh nhanh (Doi IP VM, Port, SSH Key...)
 echo   [0]  Thoat
 echo ===============================================================================
 set "OPT="
-set /p "OPT=>> Nhap lua chon cua ban [0-11]: "
+set /p "OPT=>> Nhap lua chon cua ban [0-12]: "
 
 if "!OPT!"=="1" goto :DEPLOY_VM
 if "!OPT!"=="2" goto :VM_CONTROL
@@ -168,9 +169,10 @@ if "!OPT!"=="8" goto :PATCH_CLIENT
 if "!OPT!"=="9" goto :SETUP_TOOLS
 if "!OPT!"=="10" goto :LOCAL_BUILD
 if "!OPT!"=="11" goto :EDIT_CONFIG
+if "!OPT!"=="12" goto :SETUP_WEB_DB
 if "!OPT!"=="0" exit /b 0
 
-echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 11.
+echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 12.
 timeout /t 2 >nul
 goto :MAIN_MENU
 
@@ -510,3 +512,38 @@ echo.
 echo [OK] Da luu cau hinh moi vao %CONFIG_FILE%!
 timeout /t 2 >nul
 goto :LOAD_CONFIG
+
+:: ===============================================================================
+:: 12. SETUP WEB DATABASE (PORT 3306 & REMOTE USER)
+:: ===============================================================================
+:SETUP_WEB_DB
+cls
+echo ===============================================================================
+echo   CAU HINH VA MO PORT DATABASE MARIADB CHO WEB DANG KY (PORT 3306)
+echo ===============================================================================
+echo   -- May chu dich : !VM_USER!@!VM_IP!
+echo   -- Thao tac     : Mo MariaDB bind 0.0.0.0, tao user nso_web, mo Firewall 3306
+echo ===============================================================================
+echo.
+if not exist "!KEY_PATH!" (
+    echo [LOI] Khong tim thay file SSH Key tai: !KEY_PATH!
+    pause
+    goto :MAIN_MENU
+)
+
+icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+
+echo [*] Dang cau hinh MariaDB va Firewall tren VM...
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo sed -i 's/bind-address.*/bind-address = 0.0.0.0/g' /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null || true && sudo systemctl restart mariadb && sudo mariadb -e \"CREATE USER IF NOT EXISTS 'nso_web'@'%%' IDENTIFIED BY 'NsoWebDb2026!@#'; ALTER USER 'nso_web'@'%%' IDENTIFIED BY 'NsoWebDb2026!@#'; GRANT SELECT, INSERT, UPDATE, DELETE ON nso_test.* TO 'nso_web'@'%%'; FLUSH PRIVILEGES;\" && sudo iptables -I INPUT 1 -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true && sudo iptables-save > /etc/iptables/rules.v4 2>/dev/null || true && echo '' && echo '=== TRANG THAI PORT 3306 ===' && sudo ss -tulnp | grep 3306"
+
+echo.
+echo [*] Dang kiem tra ket noi TCP Port 3306 tu may tinh cua ban...
+powershell -Command "Test-NetConnection !VM_IP! -Port 3306"
+echo.
+echo ===============================================================================
+echo   HOAN TAT THIET LAP WEB DATABASE CHO !VM_IP!:3306!
+echo ===============================================================================
+echo.
+pause
+goto :MAIN_MENU
+
