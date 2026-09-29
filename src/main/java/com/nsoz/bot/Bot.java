@@ -51,8 +51,21 @@ public class Bot extends Char {
     }
 
     public void setUp() {
-        loadDisplay();
-        load();
+        this.original_head = this.head = (short) (this.gender == 1 ? 11 : 2); // Default head: 11 for male, 2 for female
+        this.body = (short) (this.gender == 1 ? 9 : 0); // Default body: 9 for male, 0 for female
+        this.leg = (short) (this.gender == 1 ? 10 : 1); // Default leg: 10 for male, 1 for female
+        this.weapon = -1;
+        this.ID_HAIR = -1;
+        this.ID_BODY = -1;
+        this.ID_LEG = -1;
+        this.ID_WEA_PONE = -1;
+        this.ID_PP = -1;
+        this.ID_NAME = -1;
+        this.ID_HORSE = -1;
+        this.ID_RANK = -1;
+        this.ID_MAT_NA = -1;
+        this.ID_BIEN_HINH = -1;
+        
         setAbility();
         this.hp = this.maxHP;
         this.mp = this.maxMP;
@@ -117,6 +130,10 @@ public class Bot extends Char {
         if (map != null && map.getZones() != null && !map.getZones().isEmpty()) {
             com.nsoz.map.zones.Zone zone = map.getZones().get(0); // Thêm vào khu 0
             if (zone != null) {
+                bot.zone = zone;
+                // Tính toạ độ chạm đất đúng nhất
+                bot.y = zone.tilemap.collisionY(bot.x, (short) 100); 
+                bot.setXY(bot.x, bot.y);
                 zone.join(bot);
             }
         }
