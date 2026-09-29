@@ -164,6 +164,7 @@ public class Server {
             ThienDiaManager.getInstance().init();
             RandomItem.init();
             initImageMap();
+            com.nsoz.bot.Bot.spawnFriendBots();
         } catch (Exception ex) {
             Log.logException("Lỗi khởi tạo máy chủ", Server.class, ex);
             return false;

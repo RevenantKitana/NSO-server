@@ -22863,7 +22863,7 @@ public class Char {
             if (_char == this) {
                 return;
             }
-            if (!_char.isHuman) {
+            if (!_char.isHuman && !(_char instanceof com.nsoz.bot.Bot)) {
                 return;
             }
             Friend friend = friends.get(name);

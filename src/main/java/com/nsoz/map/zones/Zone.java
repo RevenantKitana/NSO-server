@@ -142,7 +142,7 @@ public class Zone extends Thread {
 
     public int getNumberChar() {
         if (!isClosed) {
-            return players.size();
+            return (int) players.stream().filter(p -> !(p instanceof Bot)).count();
         }
         return 0;
     }

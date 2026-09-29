@@ -82,4 +82,44 @@ public class Bot extends Char {
         }
     }
 
+    public static void spawnFriendBots() {
+        try {
+            // Gió / Sét: Trường Haruna (MapName.TRUONG_HARUNA = 27)
+            spawnBot(-1001, "Thor", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HARUNA, (short) 356, (short) 264, true); // Nam
+            spawnBot(-1002, "Iris", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HARUNA, (short) 400, (short) 264, false); // Nữ
+
+            // Lửa / Sáng: Trường Ookaza (MapName.TRUONG_OOKAZA = 72)
+            spawnBot(-1003, "Apollo", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_OOKAZA, (short) 356, (short) 264, true); // Nam
+            spawnBot(-1004, "Brigid", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_OOKAZA, (short) 400, (short) 264, false); // Nữ
+
+            // Băng / Nước: Trường Hirosaki (MapName.TRUONG_HIROSAKI = 1)
+            spawnBot(-1005, "Njord", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HIROSAKI, (short) 356, (short) 264, true); // Nam
+            spawnBot(-1006, "Skadi", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HIROSAKI, (short) 400, (short) 264, false); // Nữ
+        } catch (Exception e) {
+            com.nsoz.util.Log.logException("Spawn bot error", Bot.class, e);
+        }
+    }
+
+    private static void spawnBot(int id, String name, int level, byte typePk, byte classId, int mapId, short x, short y, boolean isMale) {
+        Bot bot = Bot.builder()
+                .id(id)
+                .name(name)
+                .level(level)
+                .typePk(typePk)
+                .classId(classId)
+                .build();
+        bot.isHuman = false;
+        bot.gender = (byte) (isMale ? 1 : 0);
+        bot.setDefault();
+        bot.setUp();
+        bot.setXY(x, y);
+        com.nsoz.map.Map map = com.nsoz.map.MapManager.getInstance().find(mapId);
+        if (map != null && map.getZones() != null && !map.getZones().isEmpty()) {
+            com.nsoz.map.zones.Zone zone = map.getZones().get(0); // Thêm vào khu 0
+            if (zone != null) {
+                zone.join(bot);
+            }
+        }
+    }
+
 }
