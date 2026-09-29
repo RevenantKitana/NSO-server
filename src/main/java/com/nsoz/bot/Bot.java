@@ -124,7 +124,7 @@ public class Bot extends Char {
                 .typePk(typePk)
                 .classId(classId)
                 .build();
-        bot.isHuman = false;
+        bot.isHuman = true; // Bắt buộc phải là true để Client nhận diện là người chơi và mở Menu tương tác (Kết bạn, Xem thông tin)
         bot.gender = (byte) (isMale ? 1 : 0);
         bot.setDefault();
         bot.setUp();
