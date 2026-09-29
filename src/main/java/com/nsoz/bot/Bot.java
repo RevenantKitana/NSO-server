@@ -51,7 +51,7 @@ public class Bot extends Char {
     }
 
     public void setUp() {
-        this.original_head = this.head = (short) (this.gender == 1 ? 11 : 2); // Default head: 11 for male, 2 for female
+        this.original_head = this.head = (short) (this.gender == 1 ? 2 : 11); // Default head: 2 for male, 11 for female
         this.body = -1; // -1 để Client tự render áo mặc định theo giới tính
         this.leg = -1; // -1 để Client tự render quần mặc định theo giới tính
         this.weapon = -1;
@@ -138,6 +138,7 @@ public class Bot extends Char {
                 bot.y = zone.tilemap.collisionY(bot.x, (short) 100); 
                 bot.setXY(bot.x, bot.y);
                 zone.join(bot);
+                com.nsoz.server.ServerManager.addChar(bot); // Đăng ký Bot vào danh sách máy chủ để các chức năng tìm kiếm (Kết bạn, Xem thông tin) có thể tìm thấy
             }
         }
     }
