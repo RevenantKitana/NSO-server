@@ -52,8 +52,8 @@ public class Bot extends Char {
 
     public void setUp() {
         this.original_head = this.head = (short) (this.gender == 1 ? 11 : 2); // Default head: 11 for male, 2 for female
-        this.body = (short) (this.gender == 1 ? 9 : 0); // Default body: 9 for male, 0 for female
-        this.leg = (short) (this.gender == 1 ? 10 : 1); // Default leg: 10 for male, 1 for female
+        this.body = -1; // -1 để Client tự render áo mặc định theo giới tính
+        this.leg = -1; // -1 để Client tự render quần mặc định theo giới tính
         this.weapon = -1;
         this.ID_HAIR = -1;
         this.ID_BODY = -1;
@@ -101,16 +101,16 @@ public class Bot extends Char {
     public static void spawnFriendBots() {
         try {
             // Gió / Sét: Trường Haruna (MapName.TRUONG_HARUNA = 27) - Đặt góc bên trái (X = 150, 250)
-            spawnBot(-1001, "Thor", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HARUNA, (short) 150, (short) 264, true); // Nam
-            spawnBot(-1002, "Iris", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HARUNA, (short) 250, (short) 264, false); // Nữ
+            spawnBot(2000000001, "Thor", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HARUNA, (short) 150, (short) 264, true); // Nam
+            spawnBot(2000000002, "Iris", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HARUNA, (short) 250, (short) 264, false); // Nữ
 
             // Lửa / Sáng: Trường Ookaza (MapName.TRUONG_OOKAZA = 72) - Đặt góc bên phải (X = 750, 850)
-            spawnBot(-1003, "Apollo", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_OOKAZA, (short) 750, (short) 264, true); // Nam
-            spawnBot(-1004, "Brigid", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_OOKAZA, (short) 850, (short) 264, false); // Nữ
+            spawnBot(2000000003, "Apollo", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_OOKAZA, (short) 750, (short) 264, true); // Nam
+            spawnBot(2000000004, "Brigid", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_OOKAZA, (short) 850, (short) 264, false); // Nữ
 
             // Băng / Nước: Trường Hirosaki (MapName.TRUONG_HIROSAKI = 1) - Đặt góc bên phải (X = 750, 850)
-            spawnBot(-1005, "Njord", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HIROSAKI, (short) 750, (short) 264, true); // Nam
-            spawnBot(-1006, "Skadi", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HIROSAKI, (short) 850, (short) 264, false); // Nữ
+            spawnBot(2000000005, "Njord", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HIROSAKI, (short) 750, (short) 264, true); // Nam
+            spawnBot(2000000006, "Skadi", 10, (byte) 0, (byte) 1, com.nsoz.constants.MapName.TRUONG_HIROSAKI, (short) 850, (short) 264, false); // Nữ
         } catch (Exception e) {
             com.nsoz.util.Log.logException("Spawn bot error", Bot.class, e);
         }
