@@ -67,6 +67,8 @@ public class Bot extends Char {
         this.ID_BIEN_HINH = -1;
         
         setAbility();
+        this.maxHP = 1000; // Fix lỗi maxHP = 0 gây crash client khi trỏ vào xem thanh máu
+        this.maxMP = 1000;
         this.hp = 0; // Giữ ở trạng thái kiệt sức
         this.mp = 0;
         this.isDead = true; // Trạng thái hấp hối/kiệt sức 
