@@ -56,11 +56,11 @@ vercel
 1. Đẩy thư mục mã nguồn này lên repository GitHub của bạn (hoặc tạo repo riêng cho thư mục `web`).
 2. Vào [vercel.com](https://vercel.com) > Nhấn **Add New Project** > Chọn Repository GitHub.
 3. **Cấu hình Environment Variables (Biến môi trường)** trên Vercel:
-   - `MYSQL_HOST`: `161.118.202.174`
+   - `MYSQL_HOST`: `<IP_MÁY_CHỦ_CỦA_BẠN>` (ví dụ: `168.107.66.164`)
    - `MYSQL_PORT`: `3306`
    - `MYSQL_USER`: `nso_web`
-   - `MYSQL_PASSWORD`: `NsoWebDb2026!@#`
+   - `MYSQL_PASSWORD`: `<MẬT_KHẨU_DB_CỦA_BẠN>`
    - `MYSQL_DATABASE`: `nso_test`
-   - `GAME_SERVER_HOST`: `161.118.202.174`
+   - `GAME_SERVER_HOST`: `<IP_MÁY_CHỦ_CỦA_BẠN>`
    - `GAME_SERVER_PORT`: `14444`
 4. Nhấn **Deploy**. Vercel sẽ tự động build và cấp domain miễn phí (ví dụ: `your-nso-server.vercel.app`).

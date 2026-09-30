@@ -33,7 +33,7 @@ function checkSocket(host, port, timeout = 2500) {
 
 export async function GET() {
   try {
-    const serverHost = process.env.GAME_SERVER_HOST || '161.118.202.174';
+    const serverHost = process.env.GAME_SERVER_HOST || process.env.MYSQL_HOST || '127.0.0.1';
     const serverPort = Number(process.env.GAME_SERVER_PORT) || 14444;
 
     const isOnline = await checkSocket(serverHost, serverPort);
