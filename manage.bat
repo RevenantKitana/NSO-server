@@ -144,7 +144,7 @@ echo   [6]  Khoi chay Web Quan tri Admin (Tao Giftcode va Ma OTP qua Web)
 echo.
 echo   --- [ THIET LAP MAY CHU MOI (FIRST SETUP) ] ---
 echo   [7]  Cai dat VM moi tinh tu A-Z (Toi uu OS, Swap, Java 17, MariaDB, Database, Data)
-echo   [12] Cau hinh / Mo ket noi Web Database (Port 3306 ^& User nso_web)
+echo   [12] Cau hinh / Khoi chay HTTP API Bridge (Port 8020 ^& Dong kin Port 3306)
 echo   [13] Toi uu hoa Base OS ^& Bao mat Firewall (Chay toi uu doc lap cho VM)
 echo.
 echo   --- [ CONG CU CLIENT VA MOI TRUONG BUILD ] ---
@@ -246,8 +246,10 @@ echo [BUOC 2/4] Chuan bi moi truong va sao luu ban JAR cu tren VM...
 ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs /home/ubuntu/nso-server/backups; chown -R ubuntu:ubuntu /home/ubuntu/nso-server; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
 
 echo.
-echo [BUOC 3/4] Tai file JAR moi va dong bo cau hinh len VM (!VM_IP!)...
+echo [BUOC 3/4] Tai file JAR moi, API Bridge va dong bo cau hinh len VM (!VM_IP!)...
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso_bridge.js" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/nso_bridge.js >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso-bridge.service" !VM_USER!@!VM_IP!:/tmp/nso-bridge.service >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\config\config.properties.prod" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\config\mysql.properties.prod" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1
 if errorlevel 1 (
@@ -257,8 +259,8 @@ if errorlevel 1 (
 )
 
 echo.
-echo [BUOC 4/4] Khoi dong lai dich vu nso-server tren VM...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
+echo [BUOC 4/4] Khoi dong lai dich vu Game (nso-server) va API Bridge (nso-bridge) tren VM...
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-bridge.service && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && sudo systemctl status nso-bridge.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
 
 echo.
 echo ===============================================================================
@@ -518,15 +520,15 @@ timeout /t 2 >nul
 goto :LOAD_CONFIG
 
 :: ===============================================================================
-:: 12. SETUP WEB DATABASE (PORT 3306 & REMOTE USER)
+:: 12. SETUP HTTP API BRIDGE (PORT 8020 & ISOLATE PORT 3306)
 :: ===============================================================================
 :SETUP_WEB_DB
 cls
 echo ===============================================================================
-echo   CAU HINH VA MO PORT DATABASE MARIADB CHO WEB DANG KY (PORT 3306)
+echo   CAU HINH VA KHOI CHAY HTTP API BRIDGE (PORT 8020 & DONG KIN PORT 3306)
 echo ===============================================================================
 echo   -- May chu dich : !VM_USER!@!VM_IP!
-echo   -- Thao tac     : Mo MariaDB bind 0.0.0.0, tao user nso_web, mo Firewall 3306
+echo   -- Thao tac     : Dong port 3306 (chi localhost), khoi chay API Bridge Port 8020
 echo ===============================================================================
 echo.
 if not exist "!KEY_PATH!" (
@@ -537,15 +539,19 @@ if not exist "!KEY_PATH!" (
 
 icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
 
-echo [*] Dang cau hinh MariaDB va Firewall tren VM...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo sed -i 's/bind-address.*/bind-address = 0.0.0.0/g' /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null || true && sudo systemctl restart mariadb && sudo mariadb -e \"CREATE USER IF NOT EXISTS 'nso_web'@'%%' IDENTIFIED BY 'NsoWebDb2026!@#'; ALTER USER 'nso_web'@'%%' IDENTIFIED BY 'NsoWebDb2026!@#'; GRANT SELECT, INSERT, UPDATE, DELETE ON nso_test.* TO 'nso_web'@'%%'; FLUSH PRIVILEGES;\" && sudo iptables -I INPUT 1 -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true && sudo iptables-save > /etc/iptables/rules.v4 2>/dev/null || true && echo '' && echo '=== TRANG THAI PORT 3306 ===' && sudo ss -tulnp | grep 3306"
+echo [*] Dang upload script API Bridge va cau hinh dich vu nso-bridge...
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso_bridge.js" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/nso_bridge.js >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso-bridge.service" !VM_USER!@!VM_IP!:/tmp/nso-bridge.service >nul 2>&1
+
+echo [*] Dang cau hinh MariaDB 127.0.0.1 va khoi dong nso-bridge tren VM...
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo sed -i 's/bind-address.*/bind-address = 127.0.0.1/g' /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null || true && sudo systemctl restart mariadb && sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl enable nso-bridge.service && sudo systemctl restart nso-bridge.service && sudo iptables -D INPUT -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true && sudo iptables -I INPUT 1 -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true && sudo iptables-save > /etc/iptables/rules.v4 2>/dev/null || true && echo '' && echo '=== TRANG THAI CAC PORT (PORTS) ===' && sudo ss -tuln"
 
 echo.
-echo [*] Dang kiem tra ket noi TCP Port 3306 tu may tinh cua ban...
-powershell -Command "Test-NetConnection !VM_IP! -Port 3306"
+echo [*] Dang kiem tra ket noi TCP Port 8020 (API Bridge) tu may tinh cua ban...
+powershell -Command "Test-NetConnection !VM_IP! -Port 8020"
 echo.
 echo ===============================================================================
-echo   HOAN TAT THIET LAP WEB DATABASE CHO !VM_IP!:3306!
+echo   HOAN TAT KHOI CHAY HTTP API BRIDGE (PORT 8020)! PORT 3306 DA DUOC DONG KIN!
 echo ===============================================================================
 echo.
 pause

@@ -1,24 +1,22 @@
-# NSO WEB PORTAL - VERCEL READY
+# NSO WEB PORTAL - VERCEL READY (API BRIDGE ARCHITECTURE)
 
 Trang web đăng ký tài khoản & hiển thị Giftcode dành cho máy chủ **NSO Ninja School Private 2026**.
 
 ---
 
 ## 🌟 Tính Năng Chính
-1. **Đăng ký tài khoản bảo mật bằng mã OTP 6 số**:
+1. **Kiến trúc Bảo Mật HTTP API Bridge (Zero Open MySQL Port)**:
+   - **Port 3306 đóng kín 100%** trên máy chủ VM.
+   - Vercel giao tiếp với VM thông qua API Bridge bảo mật bằng `x-bridge-token`.
+   - Hỗ trợ Cloudflare Proxy (Đám mây cam 🟠) để **giấu hoàn toàn IP thật** của máy chủ.
+2. **Đăng ký tài khoản bảo mật bằng mã OTP 6 số**:
    - Yêu cầu mã OTP 6 số do Quản trị viên cấp phép trực tiếp từ SSH backend.
-   - Mỗi mã OTP chỉ sử dụng được 1 lần và tự động hết hạn sau 90 phút.
    - Mật khẩu được mã hóa chuẩn **BCrypt Cost 12** tương thích 100% với Server Game.
-2. **Hiển thị Giftcode công khai & Phần thưởng**:
+3. **Hiển thị Giftcode công khai & Phần thưởng**:
    - Danh sách giftcode đang hoạt động trực tiếp từ Database.
-   - Phân loại: Dùng chung / Mỗi nhân vật 1 lần.
-   - Thống kê chi tiết quà tặng: Yên, Xu, Lượng, Vật phẩm đính kèm.
    - Nút 1-click Sao chép mã tiện lợi.
-3. **Trạng thái Máy Chủ thời gian thực**:
-   - Tự động ping cổng `14444` của Game Server để hiển thị trạng thái `ONLINE / BẢO TRÌ`.
-   - Đếm số lượng tài khoản đã tạo và số người chơi đang online.
-4. **Giao diện hiện đại (Cyber Ninja Dark Theme)**:
-   - Tối ưu chuẩn SEO, Responsive hoàn hảo trên Mobile, Tablet, PC.
+4. **Trạng thái Máy Chủ thời gian thực**:
+   - Tự động hiển thị trạng thái `ONLINE / BẢO TRÌ`, số lượng tài khoản và người chơi đang online.
 
 ---
 
@@ -40,27 +38,9 @@ Truy cập: `http://localhost:3000`
 
 ## ☁️ Hướng Dẫn Deploy Lên Vercel
 
-### Cách 1: Deploy qua Vercel CLI (Nhanh nhất)
-```bash
-# Cài đặt vercel CLI toàn cục (nếu chưa có)
-npm install -g vercel
-
-# Đăng nhập vercel
-vercel login
-
-# Deploy dự án
-vercel
-```
-
-### Cách 2: Deploy qua Vercel Dashboard (GitHub)
-1. Đẩy thư mục mã nguồn này lên repository GitHub của bạn (hoặc tạo repo riêng cho thư mục `web`).
+1. Đẩy thư mục mã nguồn này lên repository GitHub của bạn.
 2. Vào [vercel.com](https://vercel.com) > Nhấn **Add New Project** > Chọn Repository GitHub.
 3. **Cấu hình Environment Variables (Biến môi trường)** trên Vercel:
-   - `MYSQL_HOST`: `<IP_MÁY_CHỦ_CỦA_BẠN>` (ví dụ: `168.107.66.164`)
-   - `MYSQL_PORT`: `3306`
-   - `MYSQL_USER`: `nso_web`
-   - `MYSQL_PASSWORD`: `<MẬT_KHẨU_DB_CỦA_BẠN>`
-   - `MYSQL_DATABASE`: `nso_test`
-   - `GAME_SERVER_HOST`: `<IP_MÁY_CHỦ_CỦA_BẠN>`
-   - `GAME_SERVER_PORT`: `14444`
-4. Nhấn **Deploy**. Vercel sẽ tự động build và cấp domain miễn phí (ví dụ: `your-nso-server.vercel.app`).
+   - `BRIDGE_API_URL`: `https://nso.mio.io.vn` (hoặc `http://168.107.66.164:8020`)
+   - `BRIDGE_SECRET_KEY`: `NsoBridgeSecret2026!@#`
+4. Nhấn **Deploy**. Vercel sẽ tự động build và cấp domain miễn phí.

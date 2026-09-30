@@ -163,8 +163,6 @@ iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --se
 
 iptables -I INPUT 1 -p tcp --dport 14444 -m state --state NEW -m recent --set --name GAME_LIMIT 2>/dev/null || true
 iptables -I INPUT 2 -p tcp --dport 14444 -m state --state NEW -m recent --update --seconds 10 --hitcount 20 --name GAME_LIMIT -j DROP 2>/dev/null || true
-iptables -I INPUT 3 -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
-iptables -I INPUT 4 -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
 
 mkdir -p /etc/iptables
 iptables-save > /etc/iptables/rules.v4 2>/dev/null || true

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { queryDb } from '@/lib/db';
+import { fetchFromBridge } from '@/lib/bridge';
 
 export async function POST(request) {
   try {
@@ -49,79 +49,25 @@ export async function POST(request) {
       );
     }
 
-    // 2. Validate OTP in database (must be unused and not expired)
-    const otpRows = await queryDb(
-      'SELECT id, code, expires_at, used FROM registration_otps WHERE code = ? LIMIT 1',
-      [cleanOtp]
-    );
+    // 2. Hash password with BCrypt (Cost 12)
+    const passwordHash = await bcrypt.hash(password, 12);
 
-    if (otpRows.length === 0) {
-      return NextResponse.json(
-        { error: 'Mã OTP không hợp lệ! Vui lòng liên hệ [Khánh] để nhận mã cấp phép.' },
-        { status: 400 }
-      );
-    }
-
-    const otpRecord = otpRows[0];
-    if (otpRecord.used === 1) {
-      return NextResponse.json(
-        { error: 'Mã OTP này đã được sử dụng trước đó! Mỗi mã chỉ dùng được 1 lần.' },
-        { status: 400 }
-      );
-    }
-
-    if (new Date(otpRecord.expires_at) < new Date()) {
-      return NextResponse.json(
-        { error: 'Mã OTP này đã hết hạn (quá 90 phút)! Vui lòng liên hệ [Khánh] để nhận mã mới.' },
-        { status: 400 }
-      );
-    }
-
-    // 3. Check if username is already taken
-    const existingUsers = await queryDb(
-      'SELECT id FROM users WHERE username = ? LIMIT 1',
-      [cleanUsername]
-    );
-
-    if (existingUsers.length > 0) {
-      return NextResponse.json(
-        { error: 'Tên tài khoản này đã được sử dụng! Vui lòng chọn tên khác.' },
-        { status: 400 }
-      );
-    }
-
-    // 4. Hash password with BCrypt (Cost 12 - matches Java server StringUtils.checkPassword)
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // 5. Insert new user into database
-    await queryDb(
-      `INSERT INTO users (
-        username, password, activated, balance, luong, tongnap, 
-        point_vip, role, status, online, nap, tanthu, level, 
-        created_at, updated_at
-      ) VALUES (?, ?, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 'member', NOW(), NOW())`,
-      [cleanUsername, hashedPassword]
-    );
-
-    // 6. Delete the OTP immediately upon successful use
-    await queryDb(
-      'DELETE FROM registration_otps WHERE code = ?',
-      [cleanOtp]
-    );
-
-    // Also clean up any expired OTPs in background
-    queryDb('DELETE FROM registration_otps WHERE expires_at < NOW()').catch(() => {});
-
-    return NextResponse.json({
-      success: true,
-      message: 'Đăng ký tài khoản thành công! Bạn có thể mở Client game và đăng nhập ngay bây giờ.',
-      username: cleanUsername,
+    // 3. Forward to VM API Bridge
+    const result = await fetchFromBridge('/api/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: cleanUsername,
+        passwordHash,
+        otp: cleanOtp,
+      }),
     });
+
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error:', error.message);
     return NextResponse.json(
-      { error: 'Có lỗi xảy ra trong quá trình xử lý: ' + (error.message || 'Lỗi kết nối cơ sở dữ liệu') },
-      { status: 500 }
+      { error: error.message || 'Lỗi kết nối máy chủ máy ảo' },
+      { status: 400 }
     );
   }
 }

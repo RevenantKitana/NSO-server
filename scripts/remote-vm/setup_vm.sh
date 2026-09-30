@@ -159,10 +159,10 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get purge -y ufw >/dev/null 2>&1 || true
 apt-get update -y
 apt-get --fix-broken install -y
-apt-get install -y openjdk-17-jre-headless mariadb-server mariadb-client iptables-persistent netfilter-persistent fail2ban htop rsync curl unzip tar
+apt-get install -y openjdk-17-jre-headless mariadb-server mariadb-client nodejs iptables-persistent netfilter-persistent fail2ban htop rsync curl unzip tar
 
 echo "======================================================"
-echo " 5. ADAPTIVE MARIADB TUNING                           "
+echo " 5. ADAPTIVE MARIADB TUNING (INTERNAL 127.0.0.1 ONLY) "
 echo "======================================================"
 # Adaptive InnoDB Buffer Pool size based on RAM
 if [ "$TOTAL_RAM_MB" -ge 4000 ]; then
@@ -190,19 +190,21 @@ max_connections = ${DB_MAX_CONN}
 key_buffer_size = 16M
 table_open_cache = 400
 thread_cache_size = 8
-bind-address = 0.0.0.0
+bind-address = 127.0.0.1
+skip-name-resolve
 EOF
 
 systemctl restart mariadb
 systemctl enable mariadb
 
-# Setup database & users
+# Setup database & users (Internal localhost & 127.0.0.1 only)
 mariadb -e "CREATE DATABASE IF NOT EXISTS nso_test CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 mariadb -e "CREATE USER IF NOT EXISTS 'nso_user'@'localhost' IDENTIFIED BY 'NsoGame2026!@#';"
+mariadb -e "ALTER USER 'nso_user'@'localhost' IDENTIFIED BY 'NsoGame2026!@#';"
 mariadb -e "GRANT ALL PRIVILEGES ON nso_test.* TO 'nso_user'@'localhost';"
-mariadb -e "CREATE USER IF NOT EXISTS 'nso_web'@'%' IDENTIFIED BY 'NsoWebDb2026!@#';"
-mariadb -e "ALTER USER 'nso_web'@'%' IDENTIFIED BY 'NsoWebDb2026!@#';"
-mariadb -e "GRANT SELECT, INSERT, UPDATE, DELETE ON nso_test.* TO 'nso_web'@'%';"
+mariadb -e "CREATE USER IF NOT EXISTS 'nso_user'@'127.0.0.1' IDENTIFIED BY 'NsoGame2026!@#';"
+mariadb -e "ALTER USER 'nso_user'@'127.0.0.1' IDENTIFIED BY 'NsoGame2026!@#';"
+mariadb -e "GRANT ALL PRIVILEGES ON nso_test.* TO 'nso_user'@'127.0.0.1';"
 mariadb -e "FLUSH PRIVILEGES;"
 
 echo "======================================================"
@@ -211,25 +213,16 @@ echo "======================================================"
 # Disable UFW to prevent OCI VNIC virtual routing conflicts
 ufw disable >/dev/null 2>&1 || true
 
-# Reset existing custom rules if any
-iptables -D INPUT -p tcp --dport 14444 -m state --state NEW -m recent --set --name GAME_LIMIT 2>/dev/null || true
-iptables -D INPUT -p tcp --dport 14444 -m state --state NEW -m recent --update --seconds 10 --hitcount 20 --name GAME_LIMIT -j DROP 2>/dev/null || true
-iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
-iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
-
 # Rate-limit game port 14444 (Max 20 new conns / 10s per IP)
 iptables -I INPUT 1 -p tcp --dport 14444 -m state --state NEW -m recent --set --name GAME_LIMIT
 iptables -I INPUT 2 -p tcp --dport 14444 -m state --state NEW -m recent --update --seconds 10 --hitcount 20 --name GAME_LIMIT -j DROP
 
-# Rate-limit SSH port 22 (Max 6 new conns / 60s per IP)
-iptables -I INPUT 3 -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT
-iptables -I INPUT 4 -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP
-
-# Allow ports
-iptables -I INPUT 5 -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 6 -p tcp --dport 14444 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 7 -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 8 -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true
+# Allow ports (Port 3306 is CLOSED - isolated inside VM)
+iptables -I INPUT 3 -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 4 -p tcp --dport 14444 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 5 -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 6 -p tcp --dport 80 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 7 -p tcp --dport 443 -j ACCEPT 2>/dev/null || true
 
 mkdir -p /etc/iptables
 iptables-save > /etc/iptables/rules.v4 2>/dev/null || true

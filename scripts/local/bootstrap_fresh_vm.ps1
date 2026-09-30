@@ -130,23 +130,28 @@ Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChe
 Write-Host "  >> Cau hinh Production da duoc thiet lap tren VM!" -ForegroundColor Green
 
 # ------------------------------------------------------------
-# 6. DANG KY SYSTEMD SERVICE VA AUTO BACKUP CRONJOB
+# 6. DANG KY SYSTEMD SERVICE (GAME + API BRIDGE) VA AUTO BACKUP CRONJOB
 # ------------------------------------------------------------
 Write-Host ""
-Write-Host "[BUOC 6/6] Dang dang ky nso-server.service va cronjob sao luu tu dong..." -ForegroundColor Cyan
+Write-Host "[BUOC 6/6] Dang dang ky nso-server.service, nso-bridge.service va cronjob sao luu..." -ForegroundColor Cyan
 $ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service"
+$BridgeService = Join-Path $ProjectRoot "scripts\remote-vm\nso-bridge.service"
+$BridgeScript = Join-Path $ProjectRoot "scripts\remote-vm\nso_bridge.js"
 $AutoBackup = Join-Path $ProjectRoot "scripts\remote-vm\auto_backup_db.sh"
 $CheckStatus = Join-Path $ProjectRoot "scripts\remote-vm\check_status.sh"
 
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ServiceFile`" `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ServiceFile`" `"$BridgeService`" `"$BridgeScript`" `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
 
-$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /tmp/auto_backup_db.sh /tmp/check_status.sh 2>/dev/null || true && " +
+$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /tmp/nso-bridge.service /tmp/nso_bridge.js /tmp/auto_backup_db.sh /tmp/check_status.sh 2>/dev/null || true && " +
                   "sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
+                  "sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service && " +
+                  "mv -f /tmp/nso_bridge.js /home/ubuntu/nso-server/nso_bridge.js && " +
                   "mv -f /tmp/auto_backup_db.sh /home/ubuntu/nso-server/auto_backup_db.sh && " +
                   "mv -f /tmp/check_status.sh /home/ubuntu/check_status.sh && " +
-                  "chmod +x /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
+                  "chmod +x /home/ubuntu/nso-server/nso_bridge.js /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
                   "sudo systemctl daemon-reload && " +
-                  "sudo systemctl enable nso-server.service && " +
+                  "sudo systemctl enable nso-server.service nso-bridge.service && " +
+                  "sudo systemctl restart nso-bridge.service && " +
                   "mkdir -p /home/ubuntu/nso-server/logs && " +
                   "(crontab -l 2>/dev/null | grep -v 'auto_backup_db.sh'; echo '0 */12 * * * /home/ubuntu/nso-server/auto_backup_db.sh >/dev/null 2>&1') | crontab -"
 
@@ -158,6 +163,7 @@ Write-Host "   HOAN TAT THIET LAP MAY CHU CLOUD VM MOI TINH THANH CONG 100%!    
 Write-Host "===============================================================================" -ForegroundColor Green
 Write-Host "  - Moi truong Java 17 + MariaDB + Swap 4GB + Firewall da san sang." -ForegroundColor Yellow
 Write-Host "  - Du lieu Game (Data/) va Database sach (nso_test) da duoc khoi tao." -ForegroundColor Yellow
+Write-Host "  - Dịch vu HTTP API Bridge (Port 8020) da bat -> Port 3306 duoc dong kin." -ForegroundColor Yellow
 Write-Host "  - Dich vu nso-server.service da duoc dang ky tu bat khi khoi dong VM." -ForegroundColor Yellow
 Write-Host ""
 Write-Host ">> Bay gio ban chi can chon: [1] 1-Click Build & Deploy len VM de bat server!" -ForegroundColor Cyan

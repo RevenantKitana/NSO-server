@@ -1,0 +1,20 @@
+[Unit]
+Description=NSO Web HTTP API Bridge Service
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nso-server
+Environment=BRIDGE_PORT=8020
+Environment=BRIDGE_SECRET_KEY=NsoBridgeSecret2026!@#
+ExecStart=/usr/bin/node /home/ubuntu/nso-server/nso_bridge.js
+Restart=always
+RestartSec=3
+StandardOutput=append:/home/ubuntu/nso-server/logs/bridge.log
+StandardError=append:/home/ubuntu/nso-server/logs/bridge_error.log
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
