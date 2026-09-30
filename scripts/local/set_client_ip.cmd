@@ -176,6 +176,10 @@ if %PATCH_EXIT% equ 0 (
     echo [THANH CONG] Da cap nhat Client Jar thanh cong!
     echo Client da duoc dong bo de ket noi: %TARGET_IP%:%TARGET_PORT%
     echo Thu muc chua file: %CLIENT_DIR%
+    if exist "%ROOT_DIR%\web\public" (
+        copy /y "%CLIENT_DIR%\NSO.jar" "%ROOT_DIR%\web\public\NSO.jar" >nul
+        echo [*] Da dong bo Client moi sang: web\public\NSO.jar
+    )
     echo ============================================================
 ) else (
     echo.
@@ -190,27 +194,25 @@ exit /b %PATCH_EXIT%
 
 :DO_RESTORE
 echo.
-echo [*] Dang khoi phuc cac file Client goc tu backup (.bak)...
+echo [*] Dang khoi phuc file Client goc tu backup (NSO.jar.bak)...
 set "RESTORED=0"
-
-if exist "%CLIENT_DIR%\JAR_local.jar.bak" (
-    copy /y "%CLIENT_DIR%\JAR_local.jar.bak" "%CLIENT_DIR%\JAR_local.jar" >nul
-    echo    [+] Da khoi phuc: JAR_local.jar
-    set /a "RESTORED+=1"
-)
 
 if exist "%CLIENT_DIR%\NSO.jar.bak" (
     copy /y "%CLIENT_DIR%\NSO.jar.bak" "%CLIENT_DIR%\NSO.jar" >nul
     echo    [+] Da khoi phuc: NSO.jar
+    if exist "%ROOT_DIR%\web\public" (
+        copy /y "%CLIENT_DIR%\NSO.jar" "%ROOT_DIR%\web\public\NSO.jar" >nul
+        echo    [+] Da dong bo sang Web: web\public\NSO.jar
+    )
     set /a "RESTORED+=1"
 )
 
 if !RESTORED! gtr 0 (
     echo.
-    echo [THANH CONG] Da khoi phuc !RESTORED! file client ve trang thai ban dau.
+    echo [THANH CONG] Da khoi phuc Client ve trang thai ban dau.
 ) else (
     echo.
-    echo [!] Khong tim thay file .bak nao trong %CLIENT_DIR%.
+    echo [!] Khong tim thay file NSO.jar.bak trong %CLIENT_DIR%.
 )
 
 if "%IS_INTERACTIVE%"=="1" (

@@ -43,30 +43,36 @@ public class PatchClient {
             System.out.println(" Working Dir   : " + baseDir.getCanonicalPath());
             System.out.println("------------------------------------------------------------");
 
-            // Look for jars to patch
+            // Look for jars to patch (Standardized to NSO.jar)
             List<File> targetJars = new ArrayList<>();
             if (args.length >= 3) {
                 targetJars.add(new File(args[2]));
             } else {
-                File jarLocal = new File(baseDir, "JAR_local.jar");
                 File nsoJar = new File(baseDir, "NSO.jar");
-                if (jarLocal.exists()) targetJars.add(jarLocal);
-                if (nsoJar.exists() && !targetJars.contains(nsoJar)) targetJars.add(nsoJar);
+                if (nsoJar.exists()) {
+                    targetJars.add(nsoJar);
+                } else {
+                    File jarLocal = new File(baseDir, "JAR_local.jar");
+                    if (jarLocal.exists()) targetJars.add(jarLocal);
+                }
                 
                 // If baseDir didn't have them, check .client/ subfolder or parent
                 if (targetJars.isEmpty()) {
                     File clientSubdir = new File(baseDir, ".client");
                     if (clientSubdir.exists()) {
-                        File j1 = new File(clientSubdir, "JAR_local.jar");
                         File j2 = new File(clientSubdir, "NSO.jar");
-                        if (j1.exists()) targetJars.add(j1);
-                        if (j2.exists()) targetJars.add(j2);
+                        if (j2.exists()) {
+                            targetJars.add(j2);
+                        } else {
+                            File j1 = new File(clientSubdir, "JAR_local.jar");
+                            if (j1.exists()) targetJars.add(j1);
+                        }
                     }
                 }
             }
 
             if (targetJars.isEmpty()) {
-                System.err.println("ERROR: No client JAR file found to patch (JAR_local.jar / NSO.jar).");
+                System.err.println("ERROR: No client JAR file found to patch (NSO.jar).");
                 System.exit(1);
             }
 
@@ -101,12 +107,6 @@ public class PatchClient {
                         tempPatched.delete();
                         System.out.println("    [OK] Successfully overwritten: " + jarFile.getName());
                     }
-
-                    // Also create a dedicated named copy for distribution: NSO_<host>.jar
-                    String safeHostName = targetHost.replace(":", "_").replace("/", "_");
-                    File namedJar = new File(jarFile.getParentFile(), "NSO_" + safeHostName + ".jar");
-                    copyFile(jarFile, namedJar);
-                    System.out.println("    [+] Created export copy: " + namedJar.getName());
                 } else {
                     tempPatched.delete();
                     System.out.println("    [!] No replacement needed or no matching host strings found.");
