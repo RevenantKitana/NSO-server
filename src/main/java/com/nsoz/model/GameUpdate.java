@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 public class GameUpdate {
     ScheduledThreadPoolExecutor executor;
     public GameUpdate() {
-        executor = new ScheduledThreadPoolExecutor(1000);
+        int corePoolSize = Math.max(4, Runtime.getRuntime().availableProcessors() * 2);
+        executor = new ScheduledThreadPoolExecutor(corePoolSize);
     }
     public void add(IUpdate update) {
         if (update == null) {

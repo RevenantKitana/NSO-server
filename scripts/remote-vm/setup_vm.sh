@@ -239,11 +239,11 @@ echo "======================================================"
 mkdir -p /home/ubuntu/nso-server
 chown -R ubuntu:ubuntu /home/ubuntu/nso-server
 
-# Dynamic JVM Memory Allocation
+# Dynamic JVM Memory Allocation & Low-Latency G1GC Tuning
 if [ "$TOTAL_RAM_MB" -ge 5000 ]; then
-    JVM_MEM="-Xms1024M -Xmx2048M -Xss256k -XX:+UseG1GC"
+    JVM_MEM="-Xms1024M -Xmx2048M -Xss256k -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1ReservePercent=15 -XX:InitiatingHeapOccupancyPercent=45 -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 elif [ "$TOTAL_RAM_MB" -ge 2000 ]; then
-    JVM_MEM="-Xms512M -Xmx1024M -Xss256k -XX:+UseG1GC"
+    JVM_MEM="-Xms512M -Xmx1024M -Xss256k -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1ReservePercent=15 -XX:InitiatingHeapOccupancyPercent=45 -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 else
     JVM_MEM="-Xms256M -Xmx400M -Xss256k -XX:+UseSerialGC"
 fi

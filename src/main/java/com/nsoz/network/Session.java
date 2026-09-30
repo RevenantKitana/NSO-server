@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
@@ -81,9 +84,10 @@ public class Session implements ISession {
     public Session(Socket sc, int id) throws IOException {
         this.sc = sc;
         this.id = id;
-        //this.sc.setKeepAlive(true);
-        // this.sc.setTcpNoDelay(true);
-        // this.sc.setSoTimeout(300000);//ko hoat dong -> close
+        this.sc.setKeepAlive(true);
+        this.sc.setTcpNoDelay(true);
+        this.sc.setSendBufferSize(65536);
+        this.sc.setReceiveBufferSize(65536);
         connected = true;
         this.dis = new DataInputStream(sc.getInputStream());
         this.dos = new DataOutputStream(sc.getOutputStream());
@@ -605,38 +609,35 @@ public class Session implements ISession {
 
     private class Sender implements Runnable {
 
-        private final Vector<Message> sendingMessage;
+        private final BlockingQueue<Message> sendingMessage;
 
         public Sender() {
-            sendingMessage = new Vector<>();
+            sendingMessage = new LinkedBlockingQueue<>();
         }
 
         public void addMessage(Message message) {
-            sendingMessage.add(message);
+            if (message != null) {
+                sendingMessage.offer(message);
+            }
         }
 
         @Override
         public void run() {
             while (connected) {
-                if (sendKeyComplete) {
-                    while (!sendingMessage.isEmpty()) {
-                        try {
-                            Message m = sendingMessage.get(0);
-                            if (m != null) {
-                                doSendMessage(m);
-                            }
-                            sendingMessage.remove(0);
-                        } catch (Exception e) {
-                            disconnect();
+                try {
+                    Message m = sendingMessage.poll(50, TimeUnit.MILLISECONDS);
+                    if (m != null && sendKeyComplete) {
+                        doSendMessage(m);
+                        while ((m = sendingMessage.poll()) != null) {
+                            doSendMessage(m);
                         }
                     }
-                }
-                try {
-                    Thread.sleep(10L);
                 } catch (InterruptedException e) {
+                    break;
+                } catch (Exception e) {
+                    disconnect();
                 }
             }
-
         }
     }
 
