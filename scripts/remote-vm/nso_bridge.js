@@ -14,7 +14,14 @@ const SECRET_TOKEN = process.env.BRIDGE_SECRET_KEY || 'NsoBridgeSecret2026!@#';
 // Execute local MariaDB query via streaming stdin
 function querySql(sql) {
   return new Promise((resolve, reject) => {
-    const proc = spawn('mariadb', ['nso_test', '--batch', '--raw']);
+    const proc = spawn('mariadb', [
+      '-u', 'nso_user',
+      '-h', '127.0.0.1',
+      '-pNsoGame2026!@#',
+      'nso_test',
+      '--batch',
+      '--raw'
+    ]);
     let stdout = '';
     let stderr = '';
 

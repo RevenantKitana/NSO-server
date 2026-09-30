@@ -4,7 +4,7 @@
 // ===============================================================================
 
 export async function fetchFromBridge(endpoint, options = {}) {
-  const bridgeUrl = (process.env.BRIDGE_API_URL || 'http://168.107.66.164:8020').replace(/\/$/, '');
+  const bridgeUrl = (process.env.BRIDGE_API_URL || 'http://168.107.66.164').replace(/\/$/, '');
   const secretKey = process.env.BRIDGE_SECRET_KEY || 'NsoBridgeSecret2026!@#';
 
   const url = `${bridgeUrl}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
@@ -21,9 +21,16 @@ export async function fetchFromBridge(endpoint, options = {}) {
     cache: 'no-store',
   });
 
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || `Bridge API returned status ${response.status}`);
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (err) {
+    throw new Error(`Máy chủ trả về phản hồi không đúng định dạng (${response.status})`);
+  }
+
+  if (!response.ok || (data && data.success === false)) {
+    throw new Error((data && data.error) || `Bridge API trả về lỗi status ${response.status}`);
   }
 
   return data;
