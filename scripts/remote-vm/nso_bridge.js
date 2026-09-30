@@ -8,7 +8,7 @@ const http = require('http');
 const { spawn } = require('child_process');
 const net = require('net');
 
-const PORT = process.env.BRIDGE_PORT || 8020;
+const PORT = process.env.BRIDGE_PORT || 80;
 const SECRET_TOKEN = process.env.BRIDGE_SECRET_KEY || 'NsoBridgeSecret2026!@#';
 
 // Execute local MariaDB query via streaming stdin
