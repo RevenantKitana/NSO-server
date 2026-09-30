@@ -62,10 +62,10 @@ if ($testSsh.ExitCode -ne 0) {
 Write-Host "  >> Ket noi SSH thanh cong!" -ForegroundColor Green
 
 # ------------------------------------------------------------
-# 2. UPLOAD VA CHAY SETUP_VM.SH (CAI JAVA, MARIADB, SWAP, FIREWALL)
+# 2. UPLOAD VA CHAY SETUP_VM.SH (TOI UU OS, SWAP 4GB, JAVA 17, MARIADB, BAO MAT)
 # ------------------------------------------------------------
 Write-Host ""
-Write-Host "[BUOC 2/6] Cai dat moi truong he thong (Java 17, MariaDB, Swap 4GB, Firewall)..." -ForegroundColor Cyan
+Write-Host "[BUOC 2/6] Toi uu hoa toan dien Base OS, Swap 4GB, Cai Java 17, MariaDB & Tuong lua..." -ForegroundColor Cyan
 $SetupScriptLocal = Join-Path $ProjectRoot "scripts\remote-vm\setup_vm.sh"
 
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no `"$SetupScriptLocal`" $VM_USER@$VM_IP`:/tmp/setup_vm.sh" -Wait -NoNewWindow | Out-Null
@@ -74,7 +74,7 @@ if ($resSetup.ExitCode -ne 0) {
     Write-Host "[LOI] Cai dat setup_vm.sh tren VM that bai!" -ForegroundColor Red
     exit 1
 }
-Write-Host "  >> Cai dat he thong & database thanh cong!" -ForegroundColor Green
+Write-Host "  >> Toi uu Base OS, he thong & database thanh cong!" -ForegroundColor Green
 
 # ------------------------------------------------------------
 # 3. NEN VA UPLOAD THU MUC DATA/

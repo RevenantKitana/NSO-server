@@ -143,8 +143,9 @@ echo   [5]  Tai ban sao luu Database tu VM ve may ca nhan (Thu muc backups/)
 echo   [6]  Khoi chay Web Quan tri Admin (Tao Giftcode va Ma OTP qua Web)
 echo.
 echo   --- [ THIET LAP MAY CHU MOI (FIRST SETUP) ] ---
-echo   [7]  Cai dat VM moi tinh tu A-Z (Cai Java, MariaDB, Swap, Database, Data)
+echo   [7]  Cai dat VM moi tinh tu A-Z (Toi uu OS, Swap, Java 17, MariaDB, Database, Data)
 echo   [12] Cau hinh / Mo ket noi Web Database (Port 3306 ^& User nso_web)
+echo   [13] Toi uu hoa Base OS ^& Bao mat Firewall (Chay toi uu doc lap cho VM)
 echo.
 echo   --- [ CONG CU CLIENT VA MOI TRUONG BUILD ] ---
 echo   [8]  Cau hinh IP / Port cho Game Client JAR (.client/)
@@ -156,7 +157,7 @@ echo   [11] Chinh sua cau hinh nhanh (Doi IP VM, Port, SSH Key...)
 echo   [0]  Thoat
 echo ===============================================================================
 set "OPT="
-set /p "OPT=>> Nhap lua chon cua ban [0-12]: "
+set /p "OPT=>> Nhap lua chon cua ban [0-13]: "
 
 if "!OPT!"=="1" goto :DEPLOY_VM
 if "!OPT!"=="2" goto :VM_CONTROL
@@ -170,9 +171,10 @@ if "!OPT!"=="9" goto :SETUP_TOOLS
 if "!OPT!"=="10" goto :LOCAL_BUILD
 if "!OPT!"=="11" goto :EDIT_CONFIG
 if "!OPT!"=="12" goto :SETUP_WEB_DB
+if "!OPT!"=="13" goto :OPTIMIZE_VM
 if "!OPT!"=="0" exit /b 0
 
-echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 12.
+echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 13.
 timeout /t 2 >nul
 goto :MAIN_MENU
 
@@ -543,6 +545,16 @@ echo.
 echo ===============================================================================
 echo   HOAN TAT THIET LAP WEB DATABASE CHO !VM_IP!:3306!
 echo ===============================================================================
+echo.
+pause
+goto :MAIN_MENU
+
+:: ===============================================================================
+:: 13. OPTIMIZE BASE OS & SECURITY HARDENING
+:: ===============================================================================
+:OPTIMIZE_VM
+cls
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\local\optimize_remote_vm.ps1"
 echo.
 pause
 goto :MAIN_MENU
