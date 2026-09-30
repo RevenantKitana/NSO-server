@@ -155,8 +155,11 @@ echo "======================================================"
 echo " 4. INSTALLING PACKAGES (JAVA 17, MARIADB, TOOLS)     "
 echo "======================================================"
 export DEBIAN_FRONTEND=noninteractive
+# Purge UFW to prevent conflict with iptables-persistent on Ubuntu 24.04 & OCI routing
+apt-get purge -y ufw >/dev/null 2>&1 || true
 apt-get update -y
-apt-get install -y openjdk-17-jre-headless mariadb-server mariadb-client ufw iptables-persistent fail2ban htop rsync curl unzip tar
+apt-get --fix-broken install -y
+apt-get install -y openjdk-17-jre-headless mariadb-server mariadb-client iptables-persistent netfilter-persistent fail2ban htop rsync curl unzip tar
 
 echo "======================================================"
 echo " 5. ADAPTIVE MARIADB TUNING                           "
