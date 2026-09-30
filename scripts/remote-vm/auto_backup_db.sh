@@ -37,3 +37,18 @@ fi
 
 TOTAL_REMAINING=$(ls -1 "$BACKUP_DIR"/nso_backup_*.sql.gz 2>/dev/null | wc -l)
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Auto backup completed successfully. Total active backups: $TOTAL_REMAINING/7" >> "$LOG_DIR/auto_backup.log"
+
+# ==========================================================
+# AUTO LOG CAPPING & TRUNCATION (PREVENT UNLIMITED LOGS)
+# Keep each log file under 20MB / max 30,000 lines
+# ==========================================================
+for logfile in "$LOG_DIR"/*.log; do
+    if [ -f "$logfile" ]; then
+        LOG_SIZE_KB=$(du -k "$logfile" | cut -f1)
+        if [ "$LOG_SIZE_KB" -gt 20480 ]; then
+            tail -n 30000 "$logfile" > "${logfile}.tmp" && mv -f "${logfile}.tmp" "$logfile"
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Truncated oversized log file: $logfile" >> "$LOG_DIR/auto_backup.log"
+        fi
+    fi
+done
+

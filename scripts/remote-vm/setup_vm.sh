@@ -85,6 +85,20 @@ EOF
 systemctl restart systemd-journald 2>/dev/null || true
 journalctl --vacuum-size=20M >/dev/null 2>&1 || true
 
+# Limit and Rotate NSO Server Application Logs
+cat <<'EOF' > /etc/logrotate.d/nso-server
+/home/ubuntu/nso-server/logs/*.log {
+    daily
+    rotate 3
+    size 20M
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}
+EOF
+
 echo "======================================================"
 echo " 3. DE-BLOATING BACKGROUND OS SERVICES & AUTO-UPDATES "
 echo "======================================================"
