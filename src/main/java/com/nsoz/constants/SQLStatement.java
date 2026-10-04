@@ -72,7 +72,7 @@ public class SQLStatement {
             "`timeOnline` = ?, " +
             " `giftTongnap` = ?" +
             " WHERE `id` = ? LIMIT 1";
-    public static final String GET_GIFT_CODE = "SELECT * FROM `gift_codes` WHERE `code` = ? AND (`server_id` = ? OR `server_id` = 0) AND (expires_at IS NULL OR expires_at > now()) LIMIT 1;";
+    public static final String GET_GIFT_CODE = "SELECT * FROM `gift_codes` WHERE `code` = ? AND (`server_id` = ? OR `server_id` = 0 OR `server_id` IS NULL) AND (expires_at IS NULL OR expires_at > now()) LIMIT 1;";
     public static final String UPDATE_GIFT_CODE = "UPDATE `gift_codes` SET `status` = 1, `updated_at` = ? WHERE `id` = ? LIMIT 1;";
     public static final String INSERT_USED_GIFT_CODE = "INSERT INTO `gift_code_histories`(`player_id`,`user_id`, `gift_code`, `updated_at`) VALUES (?, ?, ?, ?)";
     public static final String CHECK_EXIST_USED_GIFT_CODE = "SELECT * FROM `gift_code_histories` WHERE `gift_code` = ? AND (`player_id` = ? OR `user_id` = ?) LIMIT 1;";

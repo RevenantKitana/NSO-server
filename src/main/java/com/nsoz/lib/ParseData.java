@@ -29,19 +29,51 @@ public class ParseData {
     }
 
     public byte getByte(String key) {
-        return Byte.parseByte(obj.get(key).toString());
+        try {
+            Object val = obj.get(key);
+            if (val == null) {
+                return 0;
+            }
+            return Byte.parseByte(val.toString());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public short getShort(String key) {
-        return Short.parseShort(obj.get(key).toString());
+        try {
+            Object val = obj.get(key);
+            if (val == null) {
+                return 0;
+            }
+            return Short.parseShort(val.toString());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public int getInt(String key) {
-        return Integer.parseInt(obj.get(key).toString());
+        try {
+            Object val = obj.get(key);
+            if (val == null) {
+                return 0;
+            }
+            return Integer.parseInt(val.toString());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public long getLong(String key) {
-        return Long.parseLong(obj.get(key).toString());
+        try {
+            Object val = obj.get(key);
+            if (val == null) {
+                return 0L;
+            }
+            return Long.parseLong(val.toString());
+        } catch (Exception e) {
+            return 0L;
+        }
     }
 
     public String getString(String key) {
@@ -127,6 +159,14 @@ public class ParseData {
     }
 
     public double getDouble(String key) {
-        return Double.parseDouble(obj.get(key).toString());
+        try {
+            Object val = obj.get(key);
+            if (val == null) {
+                return 0.0;
+            }
+            return Double.parseDouble(val.toString());
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
 }

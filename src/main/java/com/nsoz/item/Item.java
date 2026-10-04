@@ -816,8 +816,14 @@ public class Item {
             this.index = parse.getInt("index");
         } catch (Exception e) {
         }
-        this.isLock = parse.getBoolean("isLock");
-        if (template.type == 13) {
+        if (parse.containsKey("isLock")) {
+            this.isLock = parse.getBoolean("isLock");
+        } else if (parse.containsKey("lock")) {
+            this.isLock = parse.getBoolean("lock");
+        } else {
+            this.isLock = false;
+        }
+        if (this.template != null && template.type == 13) {
             if (hasExpire()) {
                 int remaining = (int) ((getExpire() - System.currentTimeMillis()) / 1000 / 60 / 60 / 24 / 30);
                 if (remaining > 1) {
@@ -825,33 +831,53 @@ public class Item {
                 }
             }
         }
-        this.yen = parse.getInt("yen");
-        this.isGiahan = parse.getBoolean("isExtend");
+        if (parse.containsKey("yen")) {
+            this.yen = parse.getInt("yen");
+        } else {
+            initYen();
+        }
+        if (parse.containsKey("isExtend")) {
+            this.isGiahan = parse.getBoolean("isExtend");
+        } else {
+            this.isGiahan = false;
+        }
         this.options = new ArrayList<>();
-        if (this.template.isTypeBody() || this.template.isTypeMount() || this.template.isTypeNgocKham()
-                || this.template.isTypeEquipmentBijuu()) {
+        if (this.template != null && (this.template.isTypeBody() || this.template.isTypeMount() || this.template.isTypeNgocKham()
+                || this.template.isTypeEquipmentBijuu())) {
 //            System.out.println(this.template.name);
-            this.sys = parse.getByte("sys");
-            this.upgrade = parse.getByte("upgrade");
-            JSONArray ability = parse.getJSONArray("options");
-            int size2 = ability.size();
-            for (int c = 0; c < size2; c++) {
-                JSONArray jAbility = (JSONArray) ability.get(c);
-                int templateId = Integer.parseInt(jAbility.get(0).toString());
-                int param = Integer.parseInt(jAbility.get(1).toString());
-                if (templateId == 46 && param == 800) {
-                    param = 55;
+            this.sys = parse.containsKey("sys") ? parse.getByte("sys") : 0;
+            this.upgrade = parse.containsKey("upgrade") ? parse.getByte("upgrade") : 0;
+            if (parse.containsKey("options")) {
+                JSONArray ability = parse.getJSONArray("options");
+                if (ability != null) {
+                    int size2 = ability.size();
+                    for (int c = 0; c < size2; c++) {
+                        Object itemAb = ability.get(c);
+                        if (itemAb instanceof JSONArray) {
+                            JSONArray jAbility = (JSONArray) itemAb;
+                            int templateId = Integer.parseInt(jAbility.get(0).toString());
+                            int param = Integer.parseInt(jAbility.get(1).toString());
+                            if (templateId == 46 && param == 800) {
+                                param = 55;
+                            }
+                            this.options.add(new ItemOption(templateId, param));
+                        }
+                    }
                 }
-                this.options.add(new ItemOption(templateId, param));
+            }
+            if (this.options.isEmpty()) {
+                initOption();
             }
             if (this.template.isTypeAdorn() || this.template.isTypeClothe() || this.template.isTypeWeapon()) {
                 this.gems = new ArrayList<>();
                 if (parse.containsKey("gems")) {
                     JSONArray gems = parse.getJSONArray("gems");
-                    for (int i = 0; i < gems.size(); i++) {
-                        Item gem = new Item((JSONObject) gems.get(i));
-                        if (gem.template.isTypeNgocKham()) {
-                            addGem(gem);
+                    if (gems != null) {
+                        for (int i = 0; i < gems.size(); i++) {
+                            Item gem = new Item((JSONObject) gems.get(i));
+                            if (gem.template != null && gem.template.isTypeNgocKham()) {
+                                addGem(gem);
+                            }
                         }
                     }
                 }
@@ -859,14 +885,34 @@ public class Item {
             }
         } else {
             this.upgrade = 0;
-        }
-        if (this.template.isUpToUp) {
-            if (parse.containsKey("quantity")) {
-                this.quantity = parse.getInt("quantity");
-            } else {
-                this.quantity = 1;
+            if (parse.containsKey("options")) {
+                JSONArray ability = parse.getJSONArray("options");
+                if (ability != null) {
+                    for (int c = 0; c < ability.size(); c++) {
+                        Object itemAb = ability.get(c);
+                        if (itemAb instanceof JSONArray) {
+                            JSONArray jAbility = (JSONArray) itemAb;
+                            int templateId = Integer.parseInt(jAbility.get(0).toString());
+                            int param = Integer.parseInt(jAbility.get(1).toString());
+                            this.options.add(new ItemOption(templateId, param));
+                        }
+                    }
+                }
             }
+            if (this.options.isEmpty()) {
+                initOption();
+            }
+        }
+        if (parse.containsKey("quantity")) {
+            this.quantity = parse.getInt("quantity");
+        } else if (parse.containsKey("count")) {
+            this.quantity = parse.getInt("count");
+        } else if (parse.containsKey("amount")) {
+            this.quantity = parse.getInt("amount");
         } else {
+            this.quantity = 1;
+        }
+        if (this.quantity <= 0) {
             this.quantity = 1;
         }
     }
@@ -984,8 +1030,20 @@ public class Item {
     }
 
     public void loadHeader(ParseData parse) {
-        this.id = parse.getInt("id");
-        this.expire = parse.getLong("expire");
+        if (parse.containsKey("id")) {
+            this.id = parse.getInt("id");
+        } else if (parse.containsKey("templateId")) {
+            this.id = parse.getInt("templateId");
+        } else if (parse.containsKey("itemId")) {
+            this.id = parse.getInt("itemId");
+        } else if (parse.containsKey("item_id")) {
+            this.id = parse.getInt("item_id");
+        }
+        if (parse.containsKey("expire")) {
+            this.expire = parse.getLong("expire");
+        } else {
+            this.expire = -1;
+        }
         if (parse.containsKey("new")) {
             this.isNew = parse.getBoolean("new");
             this.createdAt = parse.getLong("created_at");
