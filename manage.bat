@@ -13,6 +13,7 @@ set "VM_USER="
 set "VM_PORT="
 set "SSH_KEY_REL="
 set "WEB_PORT="
+set "SERVER_PROFILE="
 
 set "CONFIG_FILE=%ROOT_DIR%\config\server_config.ini"
 if not exist "%CONFIG_FILE%" (
@@ -37,6 +38,7 @@ for /f "usebackq tokens=1,2 delims==" %%A in ("%CONFIG_FILE%") do (
         if /i "!CFG_KEY!"=="VM_PORT" set "VM_PORT=!CFG_VAL!"
         if /i "!CFG_KEY!"=="SSH_KEY" set "SSH_KEY_REL=!CFG_VAL!"
         if /i "!CFG_KEY!"=="WEB_PORT" set "WEB_PORT=!CFG_VAL!"
+        if /i "!CFG_KEY!"=="SERVER_PROFILE" set "SERVER_PROFILE=!CFG_VAL!"
     )
 )
 
@@ -63,6 +65,12 @@ if "!HAS_CONFIG_ERROR!"=="1" (
     pause
     exit /b 1
 )
+
+if "!SERVER_PROFILE!"=="" set "SERVER_PROFILE=LOW_RESOURCE"
+
+set "PROFILE_LABEL=[LOW_RESOURCE - VM 1-2GB RAM (SerialGC, 512M)]"
+if /i "!SERVER_PROFILE!"=="STANDARD" set "PROFILE_LABEL=[STANDARD - VM 4GB+ RAM (G1GC, 2048M)]"
+if /i "!SERVER_PROFILE!"=="AUTO" set "PROFILE_LABEL=[AUTO - Tu dong theo RAM thuc te tren VM]"
 
 set "KEY_PATH=%ROOT_DIR%\!SSH_KEY_REL!"
 
@@ -122,8 +130,9 @@ if !errorlevel! equ 0 (
 echo ===============================================================================
 echo                NSO SERVER - BANG DIEU KHIEN CLOUD VM CHUYEN NGHIEP
 echo ===============================================================================
-echo   Cloud VM : !VM_USER!@!VM_IP! ^| Game Port: !VM_PORT!
-echo   SSH Key  : !SSH_KEY_REL! !STATUS_KEY!
+echo   Cloud VM       : !VM_USER!@!VM_IP! ^| Game Port: !VM_PORT!
+echo   SSH Key        : !SSH_KEY_REL! !STATUS_KEY!
+echo   Active Profile : !PROFILE_LABEL!
 echo.
 echo   [ TRANG THAI TAI NGUYEN VA MOI TRUONG - FIRST SETUP CHECK ]
 echo   - JDK 17 Compiler     : !STATUS_JDK!
@@ -135,7 +144,7 @@ echo   - Node.js (Web Admin) : !STATUS_NODE!
 echo ===============================================================================
 echo.
 echo   --- [ VAN HANH VA TRIEN KHAI CLOUD VM ] ---
-echo   [1]  1-Click Build va Deploy len VM (Build Local - Upload - Restart Service)
+echo   [1]  1-Click Build va Deploy len VM (Kem tuy chon Profile toi uu tai nguyen)
 echo   [2]  Bang dieu khien VM (Kiem tra Status / Live Logs / Restart Service)
 echo   [3]  Mo SSH Terminal ket noi truc tiep vao VM
 echo   [4]  Theo doi tai nguyen VM thoi gian thuc (CPU / RAM / Disk / Uptime)
@@ -152,12 +161,13 @@ echo   [8]  Cau hinh IP / Port cho Game Client JAR (.client/)
 echo   [9]  Tai va Thiet lap JDK 17 + Maven Portable (100%% Tu dong)
 echo   [10] Bien dich thu nghiem tren may (Test Maven Build)
 echo.
-echo   --- [ HE THONG ] ---
+echo   --- [ HE THONG ^& PROFILE ] ---
 echo   [11] Chinh sua cau hinh nhanh (Doi IP VM, Port, SSH Key...)
+echo   [14] Chuyen doi nhanh Profile Server (Low-Resource / Standard / Auto)
 echo   [0]  Thoat
 echo ===============================================================================
 set "OPT="
-set /p "OPT=>> Nhap lua chon cua ban [0-13]: "
+set /p "OPT=>> Nhap lua chon cua ban [0-14]: "
 
 if "!OPT!"=="1" goto :DEPLOY_VM
 if "!OPT!"=="2" goto :VM_CONTROL
@@ -172,9 +182,10 @@ if "!OPT!"=="10" goto :LOCAL_BUILD
 if "!OPT!"=="11" goto :EDIT_CONFIG
 if "!OPT!"=="12" goto :SETUP_WEB_DB
 if "!OPT!"=="13" goto :OPTIMIZE_VM
+if "!OPT!"=="14" goto :QUICK_SWITCH_PROFILE
 if "!OPT!"=="0" exit /b 0
 
-echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 13.
+echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 14.
 timeout /t 2 >nul
 goto :MAIN_MENU
 
@@ -208,7 +219,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\local\se
 goto :EOF
 
 :: ===============================================================================
-:: 1. 1-CLICK DEPLOY TO VM
+:: 1. 1-CLICK DEPLOY TO VM (WITH PROFILE SELECTION)
 :: ===============================================================================
 :DEPLOY_VM
 cls
@@ -217,7 +228,47 @@ echo            QUY TRINH 1-CLICK BUILD VA DEPLOY LEN VM CLOUD
 echo ===============================================================================
 echo   -- May chu dich : !VM_USER!@!VM_IP!
 echo   -- Key xac thuc : !KEY_PATH!
+echo   -- Profile hien : !PROFILE_LABEL!
 echo ===============================================================================
+echo.
+echo   [CHON PROFILE TOI UU CHO LAN DEPLOY NAY]
+echo   [Enter] Giu nguyen Profile hien tai: !SERVER_PROFILE!
+echo   [1]     Chuyen sang LOW_RESOURCE (VM 1 CPU / 1-2GB RAM - SerialGC, Heap 512M)
+echo   [2]     Chuyen sang STANDARD     (VM 2-4+ Cores / 4GB+ RAM - G1GC, Heap 2048M)
+echo   [3]     Chuyen sang AUTO         (Tu dong nhan dien dung luong RAM tren VM)
+echo ===============================================================================
+set "DEP_P_OPT="
+set /p "DEP_P_OPT=>> Bam Enter de tiep tuc hoac nhap [1/2/3] de doi Profile: "
+
+if "!DEP_P_OPT!"=="1" (
+    set "SERVER_PROFILE=LOW_RESOURCE"
+    set "PROFILE_LABEL=[LOW_RESOURCE - VM 1-2GB RAM (SerialGC, 512M)]"
+)
+if "!DEP_P_OPT!"=="2" (
+    set "SERVER_PROFILE=STANDARD"
+    set "PROFILE_LABEL=[STANDARD - VM 4GB+ RAM (G1GC, 2048M)]"
+)
+if "!DEP_P_OPT!"=="3" (
+    set "SERVER_PROFILE=AUTO"
+    set "PROFILE_LABEL=[AUTO - Tu dong theo RAM thuc te tren VM]"
+)
+
+REM Luu lai profile da chon vao server_config.ini
+(
+    echo # ============================================================
+    echo # NSO GAME SERVER - CAU HINH HE THONG VA CLOUD VM
+    echo # ============================================================
+    echo.
+    echo VM_IP=!VM_IP!
+    echo VM_USER=!VM_USER!
+    echo VM_PORT=!VM_PORT!
+    echo SSH_KEY=!SSH_KEY_REL!
+    echo WEB_PORT=!WEB_PORT!
+    echo SERVER_PROFILE=!SERVER_PROFILE!
+) > "%CONFIG_FILE%"
+
+echo.
+echo [*] Dang deploy voi Profile: !SERVER_PROFILE!
 echo.
 
 if not exist "!KEY_PATH!" (
@@ -246,12 +297,30 @@ echo [BUOC 2/4] Chuan bi moi truong va sao luu ban JAR cu tren VM...
 ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs /home/ubuntu/nso-server/backups; chown -R ubuntu:ubuntu /home/ubuntu/nso-server; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
 
 echo.
-echo [BUOC 3/4] Tai file JAR moi, API Bridge va dong bo cau hinh len VM (!VM_IP!)...
+echo [BUOC 3/4] Tai file JAR moi, API Bridge va dong bo cau hinh Profile (!SERVER_PROFILE!) len VM...
+
+set "LOCAL_CFG_SRC=%ROOT_DIR%\config\config.properties.low"
+set "LOCAL_SQL_SRC=%ROOT_DIR%\config\mysql.properties.low"
+set "LOCAL_SVC_SRC=%ROOT_DIR%\scripts\remote-vm\nso-server.service.low"
+
+if /i "!SERVER_PROFILE!"=="STANDARD" (
+    set "LOCAL_CFG_SRC=%ROOT_DIR%\config\config.properties.standard"
+    set "LOCAL_SQL_SRC=%ROOT_DIR%\config\mysql.properties.standard"
+    set "LOCAL_SVC_SRC=%ROOT_DIR%\scripts\remote-vm\nso-server.service.standard"
+)
+
+if /i "!SERVER_PROFILE!"=="AUTO" (
+    set "LOCAL_CFG_SRC=%ROOT_DIR%\config\config.properties.prod"
+    set "LOCAL_SQL_SRC=%ROOT_DIR%\config\mysql.properties.prod"
+    set "LOCAL_SVC_SRC=%ROOT_DIR%\scripts\remote-vm\nso-server.service"
+)
+
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso_bridge.js" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/nso_bridge.js >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso-bridge.service" !VM_USER!@!VM_IP!:/tmp/nso-bridge.service >nul 2>&1
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\config\config.properties.prod" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\config\mysql.properties.prod" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SVC_SRC!" !VM_USER!@!VM_IP!:/tmp/nso-server.service >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_CFG_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SQL_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1
 if errorlevel 1 (
     echo [LOI] Khong the upload file len VM! Vui long kiem tra ket noi mang.
     pause
@@ -259,12 +328,12 @@ if errorlevel 1 (
 )
 
 echo.
-echo [BUOC 4/4] Khoi dong lai dich vu Game (nso-server) va API Bridge (nso-bridge) tren VM...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-bridge.service && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && sudo systemctl status nso-bridge.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
+echo [BUOC 4/4] Khoi dong lai dich vu Game (!SERVER_PROFILE!) va API Bridge tren VM...
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service 2>/dev/null || true && sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-bridge.service && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && sudo systemctl status nso-bridge.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
 
 echo.
 echo ===============================================================================
-echo   HOAN TAT BUILD VA DEPLOY LEN VM THANH CONG!
+echo   HOAN TAT BUILD VA DEPLOY VOI PROFILE [!SERVER_PROFILE!] THANH CONG!
 echo ===============================================================================
 echo.
 pause
@@ -422,6 +491,7 @@ echo ===========================================================================
 echo    CAI DAT TOAN DIEN MAY CHU CLOUD VM MOI TINH (BOOTSTRAP TU A-Z)
 echo ===============================================================================
 echo   -- May chu dich : !VM_USER!@!VM_IP!
+echo   -- Server Profile: !PROFILE_LABEL!
 echo   -- Canh bao     : Thao tac nay se cai Java 17, MariaDB, Swap, upload Data
 echo                     va nap Database sach lan dau len VM.
 echo ===============================================================================
@@ -463,6 +533,8 @@ cls
 echo ===============================================================================
 echo   DANG BIEN DICH VA DONG GOI NSO GAME SERVER (TEST BUILD)...
 echo ===============================================================================
+echo   Profile hien tai: !PROFILE_LABEL!
+echo ===============================================================================
 echo.
 call :CHECK_LOCAL_ENV
 cd /d "%ROOT_DIR%"
@@ -486,11 +558,12 @@ cls
 echo ===============================================================================
 echo                      CAU HINH HE THONG HIEN TAI
 echo ===============================================================================
-echo   [1] VM IP   : !VM_IP!
-echo   [2] VM User : !VM_USER!
-echo   [3] VM Port : !VM_PORT!
-echo   [4] SSH Key : !SSH_KEY_REL!
-echo   [5] Web Port: !WEB_PORT!
+echo   [1] VM IP          : !VM_IP!
+echo   [2] VM User        : !VM_USER!
+echo   [3] VM Port        : !VM_PORT!
+echo   [4] SSH Key        : !SSH_KEY_REL!
+echo   [5] Web Port       : !WEB_PORT!
+echo   [6] Server Profile : !SERVER_PROFILE!
 echo ===============================================================================
 echo.
 set /p "NEW_IP=>> Nhap VM IP moi (Bam Enter de giu nguyen '!VM_IP!'): "
@@ -502,6 +575,19 @@ if not "!NEW_PORT!"=="" set "VM_PORT=!NEW_PORT!"
 set /p "NEW_KEY=>> Nhap duong dan SSH Key (Bam Enter de giu nguyen '!SSH_KEY_REL!'): "
 if not "!NEW_KEY!"=="" set "SSH_KEY_REL=!NEW_KEY!"
 
+set /p "NEW_WEB_PORT=>> Nhap Web Port (Bam Enter de giu nguyen '!WEB_PORT!'): "
+if not "!NEW_WEB_PORT!"=="" set "WEB_PORT=!NEW_WEB_PORT!"
+
+echo.
+echo   Tuy chon Profile toi uu:
+echo   [1] LOW_RESOURCE (VM 1 CPU / 1-2GB RAM)
+echo   [2] STANDARD     (VM 2-4+ Cores / 4GB+ RAM)
+echo   [3] AUTO         (Tu dong theo RAM tren VM)
+set /p "NEW_PROF_OPT=>> Chon Profile [Bam Enter de giu nguyen '!SERVER_PROFILE!']: "
+if "!NEW_PROF_OPT!"=="1" set "SERVER_PROFILE=LOW_RESOURCE"
+if "!NEW_PROF_OPT!"=="2" set "SERVER_PROFILE=STANDARD"
+if "!NEW_PROF_OPT!"=="3" set "SERVER_PROFILE=AUTO"
+
 (
     echo # ============================================================
     echo # NSO GAME SERVER - CAU HINH HE THONG VA CLOUD VM
@@ -512,6 +598,7 @@ if not "!NEW_KEY!"=="" set "SSH_KEY_REL=!NEW_KEY!"
     echo VM_PORT=!VM_PORT!
     echo SSH_KEY=!SSH_KEY_REL!
     echo WEB_PORT=!WEB_PORT!
+    echo SERVER_PROFILE=!SERVER_PROFILE!
 ) > "%CONFIG_FILE%"
 
 echo.
@@ -567,3 +654,53 @@ echo.
 pause
 goto :MAIN_MENU
 
+:: ===============================================================================
+:: 14. QUICK SWITCH PROFILE
+:: ===============================================================================
+:QUICK_SWITCH_PROFILE
+cls
+echo ===============================================================================
+echo               CHUYEN DOI NHANH PROFILE TOI UU CHO NSO GAME SERVER
+echo ===============================================================================
+echo   Profile hien tai : !PROFILE_LABEL!
+echo ===============================================================================
+echo.
+echo   [1] LOW_RESOURCE Profile (Toi uu cho VM 1 CPU / 1GB - 2GB RAM)
+echo       - Heap: -Xms256M -Xmx512M -Xss256k -XX:+UseSerialGC
+echo       - ThreadPool: 4, ScheduledPool: 2, LoginLimit: 2000, ClientData: 512
+echo       - Database: Pool Min 2 / Max 8, Buffer Pool 128M
+echo.
+echo   [2] STANDARD Profile (Toi uu cho VM 2-4+ Cores / 4GB+ RAM)
+echo       - Heap: -Xms1024M -Xmx2048M -Xss512k -XX:+UseG1GC
+echo       - ThreadPool: 10, ScheduledPool: 5, LoginLimit: 5000, ClientData: 1024
+echo       - Database: Pool Min 5 / Max 20, Buffer Pool 512M
+echo.
+echo   [3] AUTO Profile (Tu dong nhan dien thong so RAM tren VM khi Deploy)
+echo.
+echo   [0] Quay lai Menu chinh
+echo ===============================================================================
+set "SW_OPT="
+set /p "SW_OPT=>> Nhap lua chon [0-3]: "
+
+if "!SW_OPT!"=="1" set "SERVER_PROFILE=LOW_RESOURCE"
+if "!SW_OPT!"=="2" set "SERVER_PROFILE=STANDARD"
+if "!SW_OPT!"=="3" set "SERVER_PROFILE=AUTO"
+if "!SW_OPT!"=="0" goto :MAIN_MENU
+
+(
+    echo # ============================================================
+    echo # NSO GAME SERVER - CAU HINH HE THONG VA CLOUD VM
+    echo # ============================================================
+    echo.
+    echo VM_IP=!VM_IP!
+    echo VM_USER=!VM_USER!
+    echo VM_PORT=!VM_PORT!
+    echo SSH_KEY=!SSH_KEY_REL!
+    echo WEB_PORT=!WEB_PORT!
+    echo SERVER_PROFILE=!SERVER_PROFILE!
+) > "%CONFIG_FILE%"
+
+echo.
+echo [OK] Da chuyen sang Profile: !SERVER_PROFILE!
+timeout /t 2 >nul
+goto :LOAD_CONFIG

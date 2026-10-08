@@ -1,0 +1,15 @@
+# ============================================================
+# MYSQL PROPERTIES (LOW-RESOURCE VM PROFILE - 1 CPU / 1-2GB RAM)
+# ============================================================
+nsoz.database.driver=com.mysql.cj.jdbc.Driver
+nsoz.database.port=3306
+nsoz.database.host=localhost
+nsoz.database.name=nso_test
+nsoz.database.user=nso_user
+nsoz.database.pass=NsoGame2026!@#
+nsoz.database.min=2
+nsoz.database.max=8
+nsoz.database.lifetime=600000
+nsoz.database.idleTimeout=300000
+nsoz.database.log=false
+nsoz.database.baotri=true

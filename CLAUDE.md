@@ -11,6 +11,10 @@ File cấu hình: `config/server_config.ini`
 - `VM_USER`: Tên user SSH (mặc định `ubuntu`).
 - `VM_PORT`: Cổng game server (mặc định `14444`).
 - `SSH_KEY`: Đường dẫn file SSH private key.
+- `SERVER_PROFILE`: Profile cấu hình và JVM (`LOW_RESOURCE`, `STANDARD`, `AUTO`).
+  + `LOW_RESOURCE`: Tối ưu đặc biệt cho VM 1 CPU / 1-2GB RAM (SerialGC, Heap 256M-512M, Stack 256k, ThreadPool nhỏ).
+  + `STANDARD`: Dành cho VPS 4GB+ RAM (G1GC, Heap 1024M-2048M, hiệu năng cao).
+  + `AUTO`: Tự động nhận diện RAM VM để sinh cấu hình thích ứng.
 
 ## 3. Cấu trúc thư mục
 - `database/`: Chứa file database game sạch (`init_nso_clean.sql`) và script reset mùa/người chơi (`reset_player_data.sql`).

@@ -118,29 +118,42 @@ Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChe
 Write-Host "  >> Nap Database game sach 100% thanh cong tren MariaDB!" -ForegroundColor Green
 
 # ------------------------------------------------------------
-# 5. UPLOAD FILE CAU HINH PRODUCTION
+# 5. UPLOAD FILE CAU HINH THEO PROFILE (LOW_RESOURCE / STANDARD / AUTO)
 # ------------------------------------------------------------
+$ServerProfile = if ($Config["SERVER_PROFILE"]) { $Config["SERVER_PROFILE"].ToUpper() } else { "LOW_RESOURCE" }
 Write-Host ""
-Write-Host "[BUOC 5/6] Dang dong bo file cau hinh config.properties & mysql.properties..." -ForegroundColor Cyan
-$CfgProp = Join-Path $ProjectRoot "config\config.properties.prod"
-$MyProp = Join-Path $ProjectRoot "config\mysql.properties.prod"
+Write-Host "[BUOC 5/6] Dang dong bo file cau hinh theo Profile [$ServerProfile]..." -ForegroundColor Cyan
 
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$CfgProp`" `"$MyProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/" -Wait -NoNewWindow | Out-Null
-Start-Process -FilePath "ssh" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 $VM_USER@$VM_IP `"mv -f /home/ubuntu/nso-server/config.properties.prod /home/ubuntu/nso-server/config.properties; mv -f /home/ubuntu/nso-server/mysql.properties.prod /home/ubuntu/nso-server/mysql.properties`"" -Wait -NoNewWindow | Out-Null
-Write-Host "  >> Cau hinh Production da duoc thiet lap tren VM!" -ForegroundColor Green
+$CfgProp = Join-Path $ProjectRoot "config\config.properties.low"
+$MyProp = Join-Path $ProjectRoot "config\mysql.properties.low"
+$ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service.low"
+
+if ($ServerProfile -eq "STANDARD") {
+    $CfgProp = Join-Path $ProjectRoot "config\config.properties.standard"
+    $MyProp = Join-Path $ProjectRoot "config\mysql.properties.standard"
+    $ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service.standard"
+} elseif ($ServerProfile -eq "AUTO") {
+    $CfgProp = Join-Path $ProjectRoot "config\config.properties.prod"
+    $MyProp = Join-Path $ProjectRoot "config\mysql.properties.prod"
+    $ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service"
+}
+
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$CfgProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/config.properties" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$MyProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/mysql.properties" -Wait -NoNewWindow | Out-Null
+Write-Host "  >> Cau hinh Profile [$ServerProfile] da duoc thiet lap tren VM!" -ForegroundColor Green
 
 # ------------------------------------------------------------
 # 6. DANG KY SYSTEMD SERVICE (GAME + API BRIDGE) VA AUTO BACKUP CRONJOB
 # ------------------------------------------------------------
 Write-Host ""
-Write-Host "[BUOC 6/6] Dang dang ky nso-server.service, nso-bridge.service va cronjob sao luu..." -ForegroundColor Cyan
-$ServiceFile = Join-Path $ProjectRoot "scripts\remote-vm\nso-server.service"
+Write-Host "[BUOC 6/6] Dang dang ky nso-server.service (Profile: $ServerProfile), nso-bridge.service va cronjob sao luu..." -ForegroundColor Cyan
 $BridgeService = Join-Path $ProjectRoot "scripts\remote-vm\nso-bridge.service"
 $BridgeScript = Join-Path $ProjectRoot "scripts\remote-vm\nso_bridge.js"
 $AutoBackup = Join-Path $ProjectRoot "scripts\remote-vm\auto_backup_db.sh"
 $CheckStatus = Join-Path $ProjectRoot "scripts\remote-vm\check_status.sh"
 
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ServiceFile`" `"$BridgeService`" `"$BridgeScript`" `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ServiceFile`" $VM_USER@$VM_IP`:/tmp/nso-server.service" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$BridgeService`" `"$BridgeScript`" `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
 
 $setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /tmp/nso-bridge.service /tmp/nso_bridge.js /tmp/auto_backup_db.sh /tmp/check_status.sh 2>/dev/null || true && " +
                   "sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
