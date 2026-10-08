@@ -29,7 +29,7 @@ rm -rf /home/ubuntu/nso-server
 rm -rf /home/ubuntu/backups
 rm -f /home/ubuntu/*.sh
 rm -f /home/ubuntu/*.sql
-rm -f /home/ubuntu/*.tar.gz
+rm -f /home/ubuntu/*.tar.gz /home/ubuntu/*.tar
 rm -f /etc/logrotate.d/nso-server
 
 # Clear user crontabs
