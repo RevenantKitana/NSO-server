@@ -47,6 +47,16 @@ if (!VM_HOST || !VM_USER || !SSH_KEY_PATH) {
   process.exit(1);
 }
 
+// Tu dong phan quyen lai file SSH Key tren Windows de tranh loi "bad permissions"
+if (process.platform === 'win32' && fs.existsSync(SSH_KEY_PATH)) {
+  try {
+    const { execSync } = require('child_process');
+    execSync(`icacls "${SSH_KEY_PATH}" /inheritance:r /grant:r "%USERNAME%:R"`, { stdio: 'ignore' });
+  } catch (e) {
+    // bo qua neu khong co quyen
+  }
+}
+
 // Load items data
 let itemsList = [];
 try {

@@ -483,6 +483,10 @@ if not "!WEB_PORT!"=="" set "ADMIN_PORT=!WEB_PORT!"
 echo [*] Dang mo trinh duyet tai: http://localhost:!ADMIN_PORT! ...
 start "" "http://localhost:!ADMIN_PORT!"
 
+if exist "!KEY_PATH!" (
+    icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
+)
+
 echo [*] Khoi chay backend admin server (Nhan Ctrl+C de tat server khi xong)...
 echo.
 node "%ROOT_DIR%\tools\admin-portal\admin_server.js"
