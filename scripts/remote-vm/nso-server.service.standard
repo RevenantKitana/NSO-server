@@ -14,6 +14,7 @@ StandardOutput=append:/home/ubuntu/nso-server/logs/service.log
 StandardError=append:/home/ubuntu/nso-server/logs/service_error.log
 LimitNOFILE=65535
 LimitNPROC=65535
+TasksMax=infinity
 
 [Install]
 WantedBy=multi-user.target
