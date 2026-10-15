@@ -8,9 +8,9 @@ set -e
 echo "======================================================"
 echo " 1. STOPPING & REMOVING SYSTEMD GAME SERVICE          "
 echo "======================================================"
-systemctl stop nso-server.service 2>/dev/null || true
-systemctl disable nso-server.service 2>/dev/null || true
-rm -f /etc/systemd/system/nso-server.service
+systemctl stop nso-server.service nso-bridge.service 2>/dev/null || true
+systemctl disable nso-server.service nso-bridge.service 2>/dev/null || true
+rm -f /etc/systemd/system/nso-server.service /etc/systemd/system/nso-bridge.service
 systemctl daemon-reload
 systemctl reset-failed 2>/dev/null || true
 

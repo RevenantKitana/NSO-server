@@ -6,9 +6,9 @@ echo " PERFORMING COMPLETE FACTORY OS RESET ON VM           "
 echo "======================================================"
 
 # 1. Stop and remove services
-systemctl stop nso-server.service mariadb fail2ban 2>/dev/null || true
-systemctl disable nso-server.service mariadb fail2ban 2>/dev/null || true
-rm -f /etc/systemd/system/nso-server.service
+systemctl stop nso-server.service nso-bridge.service mariadb fail2ban 2>/dev/null || true
+systemctl disable nso-server.service nso-bridge.service mariadb fail2ban 2>/dev/null || true
+rm -f /etc/systemd/system/nso-server.service /etc/systemd/system/nso-bridge.service
 systemctl daemon-reload
 
 # 2. Swapoff and remove swapfile
@@ -31,11 +31,13 @@ rm -f /etc/apt/apt.conf.d/20auto-upgrades /etc/apt/apt.conf.d/10periodic
 sysctl --system >/dev/null 2>&1 || true
 
 # 5. Reset Firewall (Flush rules, ensure default ACCEPT)
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
-iptables -F
-iptables -X
+if command -v iptables >/dev/null 2>&1; then
+    iptables -P INPUT ACCEPT 2>/dev/null || true
+    iptables -P FORWARD ACCEPT 2>/dev/null || true
+    iptables -P OUTPUT ACCEPT 2>/dev/null || true
+    iptables -F 2>/dev/null || true
+    iptables -X 2>/dev/null || true
+fi
 rm -rf /etc/iptables
 
 # 6. Unmask background services

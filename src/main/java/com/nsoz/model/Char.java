@@ -13,6 +13,8 @@ import com.nsoz.bot.move.MoveToTarget;
 import com.nsoz.clan.Clan;
 import com.nsoz.clan.ClanDAO;
 import com.nsoz.clan.Member;
+import com.nsoz.combat.CombatResult;
+import com.nsoz.combat.CombatService;
 import com.nsoz.constants.*;
 import com.nsoz.convert.Converter;
 import com.nsoz.db.jdbc.DbManager;
@@ -3315,8 +3317,8 @@ public class Char {
                 Item itm = ItemFactory.getInstance().newItem(itemId);
                 if (itemId == ItemName.SON_TINH || itemId == ItemName.THUY_TINH) {
                     itm.expire = System.currentTimeMillis() + (long) (86400000);
-                    itm.options.add(new ItemOption(87, NinjaUtils.nextInt(3000, 5000)));
-                    itm.options.add(new ItemOption(82, NinjaUtils.nextInt(3000, 5000)));
+                    itm.options.add(new ItemOption(0, NinjaUtils.nextInt(3000, 5000)));
+                    itm.options.add(new ItemOption(6, NinjaUtils.nextInt(3000, 5000)));
                 }
 
                 addItemToBag(itm);
@@ -4507,14 +4509,17 @@ public class Char {
             int khaihoa = NinjaUtils.nextInt(1, 9);
             itm.options.add(new ItemOption(156, khaihoa));
             itm.options.add(new ItemOption(157, khaihoa));
-            itm.options.add(new ItemOption(73, 500));
+            itm.options.add(new ItemOption(0, 500));
             itm.options.add(new ItemOption(67, 5));
-            itm.options.add(new ItemOption(69, 10));
-            itm.options.add(new ItemOption(116, 15));
+            itm.options.add(new ItemOption(14, 10));
+            itm.options.add(new ItemOption(10, 15));
             for (int i1 = 0; i1 <= khaihoa; i1++) {
 
                 for (int i = 0; i < itm.options.size() - 3; i++) {
-                    if (itm.options.get(i).optionTemplate.id == 73 && itm.options.get(i + 1).optionTemplate.id == 67 && itm.options.get(i + 2).optionTemplate.id == 69) {
+                    int opt0 = itm.options.get(i).optionTemplate.id;
+                    int opt1 = itm.options.get(i + 1).optionTemplate.id;
+                    int opt2 = itm.options.get(i + 2).optionTemplate.id;
+                    if ((opt0 == 0 || opt0 == 73) && opt1 == 67 && (opt2 == 14 || opt2 == 69)) {
                         itm.options.get(i).param += 170;
                         itm.options.get(i + 1).param += 3;
                         itm.options.get(i + 2).param += 3;
@@ -5050,8 +5055,8 @@ public class Char {
                             if (itemct.options == null) {
                                 itemct.options = new ArrayList<>();
                             }
-                            itemct.options.add(new ItemOption(117, 3000 + ((3000 * percent) / 100)));
-                            itemct.options.add(new ItemOption(125, 3000 + ((3000 * percent) / 100)));
+                            itemct.options.add(new ItemOption(7, 3000 + ((3000 * percent) / 100)));
+                            itemct.options.add(new ItemOption(6, 3000 + ((3000 * percent) / 100)));
                             itemct.options.add(new ItemOption(94, 10 + ((10 * percent) / 100)));
                             itemct.options.add(new ItemOption(127, 10 + ((10 * percent) / 100)));
                             itemct.options.add(new ItemOption(130, 10 + ((10 * percent) / 100)));
@@ -5097,8 +5102,8 @@ public class Char {
                         if (itemct.options == null) {
                             itemct.options = new ArrayList<>();
                         }
-                        itemct.options.add(new ItemOption(117, 3000 + ((3000 * percent) / 100)));
-                        itemct.options.add(new ItemOption(125, 3000 + ((3000 * percent) / 100)));
+                        itemct.options.add(new ItemOption(7, 3000 + ((3000 * percent) / 100)));
+                        itemct.options.add(new ItemOption(6, 3000 + ((3000 * percent) / 100)));
                         itemct.options.add(new ItemOption(94, 10 + ((10 * percent) / 100)));
                         itemct.options.add(new ItemOption(127, 10 + ((10 * percent) / 100)));
                         itemct.options.add(new ItemOption(130, 10 + ((10 * percent) / 100)));
@@ -5520,9 +5525,9 @@ public class Char {
         addGold(-NinjaUtils.luongThangCap[cap]);
         removeItemBags(ItemName.DA_CHINH_PHUC, NinjaUtils.quantity[cap]);
         if (NinjaUtils.nextInt(0, 100) < NinjaUtils.percentThangCap[0]) {
-            item.options.add(new ItemOption(73, NinjaUtils.nextInt(90, 100)));
-            item.options.add(new ItemOption(69, 5));
-            item.options.add(new ItemOption(116, NinjaUtils.nextInt(8, 10)));
+            item.options.add(new ItemOption(0, NinjaUtils.nextInt(90, 100)));
+            item.options.add(new ItemOption(14, 5));
+            item.options.add(new ItemOption(10, NinjaUtils.nextInt(8, 10)));
             for (ItemOption option : item.options) {
                 if (option.optionTemplate.id == 157) {
                     option.param += 1;
@@ -5563,8 +5568,8 @@ public class Char {
         addGold(-NinjaUtils.luongThangCap[cap]);
         removeItemBags(ItemName.DA_VO_THUONG, NinjaUtils.quantity[cap]);
         if (NinjaUtils.nextInt(0, 100) < NinjaUtils.percentThangCap[0]) {
-            item.options.add(new ItemOption(115, NinjaUtils.nextInt(8, 10)));
-            item.options.add(new ItemOption(118, NinjaUtils.nextInt(8, 10)));
+            item.options.add(new ItemOption(5, NinjaUtils.nextInt(8, 10)));
+            item.options.add(new ItemOption(20, NinjaUtils.nextInt(8, 10)));
             item.options.add(new ItemOption(121, 1));
             for (ItemOption option : item.options) {
                 if (option.optionTemplate.id == 157) {
@@ -7393,77 +7398,7 @@ public class Char {
                                     mob.effects.put(eff2.template.type, eff2);
                                 }
                             }
-                            int damageBasic = NinjaUtils.nextInt(this.damage2, this.damage);
-
-                            if (zone.tilemap.isDungeoClan()) {// test
-                                damageBasic = (int) ((long) mob.maxHP / 100);
-                                if (mob.template.id == MobName.BAO_QUAN || mob.template.id == MobName.TU_HA_MA_THAN) {
-                                    damageBasic = (int) ((long) mob.maxHP / 10000);
-                                }
-                            }
-                            int dameHit = damageBasic;
-
-                            if (isFatal) {
-                                dameHit += damageBasic;
-                                dameHit += damageBasic * (this.percentFatalDame + optionsSupportSkill[65] + add) / 100;
-                                dameHit += this.fatalDame;
-                            }
-                            if (mobMe != null && (mobMe.template.id == MobName.HOA_LONG
-                                    || mobMe.template.id == MobName.DI_LONG_CAP_1
-                                    || mobMe.template.id == MobName.DI_LONG_CAP_2
-                                    || mobMe.template.id == MobName.DI_LONG_CAP_3 ||
-                                    mobMe.template.id == MobName.HAI_MA_CAP_1
-                                    || mobMe.template.id == MobName.HAI_MA_CAP_2
-                                    || mobMe.template.id == MobName.HAI_MA_CAP_3)) {
-                                dameHit += 0;
-                            } else {
-                                dameHit += options[102];
-                            }
-
-
-                            if (mob.effects != null) {
-                                if (mob.effects.get((byte) 1) != null) {
-                                    dameHit += damageBasic;
-                                }
-                            }
-
-                            if (mapId != MapName.DONG_HACHI && mapId != MapName.SONG_BANG_YAMATO && mapId != MapName.KY_TUC_XA_HARUNA && mapId != MapName.HANG_KARASUMORI_92) {
-//                                if (mob.isBoss && mob.level != 99) {
-//                                    if (Math.abs(this.level - (int) mob.level) > 20) {
-//                                        dameHit = 1;
-//                                    }
-//                                    if (clone != null && !clone.isDead && clone.isNhanBan) {
-//                                        if (Math.abs(clone.level - (int) (mob.level)) > 20) {
-//                                            dameHit = 1;
-//                                        }
-//                                    }
-//                                }
-                            }
-
-                            dameHit += options[113];
-                            switch (mob.sys) {//fix dong vk16
-                                case 1:
-                                    dameHit += options[51];
-                                    dameHit += dameHit * options[54] / 100;
-                                    break;
-                                case 2:
-                                    dameHit += options[52];
-                                    dameHit += dameHit * options[55] / 100;
-                                    break;
-                                case 3:
-                                    dameHit += options[53];
-                                    dameHit += dameHit * options[56] / 100;
-                                    break;
-                            }
-                            if (isInfected()) {
-                                dameHit -= dameHit * 80 / 100;
-                            }
-                            if (isCool()) {
-                                dameHit -= dameHit * 50 / 100;
-                            }
-                            if (mob.template.id == MobName.NGUOI_TUYET) {
-                                dameHit = 1;
-                            }
+                            int dameHit = CombatService.calculatePvEDamage(this, mob, isFatal, add);
                             if (dameHit > 0) {
                                 mob.Fight(this, dameHit); // fix dame boss
                                 int preHP = mob.hp;
@@ -8208,37 +8143,6 @@ public class Char {
             pl.lock.lock();
             try {
                 if (!pl.isDead && !pl.isCleaned) {
-                    int dameHit = NinjaUtils.nextInt(this.damage2, this.damage);
-                    int dameBasic = dameHit;
-                    int dameMp = 0;
-
-
-//                    dameHit += options[103]; /// dev fix 13/8
-
-                    if (isEffDameDown) {
-                        Effect eff2 = pl.em.findByID((byte) 37);
-                        if (eff2 != null) {
-                            dameHit -= dameHit * eff2.param / 100;
-                        }
-                    }
-                    int dameFatal = 0;
-                    if (isFatal) {
-                        dameFatal += dameBasic;
-                        dameFatal += (dameBasic * (this.percentFatalDame + optionsSupportSkill[65])) / 100;
-                        dameFatal += this.fatalDame;
-                        dameFatal -= dameHit * (pl.options[46] + pl.options[79]) / 100;
-                    }
-                    if (pl.isFire) {
-                        dameHit += dameBasic;
-                    }
-                    boolean isSkipResistance = false;
-                    if (isEffSkipResistance) {
-                        Effect eff3 = pl.em.findByID((byte) 39);
-                        if (eff3 != null) {
-                            isSkipResistance = NinjaUtils.nextInt(100) < eff3.param;
-                        }
-                    }
-
                     if (pl.optionsSupportSkill[69] > 0) { // dong bang skill kunai 6x
                         if (!this.isNhanBan) {
                             int rand = NinjaUtils.nextInt(150);
@@ -8262,91 +8166,25 @@ public class Char {
                         }
                     }
 
-                    switch (getSys()) {
-                        case 1:
-                            if (!isSkipResistance) {
-                                dameHit -= pl.resFire;
-                            }
-                            dameHit -= dameHit * pl.options[127] / 100;
-                            dameHit -= pl.options[48];
-                            dameHit += options[51];
-                            dameHit += dameBasic * options[55] / 100;
-                            break;
+                    CombatResult result = CombatService.calculatePvPDamage(this, pl, isFatal);
 
-                        case 2:
-                            if (!isSkipResistance) {
-                                dameHit -= pl.resIce;
-                            }
-
-                            dameHit -= dameHit * pl.options[130] / 100;
-                            dameHit -= pl.options[49];
-                            dameHit += options[52];
-                            dameHit += dameBasic * options[56] / 100;
-                            if (isFatal) {
-                                dameFatal += dameHit * optionsSupportSkill[65] / 100;
-                            }
-                            break;
-
-                        case 3:
-                            if (!isSkipResistance) {
-                                dameHit -= pl.resWind;
-                            }
-                            dameHit -= dameHit * pl.options[131] / 100;
-                            dameHit -= pl.options[50];
-                            dameHit += options[53];
-                            dameHit += dameBasic * options[54] / 100;
-                            break;
-                    }
-                    int kstcm = pl.options[121] > 100 ? 100 : pl.options[121];
-                    dameFatal -= dameFatal * kstcm / 100;
-                    dameHit -= dameHit * (pl.options[63] + pl.options[98]) / 100;
-                    if (pl.isReductionDame) {
-                        dameHit -= dameHit * pl.options[136] / 100;
-                    }
-                    dameHit = (dameHit + (dameFatal / 3)) * (6 - ((pl.level - this.level) / 40)) / 100;
-                    if (!isNhanBan) {
-                        int reactDame = pl.reactDame;
-
-                        if (pl.options[135] > 0) {
-                            if (NinjaUtils.nextInt(100) < pl.options[135]) {
-                                reactDame = hp * 20 / 100;
-                                zone.getService().addEffect(mob, 64, 5, 5, 0);
-                            }
+                    if (!isNhanBan && result.getReactDamage() > 0) {
+                        int reactDame = result.getReactDamage();
+                        if (result.isIceReflect()) {
+                            zone.getService().addEffect(mob, 64, 5, 5, 0);
                         }
-
-                        if (reactDame > 0) {
-                            if (this.hp - reactDame > 1) {
-                                addHp(-reactDame);
-                            } else {
-                                this.hp = 1;
-                                reactDame = -1;
-                            }
-                            zone.getService().attackCharacter(reactDame, 0, this);
+                        if (this.hp - reactDame > 1) {
+                            addHp(-reactDame);
+                        } else {
+                            this.hp = 1;
+                            reactDame = -1;
                         }
-                    }
-                    if (dameHit <= 0) {
-                        dameHit = 1;
-                    }
-                    int randMiss = NinjaUtils.nextInt(pl.miss + 100);
-                    int randExactly = NinjaUtils.nextInt(this.exactly + 100);
-                    boolean isMiss = randMiss > randExactly;
-                    if (pl.isMiss) {
-                        isMiss = true;
+                        zone.getService().attackCharacter(reactDame, 0, this);
                     }
 
-                    dameHit += options[113];
-                    dameHit += options[103]; /// dev fix 13/8
-                    if (isInfected()) {
-                        dameHit -= dameHit * 80 / 100;
-                    }
-                    if (isCool()) {
-                        dameHit -= dameHit * 50 / 100;
-                    }
-                    dameHit -= pl.dameDown;
-                    if (dameHit < 0) {
-                        dameHit = 0;
-                        isMiss = true;
-                    }
+                    int dameHit = result.getDamage();
+                    int dameMp = 0;
+                    boolean isMiss = result.isMiss();
                     if (isMiss) {
                         dameHit = 0;
                         dameMp = 0;

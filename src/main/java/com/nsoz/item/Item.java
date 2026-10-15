@@ -190,13 +190,13 @@ public class Item {
         if (this.template.isTypeWeapon()) {
             if (this.id == 799 || this.id == 800) {
                 this.options.add(new ItemOption(94, 15));
-                this.options.add(new ItemOption(92, 100));
-                this.options.add(new ItemOption(86, 200));
+                this.options.add(new ItemOption(14, 100));
+                this.options.add(new ItemOption(10, 200));
             }
             if (this.id == 1156 || this.id == 1157) {
                 this.options.add(new ItemOption(94, 15));
-                this.options.add(new ItemOption(92, 100));
-                this.options.add(new ItemOption(86, 200));
+                this.options.add(new ItemOption(14, 100));
+                this.options.add(new ItemOption(10, 200));
             }
         } else if (this.template.type == ItemTemplate.TYPE_MON4) {// Thú cưỡi
             this.options.add(new ItemOption(65, 0));// kinh nghiệm
@@ -209,30 +209,30 @@ public class Item {
                 this.expire = expire;
             }
             if (this.template.id >= 994 && this.template.id <= 1011) {// trung cấp
-                this.options.add(new ItemOption(73, NinjaUtils.nextInt(2000, 3000)));
+                this.options.add(new ItemOption(0, NinjaUtils.nextInt(2000, 3000)));
                 this.options.add(new ItemOption(6, NinjaUtils.nextInt(2000, 3000)));
                 this.options.add(new ItemOption(7, NinjaUtils.nextInt(2000, 3000)));
-                this.options.add(new ItemOption(69, NinjaUtils.nextInt(10, 30)));
-                this.options.add(new ItemOption(118, NinjaUtils.nextInt(50, 80)));
-                this.options.add(new ItemOption(68, NinjaUtils.nextInt(50, 150)));
+                this.options.add(new ItemOption(14, NinjaUtils.nextInt(10, 30)));
+                this.options.add(new ItemOption(20, NinjaUtils.nextInt(50, 80)));
+                this.options.add(new ItemOption(5, NinjaUtils.nextInt(50, 150)));
                 this.options.add(new ItemOption(10, NinjaUtils.nextInt(50, 150)));
                 this.options.add(new ItemOption(58, 20));
             } else if (this.template.id >= 1012 && this.template.id <= 1029) {// cao cấp
-                this.options.add(new ItemOption(73, NinjaUtils.nextInt(3000, 5000)));
+                this.options.add(new ItemOption(0, NinjaUtils.nextInt(3000, 5000)));
                 this.options.add(new ItemOption(6, NinjaUtils.nextInt(3000, 5000)));
                 this.options.add(new ItemOption(7, NinjaUtils.nextInt(3000, 5000)));
-                this.options.add(new ItemOption(69, NinjaUtils.nextInt(20, 40)));
-                this.options.add(new ItemOption(118, NinjaUtils.nextInt(50, 80)));
-                this.options.add(new ItemOption(68, NinjaUtils.nextInt(50, 150)));
+                this.options.add(new ItemOption(14, NinjaUtils.nextInt(20, 40)));
+                this.options.add(new ItemOption(20, NinjaUtils.nextInt(50, 80)));
+                this.options.add(new ItemOption(5, NinjaUtils.nextInt(50, 150)));
                 this.options.add(new ItemOption(10, NinjaUtils.nextInt(50, 150)));
                 this.options.add(new ItemOption(58, 20));
             } else if (this.template.id >= 1030 && this.template.id <= 1047) {// siêu cấp
-                this.options.add(new ItemOption(73, NinjaUtils.nextInt(5000, 8000)));
+                this.options.add(new ItemOption(0, NinjaUtils.nextInt(5000, 8000)));
                 this.options.add(new ItemOption(6, NinjaUtils.nextInt(5000, 8000)));
                 this.options.add(new ItemOption(7, NinjaUtils.nextInt(5000, 8000)));
-                this.options.add(new ItemOption(69, NinjaUtils.nextInt(40, 60)));
-                this.options.add(new ItemOption(118, NinjaUtils.nextInt(50, 80)));
-                this.options.add(new ItemOption(68, NinjaUtils.nextInt(50, 150)));
+                this.options.add(new ItemOption(14, NinjaUtils.nextInt(40, 60)));
+                this.options.add(new ItemOption(20, NinjaUtils.nextInt(50, 80)));
+                this.options.add(new ItemOption(5, NinjaUtils.nextInt(50, 150)));
                 this.options.add(new ItemOption(10, NinjaUtils.nextInt(50, 150)));
                 this.options.add(new ItemOption(58, 20));
             }
@@ -245,27 +245,27 @@ public class Item {
             if (this.template.type == 35) {
                 this.options.add(new ItemOption(94, 112));
             } else if (this.template.type == 36) {
-                this.options.add(new ItemOption(92, 78));
+                this.options.add(new ItemOption(14, 78));
             } else if (this.template.type == 37) {
-                this.options.add(new ItemOption(80, 750));
+                this.options.add(new ItemOption(47, 750));
             } else if (this.template.type == 38) {
-                this.options.add(new ItemOption(91, 152));
+                this.options.add(new ItemOption(15, 152));
             }
         } else if (this.template.type == ItemTemplate.TYPE_AOCHOANG) {// áo choàng
             this.options.add(new ItemOption(85, 0));
             if (this.id == 797) {
-                this.options.add(new ItemOption(82, 1000));
-                this.options.add(new ItemOption(83, 350));
-                this.options.add(new ItemOption(84, 100));
-                this.options.add(new ItemOption(81, 10));
-                this.options.add(new ItemOption(80, 30));
+                this.options.add(new ItemOption(6, 1000));
+                this.options.add(new ItemOption(7, 350));
+                this.options.add(new ItemOption(5, 100));
+                this.options.add(new ItemOption(20, 10));
+                this.options.add(new ItemOption(47, 30));
             } else {
-                this.options.add(new ItemOption(82, 350));
-                this.options.add(new ItemOption(83, 350));
-                this.options.add(new ItemOption(84, 100));
-                this.options.add(new ItemOption(81, 5));
-                this.options.add(new ItemOption(80, 25));
-                this.options.add(new ItemOption(79, 5));
+                this.options.add(new ItemOption(6, 350));
+                this.options.add(new ItemOption(7, 350));
+                this.options.add(new ItemOption(5, 100));
+                this.options.add(new ItemOption(20, 5));
+                this.options.add(new ItemOption(47, 25));
+                this.options.add(new ItemOption(121, 5));
             }
 
         } else if (this.template.isTypeMount()) {// Trang bị thú cưới
@@ -274,13 +274,13 @@ public class Item {
                 this.yen = 5;
                 this.options.add(new ItemOption(85, 0));
                 if (this.template.type == 29) {
-                    this.options.add(new ItemOption(86, 50));
+                    this.options.add(new ItemOption(10, 50));
                 } else if (this.template.type == 30) {
-                    this.options.add(new ItemOption(87, 500));
+                    this.options.add(new ItemOption(0, 500));
                 } else if (this.template.type == 31) {
-                    this.options.add(new ItemOption(82, 500));
+                    this.options.add(new ItemOption(6, 500));
                 } else if (this.template.type == 32) {
-                    this.options.add(new ItemOption(84, 50));
+                    this.options.add(new ItemOption(5, 50));
                 }
             } else {
                 this.yen = 0;
@@ -289,29 +289,29 @@ public class Item {
         } else if (this.template.type == ItemTemplate.TYPE_BAOTAY) {  // chỉ số ấn tộc
             if (this.template.id == 870) { // cấp 1
                 this.options.add(new ItemOption(6, 1000));
-                this.options.add(new ItemOption(118, 50));
+                this.options.add(new ItemOption(20, 50));
                 this.upgrade = 1;
             } else if (this.template.id == 871) {
                 this.options.add(new ItemOption(6, 2000));
-                this.options.add(new ItemOption(118, 100));
+                this.options.add(new ItemOption(20, 100));
                 this.upgrade = 2;
             } else if (this.template.id == 872) {
                 this.options.add(new ItemOption(6, 3000));
-                this.options.add(new ItemOption(118, 150));
+                this.options.add(new ItemOption(20, 150));
                 this.upgrade = 3;
             } else if (this.template.id == 873) {
                 this.options.add(new ItemOption(6, 4000));
-                this.options.add(new ItemOption(118, 200));
+                this.options.add(new ItemOption(20, 200));
                 this.upgrade = 4;
             } else if (this.template.id == 874) { // cấp 5
                 this.options.add(new ItemOption(6, 5000));
-                this.options.add(new ItemOption(118, 250));
-                this.options.add(new ItemOption(79, 10));
+                this.options.add(new ItemOption(20, 250));
+                this.options.add(new ItemOption(121, 10));
                 this.upgrade = 5;
             } else if (this.template.id == 875) {
                 this.options.add(new ItemOption(6, 6000));
-                this.options.add(new ItemOption(118, 300));
-                this.options.add(new ItemOption(79, 12));
+                this.options.add(new ItemOption(20, 300));
+                this.options.add(new ItemOption(121, 12));
 
                 this.options.add(new ItemOption(127, 5));
                 this.options.add(new ItemOption(130, 5));
@@ -319,8 +319,8 @@ public class Item {
                 this.upgrade = 6;
             } else if (this.template.id == 876) {
                 this.options.add(new ItemOption(6, 7000));
-                this.options.add(new ItemOption(118, 350));
-                this.options.add(new ItemOption(79, 15));
+                this.options.add(new ItemOption(20, 350));
+                this.options.add(new ItemOption(121, 15));
 
                 this.options.add(new ItemOption(127, 7));
                 this.options.add(new ItemOption(130, 7));
@@ -328,8 +328,8 @@ public class Item {
                 this.upgrade = 7;
             } else if (this.template.id == 877) {
                 this.options.add(new ItemOption(6, 8000));
-                this.options.add(new ItemOption(118, 400));
-                this.options.add(new ItemOption(79, 18));
+                this.options.add(new ItemOption(20, 400));
+                this.options.add(new ItemOption(121, 18));
 
                 this.options.add(new ItemOption(127, 10));
                 this.options.add(new ItemOption(130, 10));
@@ -337,8 +337,8 @@ public class Item {
                 this.upgrade = 8;
             } else if (this.template.id == 878) {
                 this.options.add(new ItemOption(6, 9000));
-                this.options.add(new ItemOption(118, 450));
-                this.options.add(new ItemOption(79, 22));
+                this.options.add(new ItemOption(20, 450));
+                this.options.add(new ItemOption(121, 22));
 
                 this.options.add(new ItemOption(127, 12));
                 this.options.add(new ItemOption(130, 12));
@@ -346,8 +346,8 @@ public class Item {
                 this.upgrade = 9;
             } else if (this.template.id == 879) {
                 this.options.add(new ItemOption(6, 10000));
-                this.options.add(new ItemOption(118, 500));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(20, 500));
+                this.options.add(new ItemOption(121, 25));
 
                 this.options.add(new ItemOption(127, 15));
                 this.options.add(new ItemOption(130, 15));
@@ -357,55 +357,55 @@ public class Item {
         } else if (this.template.type == ItemTemplate.TYPE_MATTHAN) {// mắt danh vọng
             if (this.template.id == 685) {
                 this.options.add(new ItemOption(6, 1000));
-                this.options.add(new ItemOption(87, 500));
+                this.options.add(new ItemOption(0, 500));
                 this.upgrade = 1;
             } else if (this.template.id == 686) {
                 this.options.add(new ItemOption(6, 2000));
-                this.options.add(new ItemOption(87, 750));
+                this.options.add(new ItemOption(0, 750));
                 this.upgrade = 2;
             } else if (this.template.id == 687) {
                 this.options.add(new ItemOption(6, 3000));
-                this.options.add(new ItemOption(87, 1000));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 1000));
+                this.options.add(new ItemOption(121, 25));
                 this.upgrade = 3;
             } else if (this.template.id == 688) {
                 this.options.add(new ItemOption(6, 4000));
-                this.options.add(new ItemOption(87, 1250));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 1250));
+                this.options.add(new ItemOption(121, 25));
                 this.upgrade = 4;
             } else if (this.template.id == 689) {
                 this.options.add(new ItemOption(6, 5000));
-                this.options.add(new ItemOption(87, 1500));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 1500));
+                this.options.add(new ItemOption(121, 25));
                 this.upgrade = 5;
             } else if (this.template.id == 690) {
                 this.options.add(new ItemOption(6, 6000));
-                this.options.add(new ItemOption(87, 1750));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 1750));
+                this.options.add(new ItemOption(121, 25));
                 this.options.add(new ItemOption(64, 0));
                 this.upgrade = 6;
             } else if (this.template.id == 691) {
                 this.options.add(new ItemOption(6, 7000));
-                this.options.add(new ItemOption(87, 2000));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 2000));
+                this.options.add(new ItemOption(121, 25));
                 this.options.add(new ItemOption(64, 0));
                 this.upgrade = 7;
             } else if (this.template.id == 692) {
                 this.options.add(new ItemOption(6, 8000));
-                this.options.add(new ItemOption(87, 2250));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 2250));
+                this.options.add(new ItemOption(121, 25));
                 this.options.add(new ItemOption(64, 0));
                 this.upgrade = 8;
             } else if (this.template.id == 693) {
                 this.options.add(new ItemOption(6, 9000));
-                this.options.add(new ItemOption(87, 2500));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 2500));
+                this.options.add(new ItemOption(121, 25));
                 this.options.add(new ItemOption(64, 0));
                 this.upgrade = 9;
             } else if (this.template.id == 694) {
                 this.options.add(new ItemOption(6, 10000));
-                this.options.add(new ItemOption(87, 2750));
-                this.options.add(new ItemOption(79, 25));
+                this.options.add(new ItemOption(0, 2750));
+                this.options.add(new ItemOption(121, 25));
                 this.options.add(new ItemOption(64, 0));
                 this.options.add(new ItemOption(113, 5000));
                 this.upgrade = 10;
@@ -430,8 +430,8 @@ public class Item {
                 long expire = System.currentTimeMillis() + (long) (86400000 * 3);
                 this.expire = expire;
 
-                this.options.add(new ItemOption(125, 3000));
-                this.options.add(new ItemOption(117, 3000));
+                this.options.add(new ItemOption(6, 3000));
+                this.options.add(new ItemOption(7, 3000));
                 this.options.add(new ItemOption(94, 10));
                 this.options.add(new ItemOption(136, NinjaUtils.nextInt(0, 80)));
                 this.options.add(new ItemOption(127, 10));
@@ -447,8 +447,8 @@ public class Item {
                 long expire = System.currentTimeMillis() + (long) (86400000 * 3);
                 this.expire = expire;
 
-                this.options.add(new ItemOption(125, 3000));
-                this.options.add(new ItemOption(117, 3000));
+                this.options.add(new ItemOption(6, 3000));
+                this.options.add(new ItemOption(7, 3000));
                 this.options.add(new ItemOption(94, 10));
                 this.options.add(new ItemOption(136, NinjaUtils.nextInt(0, 80)));
                 this.options.add(new ItemOption(127, 10));
@@ -469,26 +469,26 @@ public class Item {
                 this.options.add(new ItemOption(58, 25));
                 this.options.add(new ItemOption(6, 500));
             } else if (this.id == ItemName.TON_HANH_GIA) {
-                this.options.add(new ItemOption(82, 3000));
-                this.options.add(new ItemOption(87, 3000));
-                this.options.add(new ItemOption(92, 10));
+                this.options.add(new ItemOption(6, 3000));
+                this.options.add(new ItemOption(0, 3000));
+                this.options.add(new ItemOption(14, 10));
                 this.options.add(new ItemOption(58, 26));
             } else if (this.id == ItemName.CAI_TRANG_BUFFALO || this.id == ItemName.CAI_TRANG_RUBE
                     || this.id == ItemName.CAI_TRANG_FAIRIES || this.id == ItemName.CAI_TRANG_SIXGIRL) {
                 long expire = System.currentTimeMillis() + (long) (86400000 * 3);
                 this.expire = expire;
-                this.options.add(new ItemOption(82, 1000));
-                this.options.add(new ItemOption(87, 1000));
-                this.options.add(new ItemOption(69, 10));
+                this.options.add(new ItemOption(6, 1000));
+                this.options.add(new ItemOption(0, 1000));
+                this.options.add(new ItemOption(14, 10));
                 this.options.add(new ItemOption(58, 20));
 
             } else if (this.id == ItemName.MAT_NA_JIRAI_ || this.id == ItemName.MAT_NA_JUMITO) {
                 if (this.upgrade == 4 || this.upgrade == 5 || this.upgrade == 6) {
-                    this.options.add(new ItemOption(125, 1000));
+                    this.options.add(new ItemOption(6, 1000));
                 } else if (this.upgrade == 7 || this.upgrade == 8 || this.upgrade == 9) {
-                    this.options.add(new ItemOption(125, 2000));
+                    this.options.add(new ItemOption(6, 2000));
                 } else if (this.upgrade == 10) {
-                    this.options.add(new ItemOption(125, 3000));
+                    this.options.add(new ItemOption(6, 3000));
                 }
                 this.options.add(new ItemOption(100, this.upgrade * 5));
             } else if (this.id == ItemName.SANTA_CLAUS) {
@@ -543,41 +543,41 @@ public class Item {
             } else if (this.id == ItemName.THAN_CHET) {
                 long expire = System.currentTimeMillis() + (long) 604800000;
                 this.expire = expire;
-                this.options.add(new ItemOption(73, 3000));
+                this.options.add(new ItemOption(0, 3000));
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 3000));
             } else if (this.id == ItemName.PET_UNG_LONG) { // chỉ số pet vv
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 3000));
-                this.options.add(new ItemOption(69, 100));
+                this.options.add(new ItemOption(14, 100));
                 this.options.add(new ItemOption(94, 10));
                 this.options.add(new ItemOption(119, 200));
                 this.options.add(new ItemOption(120, 200));
             } else if (this.id == ItemName.PET_BORU) {
                 this.options.add(new ItemOption(6, 5000));
-                this.options.add(new ItemOption(87, 5000));
+                this.options.add(new ItemOption(0, 5000));
             } else if (this.id == ItemName.TUAN_LOC) {
                 long expire = System.currentTimeMillis() + (long) 604800000;
                 this.expire = expire;
-                this.options.add(new ItemOption(73, 5000));
+                this.options.add(new ItemOption(0, 5000));
                 this.options.add(new ItemOption(6, 5000));
             } else if (this.id == ItemName.TUAN_LOC_PK) {
                 long expire = System.currentTimeMillis() + (long) 86400000L;
                 this.expire = expire;
-                this.options.add(new ItemOption(73, 5000));
+                this.options.add(new ItemOption(0, 5000));
                 this.options.add(new ItemOption(6, 5000));
                 this.options.add(new ItemOption(153, 0));
             } else if (this.id == ItemName.PET_BORU_2) {
                 long expire = System.currentTimeMillis() + (long) 604800000;
                 this.expire = expire;
-                this.options.add(new ItemOption(73, 5000));
+                this.options.add(new ItemOption(0, 5000));
                 this.options.add(new ItemOption(6, 5000));
             } else if (this.id == ItemName.PET_THANH_LONG) {
                 long expire = System.currentTimeMillis() + (long) (86400000 * 7);
                 this.expire = expire;
                 this.options.add(new ItemOption(6, 2000));
                 this.options.add(new ItemOption(7, 3000));
-                this.options.add(new ItemOption(92, 100));
+                this.options.add(new ItemOption(14, 100));
                 this.options.add(new ItemOption(94, 10));
                 this.options.add(new ItemOption(119, 200));
                 this.options.add(new ItemOption(120, 200));
@@ -589,8 +589,8 @@ public class Item {
                 ArrayList<ItemOption> randomOptions = new ArrayList<>();
                 randomOptions.add(new ItemOption(8, NinjaUtils.nextInt(100, 200)));
                 randomOptions.add(new ItemOption(9, NinjaUtils.nextInt(100, 200)));
-                randomOptions.add(new ItemOption(73, NinjaUtils.nextInt(1500, 3000)));
-                randomOptions.add(new ItemOption(79, 5));
+                randomOptions.add(new ItemOption(0, NinjaUtils.nextInt(1500, 3000)));
+                randomOptions.add(new ItemOption(121, 5));
 
                 for (int i = 0; i < random; i++) {
                     int indexRandom = NinjaUtils.nextInt(randomOptions.size());
@@ -630,61 +630,61 @@ public class Item {
 //            }
 
             if (this.id == ItemName.DE_NHAT_NINJA) {
-                this.options.add(new ItemOption(82, 5000));
-                this.options.add(new ItemOption(87, 5000));
-                this.options.add(new ItemOption(92, 100));
+                this.options.add(new ItemOption(6, 5000));
+                this.options.add(new ItemOption(0, 5000));
+                this.options.add(new ItemOption(14, 100));
                 this.options.add(new ItemOption(94, 10));
             }
 
             if (this.id == ItemName.DE_NHI) {
-                this.options.add(new ItemOption(82, 3000));
-                this.options.add(new ItemOption(87, 3000));
-                this.options.add(new ItemOption(92, 70));
+                this.options.add(new ItemOption(6, 3000));
+                this.options.add(new ItemOption(0, 3000));
+                this.options.add(new ItemOption(14, 70));
             }
 
             if (this.id == ItemName.DE_TAM) {
-                this.options.add(new ItemOption(82, 2000));
-                this.options.add(new ItemOption(87, 2000));
-                this.options.add(new ItemOption(92, 50));
+                this.options.add(new ItemOption(6, 2000));
+                this.options.add(new ItemOption(0, 2000));
+                this.options.add(new ItemOption(14, 50));
             }
 
             if (this.id == ItemName.DE_TU) {
-                this.options.add(new ItemOption(82, 1000));
-                this.options.add(new ItemOption(87, 1000));
-                this.options.add(new ItemOption(92, 30));
+                this.options.add(new ItemOption(6, 1000));
+                this.options.add(new ItemOption(0, 1000));
+                this.options.add(new ItemOption(14, 30));
             }
 
             if (this.id == ItemName.TOP1) {
-                this.options.add(new ItemOption(82, 5000));
-                this.options.add(new ItemOption(87, 5000));
-                this.options.add(new ItemOption(92, 100));
+                this.options.add(new ItemOption(6, 5000));
+                this.options.add(new ItemOption(0, 5000));
+                this.options.add(new ItemOption(14, 100));
                 this.options.add(new ItemOption(94, 10));
             }
 
             if (this.id == ItemName.TOP2) {
-                this.options.add(new ItemOption(82, 4000));
-                this.options.add(new ItemOption(87, 4000));
-                this.options.add(new ItemOption(92, 80));
+                this.options.add(new ItemOption(6, 4000));
+                this.options.add(new ItemOption(0, 4000));
+                this.options.add(new ItemOption(14, 80));
                 this.options.add(new ItemOption(94, 10));
             }
 
             if (this.id == ItemName.TOP3) {
-                this.options.add(new ItemOption(82, 3000));
-                this.options.add(new ItemOption(87, 3000));
-                this.options.add(new ItemOption(92, 70));
+                this.options.add(new ItemOption(6, 3000));
+                this.options.add(new ItemOption(0, 3000));
+                this.options.add(new ItemOption(14, 70));
                 this.options.add(new ItemOption(94, 10));
             }
 
             if (this.id == ItemName.TOP4) {
-                this.options.add(new ItemOption(82, 2000));
-                this.options.add(new ItemOption(87, 2000));
-                this.options.add(new ItemOption(92, 60));
+                this.options.add(new ItemOption(6, 2000));
+                this.options.add(new ItemOption(0, 2000));
+                this.options.add(new ItemOption(14, 60));
                 this.options.add(new ItemOption(94, 10));
             }
             if (this.id == ItemName.TOP5) {
-                this.options.add(new ItemOption(82, 1000));
-                this.options.add(new ItemOption(87, 1000));
-                this.options.add(new ItemOption(92, 50));
+                this.options.add(new ItemOption(6, 1000));
+                this.options.add(new ItemOption(0, 1000));
+                this.options.add(new ItemOption(14, 50));
                 this.options.add(new ItemOption(94, 10));
             }
 
@@ -694,50 +694,50 @@ public class Item {
             if (this.id == 1149) {
                 long expire = System.currentTimeMillis() + (long) 2144800000;
                 this.expire = expire;
-                this.options.add(new ItemOption(87, 1000));
+                this.options.add(new ItemOption(0, 1000));
                 this.options.add(new ItemOption(99, 100));
             }
         } else if (this.template.type == ItemTemplate.TYPE_NGOC_KHAM) {
             if (this.id == 652) {
                 this.options.add(new ItemOption(106, 0));
                 this.options.add(new ItemOption(102, NinjaUtils.nextInt(1, 500)));
-                this.options.add(new ItemOption(115, -NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(5, -NinjaUtils.nextInt(1, 10)));
                 this.options.add(new ItemOption(107, 0));
-                this.options.add(new ItemOption(126, NinjaUtils.nextInt(1, 5)));
+                this.options.add(new ItemOption(15, NinjaUtils.nextInt(1, 5)));
                 this.options.add(new ItemOption(105, -NinjaUtils.nextInt(1, 500)));
                 this.options.add(new ItemOption(108, 0));
-                this.options.add(new ItemOption(114, NinjaUtils.nextInt(1, 5)));
-                this.options.add(new ItemOption(118, -NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(14, NinjaUtils.nextInt(1, 5)));
+                this.options.add(new ItemOption(20, -NinjaUtils.nextInt(1, 10)));
             } else if (this.id == 653) {
                 this.options.add(new ItemOption(106, 0));
-                this.options.add(new ItemOption(73, NinjaUtils.nextInt(1, 100)));
-                this.options.add(new ItemOption(114, -NinjaUtils.nextInt(1, 5)));
+                this.options.add(new ItemOption(0, NinjaUtils.nextInt(1, 100)));
+                this.options.add(new ItemOption(14, -NinjaUtils.nextInt(1, 5)));
                 this.options.add(new ItemOption(107, 0));
-                this.options.add(new ItemOption(124, NinjaUtils.nextInt(1, 10)));
-                this.options.add(new ItemOption(114, -NinjaUtils.nextInt(1, 100)));
+                this.options.add(new ItemOption(47, NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(14, -NinjaUtils.nextInt(1, 100)));
                 this.options.add(new ItemOption(108, 0));
-                this.options.add(new ItemOption(115, NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(5, NinjaUtils.nextInt(1, 10)));
                 this.options.add(new ItemOption(119, -NinjaUtils.nextInt(1, 10)));
             } else if (this.id == 654) {
                 this.options.add(new ItemOption(106, 0));
                 this.options.add(new ItemOption(103, NinjaUtils.nextInt(1, 200)));
-                this.options.add(new ItemOption(125, -NinjaUtils.nextInt(1, 50)));
+                this.options.add(new ItemOption(6, -NinjaUtils.nextInt(1, 50)));
                 this.options.add(new ItemOption(107, 0));
                 this.options.add(new ItemOption(121, NinjaUtils.nextInt(1, 5)));
                 this.options.add(new ItemOption(120, -NinjaUtils.nextInt(1, 10)));
                 this.options.add(new ItemOption(108, 0));
-                this.options.add(new ItemOption(116, NinjaUtils.nextInt(1, 10)));
-                this.options.add(new ItemOption(126, -NinjaUtils.nextInt(1, 5)));
+                this.options.add(new ItemOption(10, NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(15, -NinjaUtils.nextInt(1, 5)));
             } else if (this.id == 655) {
                 this.options.add(new ItemOption(106, 0));
                 this.options.add(new ItemOption(105, NinjaUtils.nextInt(1, 500)));
-                this.options.add(new ItemOption(116, -NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(10, -NinjaUtils.nextInt(1, 10)));
                 this.options.add(new ItemOption(107, 0));
-                this.options.add(new ItemOption(125, NinjaUtils.nextInt(1, 50)));
-                this.options.add(new ItemOption(117, -NinjaUtils.nextInt(1, 50)));
+                this.options.add(new ItemOption(6, NinjaUtils.nextInt(1, 50)));
+                this.options.add(new ItemOption(7, -NinjaUtils.nextInt(1, 50)));
                 this.options.add(new ItemOption(108, 0));
-                this.options.add(new ItemOption(117, NinjaUtils.nextInt(1, 50)));
-                this.options.add(new ItemOption(124, -NinjaUtils.nextInt(1, 10)));
+                this.options.add(new ItemOption(7, NinjaUtils.nextInt(1, 50)));
+                this.options.add(new ItemOption(47, -NinjaUtils.nextInt(1, 10)));
             }
             this.options.add(new ItemOption(104, 0));
             this.options.add(new ItemOption(123, 800000));
