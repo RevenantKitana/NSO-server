@@ -20,7 +20,7 @@ Khi bạn nhìn vào mã nguồn của game, game dùng các biến mảng tiế
 | **`potential[0]`** | **Điểm Sức Khỏe** | Điểm tiềm năng bạn tự cộng vào cột Sức khỏe (Tăng Ngoại công cho Kiếm, Kunai, Đao). |
 | **`potential[1]`** | **Điểm Thân Pháp** | Điểm tiềm năng bạn tự cộng vào cột Thân pháp (Tăng Chính xác và Né đòn). |
 | **`potential[2]`** | **Điểm Thể Lực** | Điểm tiềm năng bạn tự cộng vào cột Thể lực (Tăng Máu HP: 1 điểm = 10 HP gốc). |
-| **`potential[3]`** | **Điểm Chakra** | Điểm tiềm năng bạn tự cộng vào cột Chakra (Tăng Mana MP: 1 điểm = 10 MP và tăng Nội công cho Tiêu, Cung, Quạt). |
+| **`potential[3]`** | **Điểm Chakra** | Điểm tiềm năng bạn tự cộng vào cột Chakra (Tăng Mana MP: 5 MP/điểm cho phái Nội công, 8 MP/điểm cho phái Ngoại công và tăng Nội công cho Tiêu, Cung, Quạt). |
 | **`options[X]`** | **Dòng Option số X** | Giá trị của dòng thuộc tính số `X` trên Trang bị, Vũ khí, Thú cưỡi, Ngọc khảm... |
 | **`optionsSupportSkill[X]`**| **Kỹ Năng Hỗ Trợ** | Giá trị cộng thêm từ các kỹ năng bị động (như skill bị động 2x, 6x). |
 | **`skillOptions[X]`** | **Chiêu Thức Đang Đánh** | Giá trị sức mạnh của kỹ năng chủ động mà bạn vừa bấm ra đòn. |
@@ -222,9 +222,9 @@ owner.maxHP += (owner.maxHP * owner.options[128] / 100); // Dòng VIP nhân ti�
 ### 2.3. Điểm Mana Tối Đa (Max MP)
 
 * **Công thức lời văn:**
-  $$\text{MP Gốc} = \left(\text{Điểm Chakra} + \text{Cộng Tiềm Năng} + \text{Chakra} \times \text{\% Tăng Tiềm Năng}\right) \times 10$$
+  $$\text{MP Gốc} = \left(\text{Điểm Chakra} + \text{Cộng Tiềm Năng} + \text{Chakra} \times \text{\% Tăng Tiềm Năng}\right) \times \text{Hệ Số MP}$$
   $$\text{Max MP} = \text{MP Gốc} + \left(\text{MP Gốc} \times \frac{\text{\% MP Trang Bị (Opt 28) + \% MP Ẩn (Opt 60) + \% MP Kỹ Năng}}{100}\right) + \text{Tổng MP Cố Định Từ Đồ}$$
-  *(Ghi nhớ: 1 điểm Chakra luôn tạo ra **10 MP Gốc**)*.
+  *(Cân bằng lạm phát MP: Phái **Nội công** có $\text{Hệ Số MP} = 5$, phái **Ngoại công** có $\text{Hệ Số MP} = 8$)*.
 
 ---
 

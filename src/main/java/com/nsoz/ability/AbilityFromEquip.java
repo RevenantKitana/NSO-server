@@ -280,13 +280,14 @@ public class AbilityFromEquip implements AbilityStrategy {
 
     /**
      * Tính toán Mana tối đa (Max MP).
-     * Sửa dứt điểm lỗi kinh điển:
-     * Cũ: basicMp + (basicMp + (owner.options[28] + ...) / 100) -> Nhân đôi basicMp và làm % MP mất tác dụng
-     * Mới: basicMp + (basicMp * mpPercent / 100) + mpFlat
+     * Cân bằng chỉ số chống lạm phát MP:
+     * - Phái nội công (Tiêu, Cung, Quạt): 1 Chakra = 5 MP cơ bản
+     * - Phái ngoại công (Kiếm, Kunai, Đao, Tân thủ): 1 Chakra = 8 MP cơ bản
      */
     private void calculateMaxMP(Char owner, StatContainer stats, int potentialBonus, int potentialPercent) {
         int effChakra = (owner.potential[3] + potentialBonus) + (owner.potential[3] * potentialPercent / 100);
-        int basicMp = effChakra * 10;
+        int mpPerPoint = (owner.getSideClass() == 1) ? 5 : 8;
+        int basicMp = effChakra * mpPerPoint;
 
         int mpPercent = stats.getPercent(StatType.MAX_MP) + owner.optionsSupportSkill[18];
         owner.maxMP = basicMp + (basicMp * mpPercent / 100) + stats.getFlat(StatType.MAX_MP);

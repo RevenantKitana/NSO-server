@@ -257,9 +257,10 @@ public void setAbility(Char owner) {
         owner.maxHP += owner.maxHP * stats.getPercent(StatType.HP_AFTER_EQUIP) / 100;
     }
 
-    // 6. Tính toán MP Chuẩn (ĐÃ SỬA BUG DẤU CỘNG)
+    // 6. Tính toán MP Chuẩn (ĐÃ SỬA BUG DẤU CỘNG & CÂN BẰNG LẠM PHÁT MP)
     int effChakra = (owner.potential[3] + potentialBonus) * (100 + potentialPercent) / 100;
-    int basicMp = effChakra * 10;
+    int mpPerPoint = (owner.getSideClass() == 1) ? 5 : 8; // Nội công: 5 MP, Ngoại công: 8 MP
+    int basicMp = effChakra * mpPerPoint;
     owner.maxMP = stats.calculate(StatType.MAX_MP, basicMp);
 
     // 7. Tính Né Đòn & Chính Xác (ĐÃ GỠ OPTION 12 KHÁNG BĂNG)
@@ -344,7 +345,7 @@ Tách rời logic tính sát thương khỏi `Char.java` vào một service riê
 | Hạng mục kiểm tra | Tiêu chí ĐẠT (Pass) |
 | :--- | :--- |
 | **1. Đeo / Tháo Giày Kháng Băng** | Điểm Kháng Băng tăng đúng, **Điểm Chính Xác không được thay đổi**. |
-| **2. Bảng Max MP** | Điểm Max MP phản ánh đúng `1 Chakra = 10 MP`, các dòng `% MP` tăng đúng tỷ lệ. |
+| **2. Bảng Max MP** | Điểm Max MP phản ánh đúng `1 Chakra = 5 MP` (Nội công) / `8 MP` (Ngoại công), các dòng `% MP` tăng đúng tỷ lệ. |
 | **3. Điểm Tấn Công (Panel C)** | Tấn công Min - Max hiển thị mượt mà, không bị nhảy số vô lý khi bấm đổi chiêu. |
 | **4. Thử nghiệm Bất Tử** | Mặc đồ full Opt 63 + 98: Sát thương nhận vào vẫn tối thiểu 25% (nhờ trần 75%), không còn bị bất tử 0 dame. |
 | **5. Sát thương chuẩn (Opt 113)** | Dù đối thủ có 10.000 `dameDown` hay người đánh bị suy yếu, sát thương chuẩn vẫn gây đúng bằng giá trị ghi trên đồ. |

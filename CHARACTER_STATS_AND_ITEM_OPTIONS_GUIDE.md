@@ -51,7 +51,7 @@ Mỗi khi lên cấp hoặc dùng sách tiềm năng, nhân vật nhận đượ
 | **Sức Khỏe** (`potential[0]`) | Ngoại công / Sức mạnh | Tăng **Tấn công Ngoại công** (Sát thương vật lý cận chiến/viễn chiến). | Kiếm, Tiêu, Cung, Đao |
 | **Thân Pháp** (`potential[1]`) | Nhanh nhẹn / Độ khéo | Tăng mạnh **Né đòn (`miss`)** và **Chính xác (`exactly`)**. | Cả 6 phái (rất quan trọng trong PvP) |
 | **Thể Lực** (`potential[2]`) | Thể chất / Sinh mệnh | Tăng **Máu tối đa (`maxHP`)**. Mỗi 1 điểm Thể lực = **+10 HP cơ bản**. | Mọi phái (tăng độ chống chịu) |
-| **Chakra** (`potential[3]`) | Nội công / Trí lực | Tăng **Tấn công Nội công** và **MP tối đa (`maxMP`)**. 1 điểm = **+10 MP cơ bản**. | Kunai, Quạt |
+| **Chakra** (`potential[3]`) | Nội công / Trí lực | Tăng **Tấn công Nội công** và **MP tối đa (`maxMP`)**. Quy đổi: **+5 MP/điểm** (phái Nội công), **+8 MP/điểm** (phái Ngoại công). | Tiêu, Cung, Quạt (Nội công) |
 
 ---
 
@@ -84,7 +84,8 @@ Dưới đây là các công thức giải mã trực tiếp từ mã nguồn [`
 * **`maxHP` (Lượng máu tối đa)**:
   $$\text{maxHP} = \left[(\text{Thể lực} \times 10) \times (1 + \sum \% \text{HP trang bị}) + \sum \text{HP cộng thẳng}\right] \times (1 + \% \text{HP sau mặc đồ})$$
 * **`maxMP` (Lượng Chakra tối đa)**:
-  $$\text{maxMP} = (\text{Chakra} \times 10) \times (1 + \sum \% \text{MP trang bị}) + \sum \text{MP cộng thẳng}$$
+  $$\text{maxMP} = (\text{Chakra} \times \text{Hệ số MP}) \times (1 + \sum \% \text{MP trang bị}) + \sum \text{MP cộng thẳng}$$
+  *(Trong đó: Phái Nội công nhân hệ số **5**, Phái Ngoại công nhân hệ số **8**)*.
 * **`resFire` (Kháng Hỏa), `resIce` (Kháng Băng), `resWind` (Kháng Phong)**: Giảm trực tiếp lượng sát thương thuộc tính hệ tương ứng nhận vào.
 * **`Kháng tất cả` (Option ID 20, 36, 81, 118)**: Tăng đồng thời cả 3 chỉ số Kháng Hỏa, Kháng Băng và Kháng Phong.
 * **`dameDown` (Giảm trừ sát thương)**: Trừ thẳng một lượng sát thương cố định nhận vào từ mỗi đòn đánh của địch.
