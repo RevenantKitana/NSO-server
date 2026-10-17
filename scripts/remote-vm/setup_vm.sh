@@ -72,18 +72,17 @@ root soft nofile 65535
 root hard nofile 65535
 EOF
 
-# Limit Journal Log Size
+# Limit Journal Log Size (Max 4MB in RAM)
 mkdir -p /etc/systemd/journald.conf.d
 cat <<'EOF' > /etc/systemd/journald.conf.d/99-nso-journald.conf
 [Journal]
-Storage=persistent
+Storage=volatile
 Compress=yes
-SystemMaxUse=20M
-RuntimeMaxUse=10M
-MaxRetentionSec=3day
+RuntimeMaxUse=4M
+MaxRetentionSec=2day
 EOF
 systemctl restart systemd-journald 2>/dev/null || true
-journalctl --vacuum-size=20M >/dev/null 2>&1 || true
+journalctl --vacuum-size=4M >/dev/null 2>&1 || true
 
 # Limit and Rotate NSO Server Application Logs
 cat <<'EOF' > /etc/logrotate.d/nso-server
@@ -126,6 +125,7 @@ SERVICES_TO_DISABLE=(
     "snapd.service"
     "snapd.socket"
     "snapd.seeded.service"
+    "ModemManager.service"
 )
 
 for svc in "${SERVICES_TO_DISABLE[@]}"; do
@@ -227,8 +227,9 @@ iptables -I INPUT 7 -p tcp --dport 443 -j ACCEPT 2>/dev/null || true
 mkdir -p /etc/iptables
 iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
 
-# Fail2ban configuration
-cat <<'EOF' > /etc/fail2ban/jail.local
+# Fail2ban configuration (Adaptive based on RAM)
+if [ "$TOTAL_RAM_MB" -ge 2000 ]; then
+    cat <<'EOF' > /etc/fail2ban/jail.local
 [DEFAULT]
 bantime = 86400
 findtime = 600
@@ -239,9 +240,23 @@ enabled = true
 port = 22
 mode = aggressive
 EOF
-
-systemctl restart fail2ban 2>/dev/null || true
-systemctl enable fail2ban >/dev/null 2>&1 || true
+    systemctl restart fail2ban 2>/dev/null || true
+    systemctl enable fail2ban >/dev/null 2>&1 || true
+    echo "  >> fail2ban configured and enabled."
+else
+    # On low RAM instances (<2GB), Python fail2ban consumes ~35MB RAM.
+    # Replace with zero-RAM kernel iptables SSH rate limiting.
+    systemctl stop fail2ban 2>/dev/null || true
+    systemctl disable fail2ban 2>/dev/null || true
+    systemctl mask fail2ban 2>/dev/null || true
+    
+    iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
+    iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
+    iptables -I INPUT 1 -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
+    iptables -I INPUT 2 -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+    echo "  >> Low RAM detected (<2GB): Disabled Python fail2ban (saved ~35MB RAM). Applied kernel iptables SSH rate limiting."
+fi
 
 echo "======================================================"
 echo " 7. GENERATING ADAPTIVE SYSTEMD GAME SERVICE          "

@@ -9,7 +9,7 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu/nso-server
 Environment=BRIDGE_PORT=80
 Environment=BRIDGE_SECRET_KEY=NsoBridgeSecret2026!@#
-ExecStart=/usr/bin/node /home/ubuntu/nso-server/nso_bridge.js
+ExecStart=/usr/bin/node --max-old-space-size=32 /home/ubuntu/nso-server/nso_bridge.js
 Restart=always
 RestartSec=3
 StandardOutput=append:/home/ubuntu/nso-server/logs/bridge.log

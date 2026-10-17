@@ -429,6 +429,10 @@ public class Zone extends Thread {
             } finally {
                 lockChar.writeLock().unlock();
             }
+            try {
+                this.interrupt();
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -1087,9 +1091,10 @@ public class Zone extends Thread {
 
     @Override
     public void run() {
-        long delay = 500L;
         while (this.running) {
             try {
+                // Toi uu CPU: Neu khu khong co nguoi choi thi nghi 2000ms, khi co nguoi choi hoat dong 500ms
+                long delay = (this.players == null || this.players.isEmpty()) ? 2000L : 500L;
                 long l1 = System.currentTimeMillis();
                 update();
                 long l2 = System.currentTimeMillis();
@@ -1098,13 +1103,14 @@ public class Zone extends Thread {
                     continue;
                 }
                 Thread.sleep(delay - l3);
-            } catch (Exception e) { // thêm đoạn log ở đây
-                if(map!=null){
-                    Log.logException("Lỗi update zone tại map "+ map.tilemap.name, Zone.class,e );
-                }else{
-                    Log.logException("Lỗi update zone: ", Zone.class,e );
+            } catch (InterruptedException ignored) {
+                // Thuc day ngay lap tuc khi co nguoi choi buoc vao khu trong
+            } catch (Exception e) {
+                if (map != null) {
+                    Log.logException("Lỗi update zone tại map " + map.tilemap.name, Zone.class, e);
+                } else {
+                    Log.logException("Lỗi update zone: ", Zone.class, e);
                 }
-
             }
         }
     }
