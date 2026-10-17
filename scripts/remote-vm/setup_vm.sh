@@ -174,9 +174,9 @@ elif [ "$TOTAL_RAM_MB" -ge 2000 ]; then
     DB_LOG_BUFFER="16M"
     DB_MAX_CONN="100"
 else
-    DB_BUFFER_POOL="128M"
-    DB_LOG_BUFFER="8M"
-    DB_MAX_CONN="50"
+    DB_BUFFER_POOL="32M"
+    DB_LOG_BUFFER="4M"
+    DB_MAX_CONN="40"
 fi
 
 cat <<EOF > /etc/mysql/mariadb.conf.d/60-nso-tuning.cnf
@@ -187,9 +187,10 @@ innodb_log_buffer_size = ${DB_LOG_BUFFER}
 innodb_read_io_threads = 2
 innodb_write_io_threads = 2
 max_connections = ${DB_MAX_CONN}
-key_buffer_size = 16M
-table_open_cache = 400
-thread_cache_size = 8
+key_buffer_size = 8M
+table_open_cache = 100
+table_definition_cache = 150
+thread_cache_size = 4
 bind-address = 127.0.0.1
 skip-name-resolve
 EOF
@@ -257,24 +258,29 @@ else
     echo "  >> Low RAM detected (<2GB): Disabled Python fail2ban (saved ~35MB RAM). Port 22 SSH secured via Key."
 fi
 
+# Stop and disable standalone Node.js bridge (Embedded inside Java Server)
+systemctl stop nso-bridge.service 2>/dev/null || true
+systemctl disable nso-bridge.service 2>/dev/null || true
+systemctl mask nso-bridge.service 2>/dev/null || true
+
 echo "======================================================"
 echo " 7. GENERATING ADAPTIVE SYSTEMD GAME SERVICE          "
 echo "======================================================"
 mkdir -p /home/ubuntu/nso-server
 chown -R ubuntu:ubuntu /home/ubuntu/nso-server
 
-# Dynamic JVM Memory Allocation & Low-Latency G1GC Tuning
+# Dynamic JVM Memory Allocation & Low-Latency Tuning
 if [ "$TOTAL_RAM_MB" -ge 5000 ]; then
     JVM_MEM="-Xms1024M -Xmx2048M -Xss256k -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1ReservePercent=15 -XX:InitiatingHeapOccupancyPercent=45 -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 elif [ "$TOTAL_RAM_MB" -ge 2000 ]; then
     JVM_MEM="-Xms512M -Xmx1024M -Xss256k -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1ReservePercent=15 -XX:InitiatingHeapOccupancyPercent=45 -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 else
-    JVM_MEM="-Xms256M -Xmx400M -Xss256k -XX:+UseSerialGC"
+    JVM_MEM="-Xms128M -Xmx320M -Xss192k -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=32M"
 fi
 
 cat <<EOF > /etc/systemd/system/nso-server.service
 [Unit]
-Description=NSO Game Server Emulator
+Description=NSO Game Server Emulator (Built-in HTTP API Bridge)
 After=network.target mariadb.service
 Wants=mariadb.service
 
@@ -287,6 +293,8 @@ Restart=always
 RestartSec=5
 StandardOutput=append:/home/ubuntu/nso-server/logs/service.log
 StandardError=append:/home/ubuntu/nso-server/logs/service_error.log
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 LimitNOFILE=65535
 LimitNPROC=65535
 TasksMax=infinity

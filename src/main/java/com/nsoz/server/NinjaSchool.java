@@ -97,6 +97,13 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
                     System.out.println("Khoi tao that bai!");
                     return;
                 }
+                new Thread(() -> {
+                    try {
+                        HttpBridge.start(80);
+                    } catch (Exception ex) {
+                        System.err.println("Could not start HttpBridge: " + ex.getMessage());
+                    }
+                }).start();
                 Server.start();
             } else {
                 System.out.println("Port " + Config.getInstance().getPort() + " da duoc su dung!");

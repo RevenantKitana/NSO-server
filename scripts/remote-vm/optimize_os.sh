@@ -53,6 +53,7 @@ SERVICES_TO_DISABLE=(
     "snapd.socket"
     "snapd.seeded.service"
     "ModemManager.service"
+    "systemd-resolved.service"
 )
 
 for svc in "${SERVICES_TO_DISABLE[@]}"; do
@@ -60,6 +61,38 @@ for svc in "${SERVICES_TO_DISABLE[@]}"; do
     systemctl disable "$svc" 2>/dev/null || true
     systemctl mask "$svc" 2>/dev/null || true
 done
+
+# Static DNS Configuration (Save ~8MB RAM from systemd-resolved)
+rm -f /etc/resolv.conf
+cat <<'EOF' > /etc/resolv.conf
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+EOF
+
+# Stop standalone Node.js bridge (Port 80 handled natively by Java server)
+systemctl stop nso-bridge.service 2>/dev/null || true
+systemctl disable nso-bridge.service 2>/dev/null || true
+systemctl mask nso-bridge.service 2>/dev/null || true
+
+# MariaDB Ultra-Low Tuning (32MB Buffer Pool)
+if [ -d /etc/mysql/mariadb.conf.d ]; then
+    cat <<'EOF' > /etc/mysql/mariadb.conf.d/60-nso-tuning.cnf
+[mysqld]
+performance_schema = OFF
+innodb_buffer_pool_size = 32M
+innodb_log_buffer_size = 4M
+innodb_read_io_threads = 2
+innodb_write_io_threads = 2
+max_connections = 40
+key_buffer_size = 8M
+table_open_cache = 100
+table_definition_cache = 150
+thread_cache_size = 4
+bind-address = 127.0.0.1
+skip-name-resolve
+EOF
+    systemctl restart mariadb 2>/dev/null || true
+fi
 
 killall -9 unattended-upgrade apt-get apt 2>/dev/null || true
 

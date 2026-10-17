@@ -68,7 +68,7 @@ if "!HAS_CONFIG_ERROR!"=="1" (
 
 if "!SERVER_PROFILE!"=="" set "SERVER_PROFILE=LOW_RESOURCE"
 
-set "PROFILE_LABEL=[LOW_RESOURCE - VM 1-2GB RAM (SerialGC, 512M)]"
+set "PROFILE_LABEL=[LOW_RESOURCE - VM 1-2GB RAM (Ultra-Low, SerialGC, Heap 320M)]"
 if /i "!SERVER_PROFILE!"=="STANDARD" set "PROFILE_LABEL=[STANDARD - VM 4GB+ RAM (G1GC, 2048M)]"
 if /i "!SERVER_PROFILE!"=="AUTO" set "PROFILE_LABEL=[AUTO - Tu dong theo RAM thuc te tren VM]"
 
@@ -233,7 +233,7 @@ echo ===========================================================================
 echo.
 echo   [CHON PROFILE TOI UU CHO LAN DEPLOY NAY]
 echo   [Enter] Giu nguyen Profile hien tai: !SERVER_PROFILE!
-echo   [1]     Chuyen sang LOW_RESOURCE (VM 1 CPU / 1-2GB RAM - SerialGC, Heap 512M)
+echo   [1]     Chuyen sang LOW_RESOURCE (VM 1 CPU / 1-2GB RAM - Ultra-Low, SerialGC, 320M)
 echo   [2]     Chuyen sang STANDARD     (VM 2-4+ Cores / 4GB+ RAM - G1GC, Heap 2048M)
 echo   [3]     Chuyen sang AUTO         (Tu dong nhan dien dung luong RAM tren VM)
 echo ===============================================================================
@@ -242,7 +242,7 @@ set /p "DEP_P_OPT=>> Bam Enter de tiep tuc hoac nhap [1/2/3] de doi Profile: "
 
 if "!DEP_P_OPT!"=="1" (
     set "SERVER_PROFILE=LOW_RESOURCE"
-    set "PROFILE_LABEL=[LOW_RESOURCE - VM 1-2GB RAM (SerialGC, 512M)]"
+    set "PROFILE_LABEL=[LOW_RESOURCE - VM 1-2GB RAM (Ultra-Low, SerialGC, Heap 320M)]"
 )
 if "!DEP_P_OPT!"=="2" (
     set "SERVER_PROFILE=STANDARD"
@@ -328,8 +328,8 @@ if errorlevel 1 (
 )
 
 echo.
-echo [BUOC 4/4] Khoi dong lai dich vu Game (!SERVER_PROFILE!) va API Bridge tren VM...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service 2>/dev/null || true && sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-bridge.service && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && sudo systemctl status nso-bridge.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
+echo [BUOC 4/4] Khoi dong dich vu Game Ultra-Low (!SERVER_PROFILE!) voi Embedded HTTP Bridge (Port 80)...
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service 2>/dev/null || true && sudo systemctl stop nso-bridge.service 2>/dev/null || true && sudo systemctl disable nso-bridge.service 2>/dev/null || true && sudo systemctl mask nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
 
 echo.
 echo ===============================================================================
