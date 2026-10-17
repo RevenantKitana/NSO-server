@@ -156,12 +156,12 @@ echo " 5. NETWORK SECURITY (RATE LIMIT & FAIL2BAN)          "
 echo "======================================================"
 command -v ufw >/dev/null 2>&1 && ufw disable >/dev/null 2>&1 || true
 
-# If RAM < 2000MB, disable Python fail2ban to save ~35MB RAM, use iptables SSH rate limit
+# If RAM < 2000MB, disable Python fail2ban to save ~35MB RAM
 if [ "$TOTAL_RAM_MB" -lt 2000 ]; then
     systemctl stop fail2ban 2>/dev/null || true
     systemctl disable fail2ban 2>/dev/null || true
     systemctl mask fail2ban 2>/dev/null || true
-    echo "  >> RAM < 2GB: Disabled Python fail2ban (saved ~35MB RAM). Using kernel iptables SSH rate limiting."
+    echo "  >> RAM < 2GB: Disabled Python fail2ban (saved ~35MB RAM). SSH secured via Key."
 fi
 
 # Clean existing limit rules
@@ -170,20 +170,18 @@ iptables -D INPUT -p tcp --dport 14444 -m state --state NEW -m recent --update -
 iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
 iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
 
-# Rate limit SSH (Max 6 attempts / 60s per IP)
-iptables -I INPUT 1 -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
-iptables -I INPUT 2 -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
+# Allow SSH directly (secured by SSH key authentication)
+iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
 
 # Rate limit Game port (Max 20 new conns / 10s per IP)
-iptables -I INPUT 3 -p tcp --dport 14444 -m state --state NEW -m recent --set --name GAME_LIMIT 2>/dev/null || true
-iptables -I INPUT 4 -p tcp --dport 14444 -m state --state NEW -m recent --update --seconds 10 --hitcount 20 --name GAME_LIMIT -j DROP 2>/dev/null || true
+iptables -I INPUT 2 -p tcp --dport 14444 -m state --state NEW -m recent --set --name GAME_LIMIT 2>/dev/null || true
+iptables -I INPUT 3 -p tcp --dport 14444 -m state --state NEW -m recent --update --seconds 10 --hitcount 20 --name GAME_LIMIT -j DROP 2>/dev/null || true
 
 # Allow traffic on necessary ports
-iptables -I INPUT 5 -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 6 -p tcp --dport 14444 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 7 -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 8 -p tcp --dport 80 -j ACCEPT 2>/dev/null || true
-iptables -I INPUT 9 -p tcp --dport 443 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 4 -p tcp --dport 14444 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 5 -p tcp --dport 8020 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 6 -p tcp --dport 80 -j ACCEPT 2>/dev/null || true
+iptables -I INPUT 7 -p tcp --dport 443 -j ACCEPT 2>/dev/null || true
 
 mkdir -p /etc/iptables
 iptables-save > /etc/iptables/rules.v4 2>/dev/null || true

@@ -294,7 +294,7 @@ if not exist "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" (
 
 echo.
 echo [BUOC 2/4] Chuan bi moi truong va sao luu ban JAR cu tren VM...
-ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs /home/ubuntu/nso-server/backups; chown -R ubuntu:ubuntu /home/ubuntu/nso-server; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
+ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo mkdir -p /home/ubuntu/nso-server/logs /home/ubuntu/nso-server/backups; sudo chown -R ubuntu:ubuntu /home/ubuntu/nso-server; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
 
 echo.
 echo [BUOC 3/4] Tai file JAR moi, API Bridge va dong bo cau hinh Profile (!SERVER_PROFILE!) len VM...

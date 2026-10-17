@@ -245,17 +245,16 @@ EOF
     echo "  >> fail2ban configured and enabled."
 else
     # On low RAM instances (<2GB), Python fail2ban consumes ~35MB RAM.
-    # Replace with zero-RAM kernel iptables SSH rate limiting.
+    # We disable fail2ban. SSH is already secured with private key authentication.
     systemctl stop fail2ban 2>/dev/null || true
     systemctl disable fail2ban 2>/dev/null || true
     systemctl mask fail2ban 2>/dev/null || true
     
     iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
     iptables -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
-    iptables -I INPUT 1 -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH_LIMIT 2>/dev/null || true
-    iptables -I INPUT 2 -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_LIMIT -j DROP 2>/dev/null || true
+    iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT 2>/dev/null || true
     iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
-    echo "  >> Low RAM detected (<2GB): Disabled Python fail2ban (saved ~35MB RAM). Applied kernel iptables SSH rate limiting."
+    echo "  >> Low RAM detected (<2GB): Disabled Python fail2ban (saved ~35MB RAM). Port 22 SSH secured via Key."
 fi
 
 echo "======================================================"
