@@ -69,10 +69,10 @@ nameserver 1.1.1.1
 nameserver 8.8.8.8
 EOF
 
-# Stop standalone Node.js bridge (Port 80 handled natively by Java server)
+# Clean up obsolete standalone Node.js bridge (Port 80 handled natively by Java server)
 systemctl stop nso-bridge.service 2>/dev/null || true
 systemctl disable nso-bridge.service 2>/dev/null || true
-systemctl mask nso-bridge.service 2>/dev/null || true
+rm -f /etc/systemd/system/nso-bridge.service /home/ubuntu/nso-server/nso_bridge.js /home/ubuntu/nso-server/logs/bridge*.log
 
 # MariaDB Ultra-Low Tuning (32MB Buffer Pool)
 if [ -d /etc/mysql/mariadb.conf.d ]; then

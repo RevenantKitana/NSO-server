@@ -148,25 +148,23 @@ Write-Host "  >> Cau hinh Profile [$ServerProfile] da duoc thiet lap tren VM!" -
 # 6. DANG KY SYSTEMD SERVICE (GAME + API BRIDGE) VA AUTO BACKUP CRONJOB
 # ------------------------------------------------------------
 Write-Host ""
-Write-Host "[BUOC 6/6] Dang dang ky nso-server.service (Profile: $ServerProfile), nso-bridge.service va cronjob sao luu..." -ForegroundColor Cyan
-$BridgeService = Join-Path $ProjectRoot "scripts\remote-vm\nso-bridge.service"
-$BridgeScript = Join-Path $ProjectRoot "scripts\remote-vm\nso_bridge.js"
+Write-Host "[BUOC 6/6] Dang dang ky nso-server.service (Profile: $ServerProfile - Embedded Port 80) va cronjob sao luu..." -ForegroundColor Cyan
 $AutoBackup = Join-Path $ProjectRoot "scripts\remote-vm\auto_backup_db.sh"
 $CheckStatus = Join-Path $ProjectRoot "scripts\remote-vm\check_status.sh"
 
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ServiceFile`" $VM_USER@$VM_IP`:/tmp/nso-server.service" -Wait -NoNewWindow | Out-Null
-Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$BridgeService`" `"$BridgeScript`" `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
+Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$AutoBackup`" `"$CheckStatus`" $VM_USER@$VM_IP`:/tmp/" -Wait -NoNewWindow | Out-Null
 
-$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /tmp/nso-bridge.service /tmp/nso_bridge.js /tmp/auto_backup_db.sh /tmp/check_status.sh 2>/dev/null || true && " +
+$setupSystemCmd = "sudo sed -i 's/\r$//' /tmp/nso-server.service /tmp/auto_backup_db.sh /tmp/check_status.sh 2>/dev/null || true && " +
                   "sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service && " +
-                  "sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service && " +
-                  "mv -f /tmp/nso_bridge.js /home/ubuntu/nso-server/nso_bridge.js && " +
+                  "sudo systemctl stop nso-bridge.service 2>/dev/null || true && " +
+                  "sudo systemctl disable nso-bridge.service 2>/dev/null || true && " +
+                  "sudo rm -f /etc/systemd/system/nso-bridge.service /home/ubuntu/nso-server/nso_bridge.js && " +
                   "mv -f /tmp/auto_backup_db.sh /home/ubuntu/nso-server/auto_backup_db.sh && " +
                   "mv -f /tmp/check_status.sh /home/ubuntu/check_status.sh && " +
-                  "chmod +x /home/ubuntu/nso-server/nso_bridge.js /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
+                  "chmod +x /home/ubuntu/nso-server/auto_backup_db.sh /home/ubuntu/check_status.sh && " +
                   "sudo systemctl daemon-reload && " +
-                  "sudo systemctl enable nso-server.service nso-bridge.service && " +
-                  "sudo systemctl restart nso-bridge.service && " +
+                  "sudo systemctl enable nso-server.service && " +
                   "mkdir -p /home/ubuntu/nso-server/logs && " +
                   "(crontab -l 2>/dev/null | grep -v 'auto_backup_db.sh'; echo '0 */12 * * * /home/ubuntu/nso-server/auto_backup_db.sh >/dev/null 2>&1') | crontab -"
 

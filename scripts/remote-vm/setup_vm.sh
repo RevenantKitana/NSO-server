@@ -159,7 +159,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get purge -y ufw >/dev/null 2>&1 || true
 apt-get update -y
 apt-get --fix-broken install -y
-apt-get install -y openjdk-17-jre-headless mariadb-server mariadb-client nodejs iptables-persistent netfilter-persistent fail2ban htop rsync curl unzip tar
+apt-get install -y openjdk-17-jre-headless mariadb-server mariadb-client iptables-persistent netfilter-persistent fail2ban htop rsync curl unzip tar
 
 echo "======================================================"
 echo " 5. ADAPTIVE MARIADB TUNING (INTERNAL 127.0.0.1 ONLY) "
@@ -258,10 +258,10 @@ else
     echo "  >> Low RAM detected (<2GB): Disabled Python fail2ban (saved ~35MB RAM). Port 22 SSH secured via Key."
 fi
 
-# Stop and disable standalone Node.js bridge (Embedded inside Java Server)
+# Clean up any obsolete standalone Node.js bridge (Embedded natively inside Java Server on Port 80)
 systemctl stop nso-bridge.service 2>/dev/null || true
 systemctl disable nso-bridge.service 2>/dev/null || true
-systemctl mask nso-bridge.service 2>/dev/null || true
+rm -f /etc/systemd/system/nso-bridge.service /home/ubuntu/nso-server/nso_bridge.js /home/ubuntu/nso-server/logs/bridge*.log
 
 echo "======================================================"
 echo " 7. GENERATING ADAPTIVE SYSTEMD GAME SERVICE          "

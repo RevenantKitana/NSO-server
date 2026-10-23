@@ -316,8 +316,6 @@ if /i "!SERVER_PROFILE!"=="AUTO" (
 )
 
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso_bridge.js" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/nso_bridge.js >nul 2>&1
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso-bridge.service" !VM_USER!@!VM_IP!:/tmp/nso-bridge.service >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SVC_SRC!" !VM_USER!@!VM_IP!:/tmp/nso-server.service >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_CFG_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SQL_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1
@@ -642,12 +640,8 @@ if not exist "!KEY_PATH!" (
 
 icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
 
-echo [*] Dang upload script API Bridge va cau hinh dich vu nso-bridge...
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso_bridge.js" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/nso_bridge.js >nul 2>&1
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\scripts\remote-vm\nso-bridge.service" !VM_USER!@!VM_IP!:/tmp/nso-bridge.service >nul 2>&1
-
-echo [*] Dang cau hinh MariaDB 127.0.0.1 va khoi dong nso-bridge tren VM...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo sed -i 's/bind-address.*/bind-address = 127.0.0.1/g' /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null || true && sudo systemctl restart mariadb && sudo mv -f /tmp/nso-bridge.service /etc/systemd/system/nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl enable nso-bridge.service && sudo systemctl restart nso-bridge.service && sudo iptables -D INPUT -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true && sudo iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT 2>/dev/null || true && sudo iptables-save > /etc/iptables/rules.v4 2>/dev/null || true && echo '' && echo '=== TRANG THAI CAC PORT (PORTS) ===' && sudo ss -tuln"
+echo [*] Dang dong kin Port 3306 va dam bao Port 80 (Embedded HTTP Bridge) duoc mo tren VM...
+ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo sed -i 's/bind-address.*/bind-address = 127.0.0.1/g' /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null || true && sudo systemctl restart mariadb && sudo systemctl stop nso-bridge.service 2>/dev/null || true && sudo systemctl disable nso-bridge.service 2>/dev/null || true && sudo rm -f /etc/systemd/system/nso-bridge.service /home/ubuntu/nso-server/nso_bridge.js && sudo iptables -D INPUT -p tcp --dport 3306 -j ACCEPT 2>/dev/null || true && sudo iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT 2>/dev/null || true && sudo iptables-save > /etc/iptables/rules.v4 2>/dev/null || true && echo '' && echo '=== TRANG THAI CAC PORT (PORTS) ===' && sudo ss -tuln"
 
 echo.
 echo [*] Dang kiem tra ket noi TCP Port 80 (API Bridge) tu may tinh cua ban...

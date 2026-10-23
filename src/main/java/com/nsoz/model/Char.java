@@ -6571,6 +6571,9 @@ public class Char {
             if (text.length() > 300) {
                 return;
             }
+            if (checkChatAdvancedStats(text)) {
+                return;
+            }
             if (text.equals("delete")) {
                 this.removeItembag();
                 this.getService().serverDialog("Đã xóa tất cả đồ hành trang");
@@ -6615,6 +6618,173 @@ public class Char {
                 Log.logException("Chat clann err: ", Char.class, ex);
             }
         }
+    }
+
+    /**
+     * Bắt lệnh chat xem chỉ số nâng cao:
+     * - me/cs, /cs, cs: Xem chỉ số bản thân
+     * - <tên_nhân_vật>/cs hoặc /cs <tên_nhân_vật>: Xem chỉ số người chơi khác
+     */
+    public boolean checkChatAdvancedStats(String rawText) {
+        if (rawText == null) return false;
+        String text = rawText.trim();
+        String lower = text.toLowerCase();
+
+        // 1. Xem bản thân
+        if (lower.equals("me/cs") || lower.equals("me /cs") || lower.equals("/cs") || lower.equals("cs")
+                || lower.equals("info") || lower.equals("/info") || lower.equals("chiso") || lower.equals("/chiso")) {
+            showAdvancedStats(this);
+            return true;
+        }
+
+        // 2. Cú pháp: <tên_nhân_vật>/cs hoặc <tên_nhân_vật> /cs
+        if (lower.endsWith("/cs")) {
+            String targetName = text.substring(0, text.length() - 3).trim();
+            if (targetName.endsWith("/")) {
+                targetName = targetName.substring(0, targetName.length() - 1).trim();
+            }
+            if (targetName.isEmpty() || targetName.equalsIgnoreCase("me")) {
+                showAdvancedStats(this);
+                return true;
+            }
+            handleViewOtherStats(targetName);
+            return true;
+        }
+
+        // 3. Cú pháp mở rộng: /cs <tên_nhân_vật> hoặc cs <tên_nhân_vật>
+        if (lower.startsWith("/cs ") || lower.startsWith("cs ")) {
+            String targetName = text.substring(text.indexOf(" ") + 1).trim();
+            if (targetName.isEmpty() || targetName.equalsIgnoreCase("me")) {
+                showAdvancedStats(this);
+                return true;
+            }
+            handleViewOtherStats(targetName);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void handleViewOtherStats(String targetName) {
+        Char target = Char.findCharByName(targetName);
+        if (target == null) {
+            getService().serverDialog("Người chơi \"" + targetName + "\" hiện không online hoặc không tồn tại!");
+            return;
+        }
+        showAdvancedStats(target);
+    }
+
+    /**
+     * Hiển thị bảng chỉ số nâng cao (toàn diện các chỉ số ẩn) của mục tiêu cho bản thân xem.
+     */
+    public void showAdvancedStats(Char target) {
+        if (target == null) return;
+        StringBuilder sb = new StringBuilder();
+
+        String className;
+        switch (target.classId) {
+            case 1: className = "Kiếm"; break;
+            case 2: className = "Tiêu"; break;
+            case 3: className = "Kunai"; break;
+            case 4: className = "Cung"; break;
+            case 5: className = "Đao"; break;
+            case 6: className = "Quạt"; break;
+            default: className = "Vô phái"; break;
+        }
+
+        sb.append("═ ").append(target.name).append(" (Lv.").append(target.level).append(") ═\n");
+        sb.append("• Phái: ").append(className).append(" | PK: ").append(target.hieuChien);
+        if (target.clan != null) {
+            sb.append(" | ").append(target.clan.getName());
+        }
+        sb.append("\n");
+
+        sb.append("• Công: ").append(NinjaUtils.getCurrency(target.damage2))
+          .append("-").append(NinjaUtils.getCurrency(target.damage)).append("\n");
+
+        int fatalPercent = target.percentFatalDame + getSkillOptParam(target, 65);
+        sb.append("• Chí mạng: ").append(target.fatal).append(" (+").append(fatalPercent).append("% STCM)\n");
+
+        int trueDame = getOptParam(target, 113);
+        int pvpDame = getOptParam(target, 103);
+        int pveDame = getOptParam(target, 102);
+        if (trueDame > 0 || pvpDame > 0 || pveDame > 0) {
+            sb.append("• ST: ");
+            boolean hasPrev = false;
+            if (trueDame > 0) {
+                sb.append("Chuẩn +").append(NinjaUtils.getCurrency(trueDame));
+                hasPrev = true;
+            }
+            if (pvpDame > 0) {
+                if (hasPrev) sb.append(" | ");
+                sb.append("PvP +").append(NinjaUtils.getCurrency(pvpDame));
+                hasPrev = true;
+            }
+            if (pveDame > 0) {
+                if (hasPrev) sb.append(" | ");
+                sb.append("PvE +").append(NinjaUtils.getCurrency(pveDame));
+            }
+            sb.append("\n");
+        }
+
+        sb.append("• HP: ").append(NinjaUtils.getCurrency(target.maxHP))
+          .append(" | MP: ").append(NinjaUtils.getCurrency(target.maxMP)).append("\n");
+
+        sb.append("• Né: ").append(target.miss)
+          .append(" | CX: ").append(target.exactly)
+          .append(" | Tốc: ").append(target.speed).append("\n");
+
+        int mitigation = Math.min(75, getOptParam(target, 63) + getOptParam(target, 98));
+        sb.append("• Giảm ST: -").append(NinjaUtils.getCurrency(target.dameDown))
+          .append(" | Miễn: ").append(mitigation).append("%\n");
+
+        int resCrit = Math.min(100, getOptParam(target, 121) + getOptParam(target, 79));
+        sb.append("• Kháng CM: ").append(resCrit).append("% | Phản: ").append(NinjaUtils.getCurrency(target.reactDame));
+        int iceReflect = getOptParam(target, 135);
+        if (iceReflect > 0) {
+            sb.append(" (Băng ").append(iceReflect).append("%)");
+        }
+        sb.append("\n");
+
+        sb.append("• Khắc hệ: Cường +").append(target.sysUp)
+          .append(" | Hạ +").append(target.sysDown).append("\n");
+
+        sb.append("• Kháng: H ").append(target.resFire)
+          .append(" | B ").append(target.resIce)
+          .append(" | P ").append(target.resWind).append("\n");
+
+        int expBonus = getOptParam(target, 100) + getSkillOptParam(target, 29);
+        int potBonus = getOptParam(target, 58);
+        if (expBonus > 0 || potBonus > 0) {
+            sb.append("• Bổ trợ: ");
+            boolean hasPrev = false;
+            if (expBonus > 0) {
+                sb.append("EXP +").append(expBonus).append("%");
+                hasPrev = true;
+            }
+            if (potBonus > 0) {
+                if (hasPrev) sb.append(" | ");
+                sb.append("TN +").append(potBonus).append("%");
+            }
+            sb.append("\n");
+        }
+
+        // Gửi dialog về cho người đang xem (this)
+        this.getService().serverDialog(sb.toString());
+    }
+
+    private int getOptParam(Char c, int id) {
+        if (c != null && c.options != null && id >= 0 && id < c.options.length) {
+            return c.options[id];
+        }
+        return 0;
+    }
+
+    private int getSkillOptParam(Char c, int id) {
+        if (c != null && c.optionsSupportSkill != null && id >= 0 && id < c.optionsSupportSkill.length) {
+            return c.optionsSupportSkill[id];
+        }
+        return 0;
     }
 
     public boolean isDontAttack() {
