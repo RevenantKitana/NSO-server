@@ -258,7 +258,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between pt-2 border-t border-white/5">
               <span className="text-[11px] text-slate-400">Dành cho PC &amp; Android</span>
               <a
-                href="/NSO.jar"
+                href="/api/download"
                 download="NSO.jar"
                 className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 transition-all hover:scale-105 flex items-center gap-1.5"
               >

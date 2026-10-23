@@ -175,11 +175,9 @@ if %PATCH_EXIT% equ 0 (
     echo ============================================================
     echo [THANH CONG] Da cap nhat Client Jar thanh cong!
     echo Client da duoc dong bo de ket noi: %TARGET_IP%:%TARGET_PORT%
-    echo Thu muc chua file: %CLIENT_DIR%
-    if exist "%ROOT_DIR%\web\public" (
-        copy /y "%CLIENT_DIR%\NSO.jar" "%ROOT_DIR%\web\public\NSO.jar" >nul
-        echo [*] Da dong bo Client moi sang: web\public\NSO.jar
-    )
+    echo [*] File Client luu tai: %CLIENT_DIR%\NSO.jar
+    echo [*] (Web Vercel se tu dong keo NSO.jar tu VM ve may nguoi dung khi tai)
+    echo [*] Hay chon [1] trong manage.bat de deploy server va upload Client len VM.
     echo ============================================================
 ) else (
     echo.

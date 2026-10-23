@@ -316,6 +316,10 @@ if /i "!SERVER_PROFILE!"=="AUTO" (
 )
 
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
+if exist "%ROOT_DIR%\.client\NSO.jar" (
+    echo [*] Dang upload Client Game (NSO.jar) len VM de phuc vu link tai tu Web...
+    scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\.client\NSO.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/NSO.jar >nul 2>&1
+)
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SVC_SRC!" !VM_USER!@!VM_IP!:/tmp/nso-server.service >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_CFG_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
 scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SQL_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1

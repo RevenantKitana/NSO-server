@@ -13,8 +13,8 @@ dist/
 *.jar
 !.client/*.jar
 !/.client/*.jar
-!web/public/*.jar
-!web/public/**/*.jar
+web/public/*.jar
+web/public/**/*.jar
 !web/assets/**/*
 !web/public/assets/**/*
 *.war

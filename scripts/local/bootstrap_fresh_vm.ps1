@@ -142,6 +142,12 @@ if ($ServerProfile -eq "STANDARD") {
 
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$CfgProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/config.properties" -Wait -NoNewWindow | Out-Null
 Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$MyProp`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/mysql.properties" -Wait -NoNewWindow | Out-Null
+
+$ClientJarLocal = Join-Path $ProjectRoot ".client\NSO.jar"
+if (Test-Path $ClientJarLocal) {
+    Start-Process -FilePath "scp" -ArgumentList "-i `"$KeyPath`" -o StrictHostKeyChecking=no -o ConnectTimeout=10 `"$ClientJarLocal`" $VM_USER@$VM_IP`:/home/ubuntu/nso-server/NSO.jar" -Wait -NoNewWindow | Out-Null
+    Write-Host "  >> Upload Client Game (NSO.jar) len VM thanh cong!" -ForegroundColor Green
+}
 Write-Host "  >> Cau hinh Profile [$ServerProfile] da duoc thiet lap tren VM!" -ForegroundColor Green
 
 # ------------------------------------------------------------

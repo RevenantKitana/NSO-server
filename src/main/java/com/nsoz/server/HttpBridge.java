@@ -12,6 +12,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,6 +51,9 @@ public class HttpBridge {
             server.createContext("/api/status", new StatusHandler());
             server.createContext("/api/giftcodes", new GiftcodesHandler());
             server.createContext("/api/register", new RegisterHandler());
+            server.createContext("/download/NSO.jar", new DownloadClientHandler());
+            server.createContext("/api/download/client", new DownloadClientHandler());
+            server.createContext("/NSO.jar", new DownloadClientHandler());
             // Lightweight 2-thread pool for HTTP API
             server.setExecutor(Executors.newFixedThreadPool(2));
             server.start();
@@ -328,6 +333,64 @@ public class HttpBridge {
                 err.addProperty("success", false);
                 err.addProperty("error", e.getMessage() != null ? e.getMessage() : "Internal Bridge Error");
                 sendJsonResponse(exchange, 500, err);
+            }
+        }
+    }
+
+    // 4. GET /download/NSO.jar or /api/download/client or /NSO.jar
+    private static class DownloadClientHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if (handleCorsPreflight(exchange)) return;
+
+            String method = exchange.getRequestMethod();
+            if (!"GET".equalsIgnoreCase(method) && !"HEAD".equalsIgnoreCase(method)) {
+                JsonObject err = new JsonObject();
+                err.addProperty("success", false);
+                err.addProperty("error", "Method Not Allowed");
+                sendJsonResponse(exchange, 405, err);
+                return;
+            }
+
+            File file = new File("NSO.jar");
+            if (!file.exists() || !file.isFile()) {
+                file = new File(".client/NSO.jar");
+            }
+            if (!file.exists() || !file.isFile()) {
+                file = new File("client/NSO.jar");
+            }
+
+            if (!file.exists() || !file.isFile()) {
+                JsonObject err = new JsonObject();
+                err.addProperty("success", false);
+                err.addProperty("error", "File NSO.jar not found on server");
+                sendJsonResponse(exchange, 404, err);
+                return;
+            }
+
+            long fileLength = file.length();
+            exchange.getResponseHeaders().set("Content-Type", "application/java-archive");
+            exchange.getResponseHeaders().set("Content-Disposition", "attachment; filename=\"NSO.jar\"");
+            exchange.getResponseHeaders().set("Content-Length", String.valueOf(fileLength));
+            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+            exchange.getResponseHeaders().set("Cache-Control", "public, max-age=60");
+
+            if ("HEAD".equalsIgnoreCase(method)) {
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+                return;
+            }
+
+            exchange.sendResponseHeaders(200, fileLength);
+            try (InputStream is = new FileInputStream(file);
+                 OutputStream os = exchange.getResponseBody()) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.flush();
             }
         }
     }
