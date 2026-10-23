@@ -1173,7 +1173,7 @@ public class Server {
                 try {
                     if (!_char.isCleaned) {
                         _char.saveData();
-                        if (!_char.user.isCleaned) {
+                        if (_char.user != null && !_char.user.isCleaned) {
                             _char.user.saveData();
                         }
                     }

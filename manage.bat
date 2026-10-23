@@ -190,13 +190,15 @@ timeout /t 2 >nul
 goto :MAIN_MENU
 
 :: ===============================================================================
-:: HELPER: CHECK JAVA / MAVEN
+:: HELPER: CHECK JAVA / MAVEN & BUILD WRAPPER
 :: ===============================================================================
 :CHECK_LOCAL_ENV
+set "MVN_BIN=mvn"
 if exist "%ROOT_DIR%\tools\jdk\bin\javac.exe" (
     if exist "%ROOT_DIR%\tools\maven\bin\mvn.cmd" (
         set "JAVA_HOME=%ROOT_DIR%\tools\jdk"
         set "PATH=%ROOT_DIR%\tools\maven\bin;%ROOT_DIR%\tools\jdk\bin;%PATH%"
+        set "MVN_BIN=%ROOT_DIR%\tools\maven\bin\mvn.cmd"
         goto :EOF
     )
 )
@@ -210,9 +212,16 @@ if exist "%ROOT_DIR%\tools\jdk\bin\javac.exe" (
     if exist "%ROOT_DIR%\tools\maven\bin\mvn.cmd" (
         set "JAVA_HOME=%ROOT_DIR%\tools\jdk"
         set "PATH=%ROOT_DIR%\tools\maven\bin;%ROOT_DIR%\tools\jdk\bin;%PATH%"
+        set "MVN_BIN=%ROOT_DIR%\tools\maven\bin\mvn.cmd"
     )
 )
 goto :EOF
+
+:RUN_MAVEN_BUILD
+call :CHECK_LOCAL_ENV
+cd /d "%ROOT_DIR%"
+cmd.exe /c ""!MVN_BIN!" clean package -DskipTests"
+exit /b %errorlevel%
 
 :SETUP_TOOLS_SILENT
 powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\local\setup_portable_tools.ps1"
@@ -282,9 +291,13 @@ if not exist "!KEY_PATH!" (
 icacls "!KEY_PATH!" /inheritance:r /grant:r %USERNAME%:R >nul 2>&1
 
 echo [BUOC 1/4] Bien dich du an tren may ca nhan...
-call :CHECK_LOCAL_ENV
-cd /d "%ROOT_DIR%"
-call mvn clean package -DskipTests
+call :RUN_MAVEN_BUILD
+if errorlevel 1 (
+    echo.
+    echo [LOI] Build that bai voi ma loi !errorlevel!!
+    pause
+    goto :MAIN_MENU
+)
 if not exist "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" (
     echo.
     echo [LOI] Build that bai! Khong tim thay file target\Nso-jar-with-dependencies.jar.
@@ -294,7 +307,7 @@ if not exist "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" (
 
 echo.
 echo [BUOC 2/4] Chuan bi moi truong va sao luu ban JAR cu tren VM...
-ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "sudo mkdir -p /home/ubuntu/nso-server/logs /home/ubuntu/nso-server/backups; sudo chown -R ubuntu:ubuntu /home/ubuntu/nso-server; if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar /home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; echo '>> Da sao luu ban JAR cu thanh cong.'; ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
+ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=15 !VM_USER!@!VM_IP! "sudo mkdir -p /home/ubuntu/nso-server/logs /home/ubuntu/nso-server/backups && sudo chown -R ubuntu:ubuntu /home/ubuntu/nso-server && if [ -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar ]; then BFILE=/home/ubuntu/nso-server/backups/Nso_backup_`date +%%Y%%m%%d_%%H%%M%%S`.jar; cp -f /home/ubuntu/nso-server/Nso-jar-with-dependencies.jar \"$BFILE\" && echo '>> Da sao luu ban JAR cu thanh cong.' && ls -1t /home/ubuntu/nso-server/backups/Nso_backup_*.jar 2>/dev/null | tail -n +4 | xargs -r rm -f; else echo '>> Chua co file JAR cu tren VM (Cai dat moi).'; fi"
 
 echo.
 echo [BUOC 3/4] Tai file JAR moi, API Bridge va dong bo cau hinh Profile (!SERVER_PROFILE!) len VM...
@@ -315,23 +328,23 @@ if /i "!SERVER_PROFILE!"=="AUTO" (
     set "LOCAL_SVC_SRC=%ROOT_DIR%\scripts\remote-vm\nso-server.service"
 )
 
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
-if exist "%ROOT_DIR%\.client\NSO.jar" (
-    echo [*] Dang upload Client Game (NSO.jar) len VM de phuc vu link tai tu Web...
-    scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "%ROOT_DIR%\.client\NSO.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/NSO.jar >nul 2>&1
-)
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SVC_SRC!" !VM_USER!@!VM_IP!:/tmp/nso-server.service >nul 2>&1
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_CFG_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
-scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "!LOCAL_SQL_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "%ROOT_DIR%\target\Nso-jar-with-dependencies.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/Nso-jar-with-dependencies.jar
 if errorlevel 1 (
-    echo [LOI] Khong the upload file len VM! Vui long kiem tra ket noi mang.
+    echo [LOI] Khong the upload file server JAR len VM! Vui long kiem tra ket noi mang.
     pause
     goto :MAIN_MENU
 )
+if exist "%ROOT_DIR%\.client\NSO.jar" (
+    echo [*] Dang upload Client Game (NSO.jar) len VM de phuc vu link tai tu Web...
+    scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "%ROOT_DIR%\.client\NSO.jar" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/NSO.jar >nul 2>&1
+)
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "!LOCAL_SVC_SRC!" !VM_USER!@!VM_IP!:/tmp/nso-server.service >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "!LOCAL_CFG_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/config.properties >nul 2>&1
+scp -i "!KEY_PATH!" -o StrictHostKeyChecking=no -o ConnectTimeout=15 "!LOCAL_SQL_SRC!" !VM_USER!@!VM_IP!:/home/ubuntu/nso-server/mysql.properties >nul 2>&1
 
 echo.
 echo [BUOC 4/4] Khoi dong dich vu Game Ultra-Low (!SERVER_PROFILE!) voi Embedded HTTP Bridge (Port 80)...
-ssh -t -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service 2>/dev/null || true && sudo systemctl stop nso-bridge.service 2>/dev/null || true && sudo systemctl disable nso-bridge.service 2>/dev/null || true && sudo systemctl mask nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-server.service && sleep 3 && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
+ssh -i "!KEY_PATH!" -o StrictHostKeyChecking=no !VM_USER!@!VM_IP! "mkdir -p /home/ubuntu/nso-server/logs && sudo mv -f /tmp/nso-server.service /etc/systemd/system/nso-server.service 2>/dev/null || true && sudo systemctl stop nso-bridge.service 2>/dev/null || true && sudo systemctl disable nso-bridge.service 2>/dev/null || true && sudo systemctl mask nso-bridge.service 2>/dev/null || true && sudo systemctl daemon-reload && sudo systemctl restart nso-server.service && sleep 5 && sudo systemctl status nso-server.service --no-pager && echo '' && echo '=== CAC PORT DANG MO (PORTS) ===' && sudo ss -tuln"
 
 echo.
 echo ===============================================================================
@@ -554,15 +567,13 @@ echo ===========================================================================
 echo   Profile hien tai: !PROFILE_LABEL!
 echo ===============================================================================
 echo.
-call :CHECK_LOCAL_ENV
-cd /d "%ROOT_DIR%"
-call mvn clean package -DskipTests
+call :RUN_MAVEN_BUILD
 if %errorlevel% equ 0 (
     echo.
     echo [OK] Build thanh cong: target\Nso-jar-with-dependencies.jar
 ) else (
     echo.
-    echo [LOI] Qua trinh build gap su co!
+    echo [LOI] Qua trinh build gap su co! (ErrorLevel: %errorlevel%)
 )
 echo.
 pause
