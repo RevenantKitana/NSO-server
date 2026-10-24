@@ -1,7 +1,7 @@
-# TÀI LIỆU THIẾT KẾ & THÔNG SỐ MOD KỸ NĂNG: KIẾM, TIÊU, ĐAO & CUNG
+# TÀI LIỆU THIẾT KẾ & THÔNG SỐ MOD KỸ NĂNG: 5 HỆ PHÁI
 ### (LƯU TRỮ Ý TƯỞNG REWORK GAMEPLAY - NSO PRIVATE 2026)
 
-> **Mục tiêu**: Đưa chiều sâu chiến thuật và phong cách hành động hiện đại (High Risk - High Reward / Mana Efficiency / Strategic Utility) vào NSO, khắc phục hạn chế animation của Client J2ME, giải quyết triệt để các kỹ năng "rác/phèn" (Dead Skills) hoặc "tự bóp" (Self-sabotaging Skills) và tạo bản sắc riêng biệt cho từng môn phái.
+> **Mục tiêu**: Đưa chiều sâu chiến thuật và phong cách hành động hiện đại (High Risk - High Reward / Mana Efficiency / Kinetic Burst / Strategic Utility) vào NSO, khắc phục hạn chế animation của Client J2ME, giải quyết triệt để các kỹ năng "rác/phèn" (Dead Skills) hoặc "tự bóp" (Self-sabotaging Skills) và tạo bản sắc riêng biệt cho từng môn phái.
 
 ---
 
@@ -12,9 +12,10 @@
 2. [Phái Ninja Tiêu: Chiêu 35 Hoshitama ("Đổi Mana Lấy Sức Tấn Công")](#2-phái-ninja-tiêu-chiêu-35-hoshitama-đổi-mana-lấy-sức-tấn-công)
 3. [Phái Ninja Đao: Chiêu 25 Magumandari ("Bùa Hại Suy Yếu & Phá Giáp")](#3-phái-ninja-đao-chiêu-25-magumandari-bùa-hại-suy-yếu--phá-giáp)
 4. [Phái Ninja Cung: Chiêu 25 Sogekihei ("Tối Ưu Hiệu Suất Khiên Mana")](#4-phái-ninja-cung-chiêu-25-sogekihei-tối-ưu-hiệu-suất-khiên-mana)
-5. [Bảng So Sánh Chỉ Số: Trước vs Sau Khi Mod](#5-bảng-so-sánh-chỉ-số-trước-vs-sau-khi-mod)
-6. [Kế Hoạch Triển Khai Vào Codebase (Server & Database)](#6-kế-hoạch-triển-khai-vào-codebase)
-7. [Đánh Giá Cân Bằng Game (Balance & Counterplay)](#7-đánh-giá-cân-bằng-game)
+5. [Phái Ninja Kunai: Chiêu 25 Aoiame ("Bù Nhìn Bộc Phá Tích Động Năng")](#5-phái-ninja-kunai-chiêu-25-aoiame-bù-nhìn-bộc-phá-tích-động-năng)
+6. [Bảng So Sánh Chỉ Số: Trước vs Sau Khi Mod](#6-bảng-so-sánh-chỉ-số-trước-vs-sau-khi-mod)
+7. [Kế Hoạch Triển Khai Vào Codebase (Server & Database)](#7-kế-hoạch-triển-khai-vào-codebase)
+8. [Đánh Giá Cân Bằng Game (Balance & Counterplay)](#8-đánh-giá-cân-bằng-game)
 
 ---
 
@@ -131,17 +132,40 @@
 | **Point 5** | Cấp 29 | **20%** | **1.2 MP** đổi 1 ST | **22 giây** *(40s)* | 120 MP |
 | **Point 6 (Max)** | Cấp 30 | **23% - 25%** | **1.0 MP** đổi 1 ST *(Cực rẻ)* | **20 giây** *(20s)* | 130 MP |
 
-### 4.4. So sánh bài toán thực chiến (Cung có 3,000 MP, bị Boss vả 3,000 Dame):
-- **Bản Gốc (Point 6 - Hút 70%)**:
-  - Khiên hút 2,100 dame $\rightarrow$ Trừ ngay **2,100 MP**!
-  - Mana chỉ còn 900 MP $\rightarrow$ Ăn thêm 1 hit là cạn sạch 0 MP, khiên sập, kẹt toàn bộ skill và chết gục!
-- **Bản Mod Mới (Point 6 - Hút 25%, Tỉ lệ 1.0 MP)**:
-  - Khiên hút 750 dame $\rightarrow$ Trừ đúng **750 MP**!
-  - Mana vẫn còn tới **2,250 MP** $\rightarrow$ Dư dả tài nguyên để xả liên tục các chiêu 30, 40, 50 trả đòn và lùi lại an toàn!
+---
+
+## 5. PHÁI NINJA KUNAI: CHIÊU 25 AOIAME (BÙ NHÌN BỘC PHÁ TÍCH ĐỘNG NĂNG)
+
+### 5.1. Thực trạng kỹ năng gốc
+- **ID Skill Template**: `22` (Chiêu Aoiame - Cấp 25 Kunai - Hệ Băng).
+- **Cơ chế cũ**: Cắm một khúc gỗ bù nhìn tại chỗ hút đòn quái trong 300px. Khi hết giờ đếm ngược, bù nhìn biến mất trong làn khói mà không để lại bất kỳ dấu ấn hay tác dụng nào tiếp theo. Lối chơi bị động, thiếu tính bộc phá.
+
+### 5.2. Concept Rework: "Bù Nhìn Nổ Động Năng" (Kinetic Decoy Bomb)
+> *"Khúc gỗ bù nhìn không chỉ hút đòn đánh của kẻ thù mà còn đóng vai trò như một bình chứa động năng: Mỗi đòn đánh của quái/Boss vả vào bù nhìn sẽ tích tụ nội lực nén lại. Khi bù nhìn hết giờ và biến mất, toàn bộ nội lực nén sẽ nổ tung dồn thẳng vào con quái gần nhất!"*
+
+- **Thuần Sát Thương Bộc Phá (Không cần hiệu ứng đóng băng rườm rà)**:
+  - Cú nổ kích hoạt công thức tính toán sát thương PvE chuẩn mực của Server (`CombatService.calculatePvEDamage`):
+    - Đầy đủ sát thương gốc theo lực chiến của chủ nhân Kunai (`damage2` - `damage`).
+    - Có tỷ lệ nổ **Chí Mạng (Bạo Kích)** theo chỉ số bạo kích của chủ nhân.
+    - Tính trọn vẹn **Khắc Hệ Thủy/Băng** lên hệ của mục tiêu.
+- **Cơ chế gia tăng sát thương theo số đòn chịu đựng (+5%/hit)**:
+  - Cứ mỗi lần quái hoặc Boss đánh trúng bù nhìn $\rightarrow$ Sát thương nổ tăng thêm **+3.0% -> +5.0%**!
+  $$\text{Sát Thương Nổ Cuối} = \text{Sát Thương Kỹ Năng Gốc} \times \left(1 + \text{Số Hit Chịu Đựng} \times 5\%\right)$$
+
+### 5.3. Bảng thông số 6 cấp độ kỹ năng Kunai:
+
+| Cấp Chiêu (Point) | Yêu Cầu Level | Thời Gian Bù Nhìn | Sát Thương Nổ Gốc (% Dame Kunai) | % Sát Thương Thêm Mỗi Hit Bị Đánh | Ví dụ Bù Nhìn Gánh 10 Hit |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **Point 1** | Cấp 25 | 6.0 giây | **120%** | **+3.0%** / hit | $120\% \times (1 + 30\%) = \mathbf{156\%}$ Dame |
+| **Point 2** | Cấp 26 | 7.0 giây | **135%** | **+3.5%** / hit | $135\% \times (1 + 35\%) = \mathbf{182\%}$ Dame |
+| **Point 3** | Cấp 27 | 8.0 giây | **150%** | **+4.0%** / hit | $150\% \times (1 + 40\%) = \mathbf{210\%}$ Dame |
+| **Point 4** | Cấp 28 | 9.0 giây | **165%** | **+4.5%** / hit | $165\% \times (1 + 45\%) = \mathbf{239\%}$ Dame |
+| **Point 5** | Cấp 29 | 10.0 giây | **180%** | **+5.0%** / hit | $180\% \times (1 + 50\%) = \mathbf{270\%}$ Dame |
+| **Point 6 (Max)** | Cấp 30 | **12.0 giây** | **200%** | **+5.0%** / hit | $200\% \times (1 + 50\%) = \mathbf{300\%}$ Dame |
 
 ---
 
-## 5. BẢNG SO SÁNH CHỈ SỐ: TRƯỚC VS SAU KHI MOD
+## 6. BẢNG SO SÁNH CHỈ SỐ: TRƯỚC VS SAU KHI MOD
 
 ```mermaid
 graph TD
@@ -164,11 +188,15 @@ graph TD
     subgraph CUNG 25 (SOGEKIHEI)
         C1["Bản Gốc: Hút 70% sát thương 1:1<br/>Cháy sạch Mana sau 1 hit Boss<br/>Kẹt chiêu, sập khiên đột tử"] --> C2["Bản Mod: Tối Ưu Hiệu Suất Mana<br/>Đỡ 8-25% Sát thương (êm ái)<br/>Tỉ lệ tiêu hao giảm dần: 2.0 -> 1.0 MP/ST<br/>Không lo cạn kiệt Mana khi xả combo"]
     end
+
+    subgraph KUNAI 25 (AOIAME)
+        KN1["Bản Gốc: Cắm cọc gỗ hút quái<br/>Hết giờ biến mất vô nghĩa"] --> KN2["Bản Mod: Bù Nhìn Bộc Phá Động Năng<br/>Cú nổ chuẩn Engine (Có Chí Mạng)<br/>Mỗi hit quái đánh tăng thêm +5% Dame<br/>Nổ dồn thẳng vào quái gần nhất"]
+    end
 ```
 
 ---
 
-## 6. KẾ HOẠCH TRIỂN KHAI VÀO CODEBASE
+## 7. KẾ HOẠCH TRIỂN KHAI VÀO CODEBASE
 
 ### Bước 1: Cập nhật Cơ sở dữ liệu MariaDB (`skill_template` & `skill`)
 ```sql
@@ -203,159 +231,117 @@ UPDATE `skill_template`
 SET `description` = 'Khiên Mana Hộ Mệnh: Chuyển 8-25% sát thương nhận vào sang Mana theo tỷ lệ tiêu hao tối ưu (2.0 -> 1.0 MP/ST).' 
 WHERE `id` = 31;
 
--- Rút ngắn thời gian hồi chiêu cấp đầu cho skill 31 (Cung)
 UPDATE `skill` SET `cooldown` = 40000 WHERE `template_id` = 31 AND `point` = 1;
 UPDATE `skill` SET `cooldown` = 35000 WHERE `template_id` = 31 AND `point` = 2;
 UPDATE `skill` SET `cooldown` = 30000 WHERE `template_id` = 31 AND `point` = 3;
 UPDATE `skill` SET `cooldown` = 25000 WHERE `template_id` = 31 AND `point` = 4;
 UPDATE `skill` SET `cooldown` = 22000 WHERE `template_id` = 31 AND `point` = 5;
 UPDATE `skill` SET `cooldown` = 20000 WHERE `template_id` = 31 AND `point` = 6;
+
+-- 6. Cập nhật mô tả cho skill 25 Kunai (ID 22)
+UPDATE `skill_template` 
+SET `description` = 'Bù Nhìn Bộc Phá: Triệu hồi bù nhìn rơm thu hút kẻ địch. Khi biến mất, bù nhìn phát nổ gây sát thương lớn lên quái gần nhất, tăng thêm 5% sát thương với mỗi đòn đã gánh chịu.' 
+WHERE `id` = 22;
 ```
 
 ---
 
-### Bước 2: Bổ sung logic kỹ năng trong `Char.java`
+### Bước 2: Bổ sung logic kỹ năng trong `Char.java` & `Figurehead.java`
 
-#### 2.1. Hồi phục máu chiêu 25 Kiếm trong `updateEveryFiveSecond()`:
+#### 2.1. Cập nhật class [Figurehead.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/model/Figurehead.java):
 ```java
-Skill skillKakyuu = getSkillWithIdTemplate(4);
-if (this.clazz == 1 && skillKakyuu != null && skillKakyuu.point > 0) {
-    if (em.findByType((byte) 0) != null) { // Đang có buff thức ăn
-        int flatHp = 50 + (skillKakyuu.point * 50);          // +100 -> +400 HP
-        int percentHp = this.maxHP * (skillKakyuu.point * 3 + 2) / 1000; // +0.5% -> +2.0% Max HP
-        this.hp = Math.min(this.maxHP, this.hp + flatHp + percentHp);
-        zone.getService().loadHP(this);
-        getService().updateHp();
-    }
-}
-```
-
-#### 2.2. Kích hoạt chiêu 6x Kiếm (ID 55) trong `useSkillBuff()`:
-```java
-} else if (skill.template.id == 55) {
-    Effect eff = new Effect(65, 15000, 80);
-    em.setEffect(eff);
-    int sacrificeHp = this.hp * 15 / 100;
-    if (this.hp - sacrificeHp > 1) {
-        addHp(-sacrificeHp);
-    }
-    getService().updateHp();
-    serverMessage("Đã kích hoạt chế độ KHÔ MÁU (Sát thương tăng vọt, Phòng thủ suy giảm trong 15s)!");
-}
-```
-
-#### 2.3. Bùa hại chiêu 25 Đao (ID 40) trong `attackMonster` & `attackPlayer`:
-```java
-if (skillTemplateId == 40) {
-    int debuffPercent = 10 + (selectedSkill.point - 1); // 10% -> 15%
-    long duration = 6000L + (selectedSkill.point * 400L); // 6s -> 8s
+public class Figurehead {
+    public String name;
+    public short x;
+    public short y;
+    public int countDown;
     
-    if (mobs != null && !mobs.isEmpty()) {
-        Mob targetMob = mobs.get(0);
-        Effect eff = new Effect(48, duration, debuffPercent);
-        targetMob.effects.put((byte) 48, eff);
-        zone.getService().addEffect(targetMob, 48, 5, 5, 0);
+    // Thuộc tính tích trữ bộc phá:
+    public Char owner;
+    public int hitsTaken = 0;
+    public int baseSkillPercent = 120;
+    public int bonusPercentPerHit = 5;
+    
+    public Figurehead(String name, short x, short y, int countDown) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.countDown = countDown;
     }
-    if (targetPlayer != null) {
-        Effect eff = new Effect(48, duration, debuffPercent);
-        targetPlayer.getEm().setEffect(eff);
-    }
-    return;
 }
 ```
 
-#### 2.4. Bật Khiên Mana Cung (ID 31) trong `useSkillBuff()`:
+#### 2.2. Triệu hồi Bù nhìn Kunai trong [Char.java:6980](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/model/Char.java#L6980):
 ```java
-} else if (skill.template.id == 31) {
-    int absorbPercent = 8 + (skill.point - 1) * 3; // 8%, 11%, 14%, 17%, 20%, 23%
-    int manaRatioX10 = 20 - (skill.point - 1) * 2; // 20 -> 10 (tương ứng 2.0 -> 1.0 MP/ST)
-    Effect eff = new Effect(10, 90000, absorbPercent);
-    eff.param2 = manaRatioX10; // Lưu tỷ lệ quy đổi MP vào param2
-    em.setEffect(eff);
+} else if (skill.template.id == 22) {
+    short x = (short) (this.x + (20 * dir));
+    short y = this.y;
+    if (!this.zone.tilemap.tileTypeAt(x, y, TileMap.T_TOP)) {
+        serverMessage("Cần phải có khoảng trống phía trước mới có thể thi triển chiêu này");
+        return;
+    }
+    Figurehead buNhin = new Figurehead(this.name, x, y, options[0].param);
+    buNhin.owner = this;
+    buNhin.baseSkillPercent = 105 + (skill.point * 15); // 120% -> 200%
+    buNhin.bonusPercentPerHit = (skill.point >= 5) ? 5 : (3 + (skill.point / 2)); // 3% -> 5%
+    zone.add(buNhin);
+    zone.getService().createBuNhin(buNhin);
 }
 ```
 
 ---
 
-### Bước 3: Áp dụng công thức tính sát thương trong `CombatService.java` & `Mob.java`
+### Bước 3: Logic kích nổ và giao tranh trong `Zone.java`, `Mob.java` & `CombatService.java`
 
-#### 3.1. Trong [CombatService.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/combat/CombatService.java) - `calculatePvPDamage`:
+#### 3.1. Quái đánh bù nhìn tăng tích lũy trong [Mob.java:830](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/mob/Mob.java#L830):
 ```java
-// Chiêu 6x Kiếm
-Effect effKhoMau = attacker.getEm().findByID(65);
-if (effKhoMau != null) {
-    dameHit += (dameHit * effKhoMau.param / 100);
-    dameHit += (attacker.damage * 25 / 100); // 25% sát thương chuẩn
-}
-Effect targetKhoMau = target.getEm().findByID(65);
-if (targetKhoMau != null) {
-    dameHit += (dameHit * 30 / 100);
-}
-
-// Chiêu 35 Tiêu
-Effect effTieu35 = attacker.getEm().findByID(16);
-if (effTieu35 != null) {
-    int manaBurn = attacker.maxMP * 8 / 100;
-    if (attacker.mp >= manaBurn) {
-        attacker.addMp(-manaBurn);
-        attacker.getService().updateMp();
-        dameHit += (manaBurn * 5 / 2);
-    }
-}
-
-// Chiêu 25 Đao (PvP)
-Effect effWeaken = attacker.getEm().findByID(48);
-if (effWeaken != null) {
-    dameHit -= (dameHit * effWeaken.param / 100); // Giảm 10-15% công
-}
-Effect effFragile = target.getEm().findByID(48);
-if (effFragile != null) {
-    dameHit += (dameHit * effFragile.param / 100); // Nhận thêm 10-15% dame
-}
+zone.getService().npcAttackBuNhin(this, j);
+buNhin.hitsTaken++; // Tăng số hit mỗi khi quái/boss đánh trúng bù nhìn
+return;
 ```
 
-#### 3.2. Trong [CombatService.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/combat/CombatService.java) - `calculatePvEDamage`:
+#### 3.2. Bù nhìn phát nổ khi hết giờ trong [Zone.java:965](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/map/zones/Zone.java#L965):
 ```java
-// Đao đánh Boss / Quái
-Effect effMobBua = mob.effects.get((byte) 48);
-if (effMobBua != null) {
-    dameHit += (dameHit * effMobBua.param / 100); // Cả team gây thêm 10-15% dame lên Boss
-}
-```
-
-#### 3.3. Trong [Mob.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/mob/Mob.java) - `attack`:
-```java
-// 1. Boss tấn công người chơi khi dính bùa của Đao
-Effect effMobWeaken = this.effects.get((byte) 48);
-if (effMobWeaken != null) {
-    dameHp -= (dameHp * effMobWeaken.param / 100); // Giảm 10-15% dame của Boss
-}
-
-// 2. Cung đỡ đòn bằng Khiên Mana (Sogekihei - Tối ưu hóa hiệu suất Mana)
-if (pl.isShieldMana) {
-    Effect eff = pl.getEm().findByType((byte) 6);
-    if (eff != null && (pl.mp * 100 / pl.maxMP) >= 10) {
-        int absorbedDame = dameHp * eff.param / 100; // 8% - 25% sát thương hấp thụ
-        int manaRatioX10 = eff.param2 > 0 ? eff.param2 : 10;
-        int manaCost = (absorbedDame * manaRatioX10) / 10;   // Lượng MP tiêu hao theo tỷ lệ
-        
-        if (pl.mp >= manaCost) {
-            dameHp -= absorbedDame;
-            pl.addMp(-manaCost);
-            pl.getService().updateMp();
+// Khi bù nhìn biến mất (b.countDown <= 0):
+// 1. Tìm quái gần nhất trong bán kính 200px quanh bù nhìn
+Mob targetMob = null;
+int minDistance = 200;
+for (Mob m : this.mobs) {
+    if (m != null && !m.isDead) {
+        int d = NinjaUtils.getDistance(b.x, b.y, m.x, m.y);
+        if (d < minDistance) {
+            minDistance = d;
+            targetMob = m;
         }
     }
 }
+
+// 2. Kích nổ sát thương chuẩn Engine lên con quái gần nhất
+if (targetMob != null && b.owner != null && !targetMob.isDead) {
+    boolean isFatal = b.owner.fatal > NinjaUtils.nextInt(1000);
+    int damageBasic = CombatService.calculatePvEDamage(b.owner, targetMob, isFatal, 0);
+    int skillDamage = damageBasic * b.baseSkillPercent / 100;
+    
+    // Nhân thêm % theo số hit bù nhìn đã gánh (mỗi hit +5%)
+    int totalDamage = skillDamage + (skillDamage * (b.hitsTaken * b.bonusPercentPerHit) / 100);
+    
+    targetMob.addHp(-totalDamage);
+    getService().attackMonster(totalDamage, isFatal, targetMob);
+    if (targetMob.hp <= 0) {
+        targetMob.die();
+    }
+}
 ```
 
 ---
 
-## 7. ĐÁNH GIÁ CÂN BẰNG GAME
+## 8. ĐÁNH GIÁ CÂN BẰNG GAME
 
-1. **Ninja Kiếm**: Trở thành cỗ xe tăng bất tử về độ hồi phục tự nhiên khi cày quái và tank Boss.
-2. **Ninja Đao**: Chiêu 25 biến thành công cụ debuff cốt lõi mở giao tranh cho cả team, xóa bỏ hoàn toàn danh hiệu phế phẩm.
-3. **Ninja Tiêu**: Biến thể ám sát dồn sát thương bùng nổ theo Mana, đưa Tiêu trở thành sát thủ tầm xa đích thực.
-4. **Ninja Cung**: Khắc phục triệt để điểm yếu "cháy sạch Mana / kẹt chiêu", mang lại lớp khiên bảo hộ êm ái 25% với chi phí cực rẻ (1:1), cho phép Cung xả combo phản kích liên tục mà không lo sập nguồn.
+1. **Ninja Kiếm**: "Pháo đài sinh tồn" với lượng hồi phục tự nhiên vô địch từ thức ăn (Flat + % Max HP).
+2. **Ninja Đao**: Chiêu 25 biến thành công cụ debuff mở giao tranh cốt lõi (Giảm công mục tiêu 15% & Tăng sát thương nhận 15%).
+3. **Ninja Tiêu**: Biến thể ám sát dồn sát thương bùng nổ theo Mana, đưa Tiêu trở thành xạ thủ burst dame tầm xa đích thực.
+4. **Ninja Cung**: Khắc phục triệt để tình trạng cháy sạch Mana / kẹt chiêu, lớp khiên hộ thể mềm 25% với chi phí rẻ (1:1) giúp Cung duy trì hỏa lực liên tục.
+5. **Ninja Kunai**: Bù nhìn trở thành quả bom động năng thông minh, trừng phạt thích đáng bầy quái bu lại tấn công và mang lại công cụ dồn dame đơn mục tiêu cực mạnh cho Kunai khi solo quái to/Boss.
 
 ---
 
