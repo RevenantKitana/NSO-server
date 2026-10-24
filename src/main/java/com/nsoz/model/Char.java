@@ -6926,10 +6926,23 @@ public class Char {
     public void useSkillBuff(byte dir, Skill skill) {
         if (skill != null && !this.isDead) {
             long now = System.currentTimeMillis();
-            if (skill.template.type == 2 && !skill.isCooldown() && this.mp >= skill.manaUse) {
+            if (skill.template.type == 2 && !skill.isCooldown()) {
+                int requiredMp = skill.manaUse;
+                if (skill.template.id == 47) {
+                    // Skill 47 Suishou: Tiêu hao Flat MP + % Max MP (Opt 76)
+                    int percentCost = 3 + (skill.point - 1);
+                    if (skill.options != null && skill.options.length > 3 && skill.options[3].optionTemplate.id == 76) {
+                        percentCost = skill.options[3].param;
+                    }
+                    requiredMp += (int) ((long) this.maxMP * percentCost / 100);
+                }
+                if (this.mp < requiredMp) {
+                    serverMessage("Không đủ MP để thi triển chiêu thức!");
+                    return;
+                }
                 SkillOption[] options = skill.options;
                 skill.lastTimeUseThisSkill = now;
-                addMp(-skill.manaUse);
+                addMp(-requiredMp);
                 getService().updateMp();
                 if (skill.template.id == 67 || skill.template.id == 68 || skill.template.id == 69 || skill.template.id == 70 || skill.template.id == 71 || skill.template.id == 72) {
 
@@ -7009,17 +7022,16 @@ public class Char {
     }
 
     public void revival(Skill skill) {
-        // skill buff hp mp
+        // skill buff hp mp (Quạt Suishou ID 47)
         SkillOption[] options = skill.options;
-        int param = options[0].param;
-        int param2 = options[1].param;
-        double reductionRate = 0.03 * skill.point;  // Mỗi cấp tăng thêm 3%
-        param -= param * reductionRate;
-        param2 -= param2 * reductionRate;
+        int baseHp = options[0].param; // Opt 27: 30 -> 150 HP
+        int percentMpHeal = (options.length > 1 && options[1].optionTemplate.id == 74) ? options[1].param : skill.point; // 1% -> 5% Max MP
+        int buffRate = (options.length > 2 && options[2].optionTemplate.id == 75) ? options[2].param : (skill.point * 3); // 3% -> 15% hiệu quả đồng đội
 
-        param += param * this.optionsSupportSkill[66] / 100;
-        param2 += param2 * this.optionsSupportSkill[66] / 100;
-        Effect eff = new Effect(8, 5000, param);
+        int totalHeal = baseHp + (int) ((long) this.maxMP * percentMpHeal / 100);
+        totalHeal += totalHeal * this.optionsSupportSkill[66] / 100;
+
+        Effect eff = new Effect(8, 5000, totalHeal);
         em.setEffect(eff);
         if (this.group != null) {
             List<Char> list = this.group.getCharsInZone(mapId, zone.id);
@@ -7028,8 +7040,8 @@ public class Char {
                     int distance = NinjaUtils.getDistance(this.x, this.y, _char.x, _char.y);
                     int d = NinjaUtils.getDistance(skill.dx, skill.dy, 0, 0);
                     if (distance <= d) {
-                        Effect eff2 = new Effect(8, 5000, param);
-                        eff2.param2 = param2;
+                        int teamHeal = totalHeal + (int) ((long) totalHeal * buffRate / 100);
+                        Effect eff2 = new Effect(8, 5000, teamHeal);
                         _char.em.setEffect(eff2);
                     }
                 }

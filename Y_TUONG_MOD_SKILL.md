@@ -1,4 +1,4 @@
-# TÀI LIỆU THIẾT KẾ & THÔNG SỐ MOD KỸ NĂNG: 5 HỆ PHÁI
+# TÀI LIỆU THIẾT KẾ & THÔNG SỐ MOD KỸ NĂNG: 6 HỆ PHÁI
 ### (LƯU TRỮ Ý TƯỞNG REWORK GAMEPLAY - NSO PRIVATE 2026)
 
 > **Mục tiêu**: Đưa chiều sâu chiến thuật và phong cách hành động hiện đại (High Risk - High Reward / Mana Efficiency / Kinetic Burst / Strategic Utility) vào NSO, khắc phục hạn chế animation của Client J2ME, giải quyết triệt để các kỹ năng "rác/phèn" (Dead Skills) hoặc "tự bóp" (Self-sabotaging Skills) và tạo bản sắc riêng biệt cho từng môn phái.
@@ -16,6 +16,8 @@
 6. [Bảng So Sánh Chỉ Số: Trước vs Sau Khi Mod](#6-bảng-so-sánh-chỉ-số-trước-vs-sau-khi-mod)
 7. [Kế Hoạch Triển Khai Vào Codebase (Server & Database)](#7-kế-hoạch-triển-khai-vào-codebase)
 8. [Đánh Giá Cân Bằng Game (Balance & Counterplay)](#8-đánh-giá-cân-bằng-game)
+9. [Cân Bằng Kỹ Năng Cấp 15 (6 Phái)](#9-cân-bằng-kỹ-năng-cấp-15-6-phái)
+10. [Cân Bằng Kỹ Năng Cấp 20 Quạt (Oouchia)](#10-cân-bằng-kỹ-năng-cấp-20-quạt-oouchia)
 
 ---
 
@@ -369,3 +371,64 @@ if (targetMob != null && b.owner != null && !targetMob.isDead) {
 ---
 
 *Tài liệu được lưu trữ trực tiếp trong thư mục dự án để làm chuẩn mực kỹ thuật khi tiến hành cập nhật phiên bản máy chủ.*
+
+---
+
+## 9. CÂN BẰNG KỸ NĂNG CẤP 15 (6 PHÁI)
+
+### Phân bậc chỉ số (Point 6 Max):
+- Chí Mạng: Cung > Đao > Tiêu
+- Chính Xác: Kunai > Cung > Tiêu
+- Né Tránh: Tiêu > Kunai > Kiếm
+- Phòng Thủ: Đao > Kiếm
+- Tấn Công %: Cung > Kunai > Tiêu = Kiếm
+- Tấn Công Thẳng: Tiêu > Kunai = Kiếm > Đao > Cung
+- Tốc Chạy: Kunai > Tiêu > Kiếm
+
+---
+
+### Chi tiết thông số (Point 1 -> Point 6):
+(Cấp 2 đến 5 tăng đều tuyến tính giữa cấp 1 và cấp 6)
+
+1. CUNG - Washihitomi (ID 29 - Bị động):
+- Point 1 (Lv 15): Công nội +9%, Chí mạng +20, Chính xác +20, Băng sát nội +20
+- Point 6 (Lv 20): Công nội +45%, Chí mạng +100, Chính xác +120, Băng sát nội +100
+
+2. TIÊU - Itotama (ID 11 - Bị động, bỏ phản đòn):
+- Point 1 (Lv 15): Hỏa công nội +40, Né tránh +30, Tốc chạy +15, Công nội +3%, Chí mạng +15, Chính xác +15
+- Point 6 (Lv 20): Hỏa công nội +300, Né tránh +150, Tốc chạy +35, Công nội +15%, Chí mạng +60, Chính xác +80
+
+3. KUNAI - Akaiame (ID 20 - Bị động):
+- Point 1 (Lv 15): Chính xác +20, Băng sát ngoại +40, Tốc chạy +20, Né tránh +25, Công ngoại +4%
+- Point 6 (Lv 20): Chính xác +140, Băng sát ngoại +200, Tốc chạy +45, Né tránh +100, Công ngoại +20%
+
+4. ĐAO - Konoitoame (ID 38 - Bị động):
+- Point 1 (Lv 15): HP tối đa +5%, Phản đòn +40, Phong lôi ngoại +90, Chí mạng +20
+- Point 6 (Lv 20): HP tối đa +30%, Phản đòn +200, Phong lôi ngoại +140, Chí mạng +80
+
+5. KIẾM - Amagedon (ID 2 - Bị động):
+- Point 1 (Lv 15): Kháng tất cả +35, Công ngoại +3%, Né tránh +20, Tốc chạy +10
+- Point 6 (Lv 20): Kháng tất cả +180, Công ngoại +15%, Né tránh +80, Tốc chạy +40
+
+6. QUẠT - Suishou (ID 47 - Chủ động hồi phục):
+- Point 1 (Lv 15): Mỗi 0.5s hồi 30 HP + 1.0% Max MP trong 5s | Buff đồng đội: +3% hiệu quả, hồi chiêu 10s | Mana sử dụng: 120MP + 3% tối đa
+- Point 6 (Lv 65): Mỗi 0.5s hồi 150 HP + 5.0% Max MP trong 5s | Buff đồng đội: +15% hiệu quả, hồi chiêu 15s | Mana sử dụng: 200MP + 8% tối đa
+
+---
+
+## 10. CÂN BẰNG KỸ NĂNG CẤP 20 QUẠT (OOUCHIA)
+
+### Định hướng thiết kế:
+- Chiêu tâm pháp bị động tốn 11 điểm kỹ năng để nâng tối đa (Point 1 ở Lv 20 -> Point 12 ở Lv 31).
+- Tăng chỉ số dàn trải, đa năng (Hybrid), mỗi thứ một chút để xứng đáng điểm đầu tư mà không phá vỡ cân bằng.
+- Không tăng máu/mana theo %, chuyển thành tăng Máu và Mana trực tiếp (Flat) để nhân vật cứng cáp và dồi dào năng lượng ngay ở giai đoạn 2x.
+- Điểm sáng cốt lõi: Tăng % kinh nghiệm nhận được khi đánh quái (giữ vững bản sắc Quạt).
+
+---
+
+### Chi tiết thông số (Point 1 -> Point 12):
+(Cấp 2 đến 11 tăng đều tuyến tính giữa Point 1 và Point 12)
+
+QUẠT - Oouchia (ID 48 - Tâm pháp bị động):
+- Point 1 (Lv 20): Tăng EXP đánh quái +10%, HP tối đa +100, MP tối đa +100, Công nội +1%, Tốc chạy +10, Phong lôi nội + 50, chính xác +10, chí mạng +10
+- Point 12 (Lv 31): Tăng EXP đánh quái +55%, HP tối đa +1000, MP tối đa +1000, Công nội +11%, Tốc chạy +30, Phong lôi nội + 150, chính xác +50, chí mạng +40

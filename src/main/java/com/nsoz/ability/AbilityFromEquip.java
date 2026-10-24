@@ -192,7 +192,8 @@ public class AbilityFromEquip implements AbilityStrategy {
                     owner.basicAttack += potentialDame * owner.incrDame / 100;
                 }
                 int flatEquipAtk0 = stats.getFlat(StatType.PHYSICAL_ATTACK) - owner.options[38];
-                owner.damage = owner.basicAttack + flatEquipAtk0 + (potentialDame * stats.getPercent(StatType.PHYSICAL_ATTACK) / 100) + potentialDame;
+                int percent0 = stats.getPercent(StatType.PHYSICAL_ATTACK) + owner.optionsSupportSkill[0];
+                owner.damage = owner.basicAttack + flatEquipAtk0 + (potentialDame * percent0 / 100) + potentialDame;
                 break;
 
             case 1: // Nội công (Chakra potential[3])
@@ -206,7 +207,8 @@ public class AbilityFromEquip implements AbilityStrategy {
                     owner.basicAttack += potentialDame * owner.incrDame2 / 100;
                 }
                 int flatEquipAtk1 = stats.getFlat(StatType.MAGIC_ATTACK) - owner.options[38];
-                owner.damage = owner.basicAttack + flatEquipAtk1 + (potentialDame * stats.getPercent(StatType.MAGIC_ATTACK) / 100) + potentialDame;
+                int percent1 = stats.getPercent(StatType.MAGIC_ATTACK) + owner.optionsSupportSkill[1];
+                owner.damage = owner.basicAttack + flatEquipAtk1 + (potentialDame * percent1 / 100) + potentialDame;
                 break;
         }
 
@@ -217,9 +219,9 @@ public class AbilityFromEquip implements AbilityStrategy {
         // Tấn công theo tiềm năng (Option 94)
         owner.damage += ((potentialDame * 4) * stats.getPercent(StatType.POTENTIAL_ATTACK) / 100);
 
-        // Hỗ trợ từ kỹ năng bị động
-        owner.damage += owner.optionsSupportSkill[8] + owner.optionsSupportSkill[6] + owner.optionsSupportSkill[9]
-                + owner.optionsSupportSkill[7] + owner.optionsSupportSkill[1];
+        // Hỗ trợ nguyên tố từ kỹ năng bị động (Option 5 đến 10)
+        owner.damage += owner.optionsSupportSkill[5] + owner.optionsSupportSkill[6] + owner.optionsSupportSkill[7]
+                + owner.optionsSupportSkill[8] + owner.optionsSupportSkill[9] + owner.optionsSupportSkill[10];
 
         // Sát thương từ chiêu thức đang chọn
         owner.damage += skillOptions[2] + skillOptions[3] + skillOptions[4] + skillOptions[5] + skillOptions[6]
@@ -264,6 +266,11 @@ public class AbilityFromEquip implements AbilityStrategy {
         int hpPercent = stats.getPercent(StatType.MAX_HP) + owner.optionsSupportSkill[17];
         owner.maxHP = basicHp + (basicHp * hpPercent / 100) + stats.getFlat(StatType.MAX_HP);
 
+        // Flat HP từ kỹ năng bị động (Option 72)
+        if (owner.optionsSupportSkill.length > 72) {
+            owner.maxHP += owner.optionsSupportSkill[72];
+        }
+
         // % HP sau khi mặc đồ (Option 128)
         if (stats.getPercent(StatType.HP_AFTER_EQUIP) > 0) {
             owner.maxHP += (owner.maxHP * stats.getPercent(StatType.HP_AFTER_EQUIP) / 100);
@@ -291,6 +298,11 @@ public class AbilityFromEquip implements AbilityStrategy {
 
         int mpPercent = stats.getPercent(StatType.MAX_MP) + owner.optionsSupportSkill[18];
         owner.maxMP = basicMp + (basicMp * mpPercent / 100) + stats.getFlat(StatType.MAX_MP);
+
+        // Flat MP từ kỹ năng bị động (Option 73)
+        if (owner.optionsSupportSkill.length > 73) {
+            owner.maxMP += owner.optionsSupportSkill[73];
+        }
 
         if (owner.maxMP <= 0) {
             owner.maxMP = 50;
@@ -362,5 +374,9 @@ public class AbilityFromEquip implements AbilityStrategy {
             owner.speed += 2;
         }
         owner.speed += stats.getFlat(StatType.MOVE_SPEED);
+        // Tốc độ di chuyển từ kỹ năng bị động (Option 16: mỗi 10 điểm = +1 tốc chạy)
+        if (owner.optionsSupportSkill.length > 16) {
+            owner.speed += owner.optionsSupportSkill[16] / 10;
+        }
     }
 }
