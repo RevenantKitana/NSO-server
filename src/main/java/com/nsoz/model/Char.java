@@ -8357,15 +8357,18 @@ public class Char {
                     if (!isNhanBan && result.getReactDamage() > 0) {
                         int reactDame = result.getReactDamage();
                         if (result.isIceReflect()) {
-                            zone.getService().addEffect(mob, 64, 5, 5, 0);
+                            zone.getService().addEffect(this, 64, 5, 5, 0);
                         }
                         if (this.hp - reactDame > 1) {
                             addHp(-reactDame);
                         } else {
-                            this.hp = 1;
-                            reactDame = -1;
+                            reactDame = Math.max(1, this.hp - 1);
+                            addHp(-reactDame);
                         }
                         zone.getService().attackCharacter(reactDame, 0, this);
+                        if (this.hp <= 0) {
+                            startDie();
+                        }
                     }
 
                     int dameHit = result.getDamage();
@@ -8382,7 +8385,6 @@ public class Char {
                             dameHit *= -1;
                             dameMp *= -1;
                         }
-                        zone.getService().attackCharacter(dameHit, dameMp, pl);
                         if (pl.isTest && pl.hp - num <= 0) {
                             Char pl2 = zone.findCharById(pl.testCharId);
                             int num2 = pl.hp;
@@ -8390,6 +8392,7 @@ public class Char {
                         } else {
                             pl.addHp(-num);
                         }
+                        zone.getService().attackCharacter(dameHit, dameMp, pl);
                         if (pl.hp <= 0) {
 
                             if (BlackSaturday.getInstance().status == 1 && !zone.tilemap.isNotBlack()) { /// t7 đen tối

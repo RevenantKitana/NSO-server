@@ -411,8 +411,9 @@ if (targetMob != null && b.owner != null && !targetMob.isDead) {
 - Point 6 (Lv 20): Kháng tất cả +180, Công ngoại +15%, Né tránh +80, Tốc chạy +40
 
 6. QUẠT - Suishou (ID 47 - Chủ động hồi phục):
-- Point 1 (Lv 15): Mỗi 0.5s hồi 30 HP + 1.0% Max MP trong 5s | Buff đồng đội: +3% hiệu quả, hồi chiêu 10s | Mana sử dụng: 120MP + 3% tối đa
-- Point 6 (Lv 65): Mỗi 0.5s hồi 150 HP + 5.0% Max MP trong 5s | Buff đồng đội: +15% hiệu quả, hồi chiêu 15s | Mana sử dụng: 200MP + 8% tối đa
+- *Lưu ý cơ chế cốt lõi*: Chiêu thức **KHÔNG hồi phục Mana**. Chiêu này hồi phục máu (HP) cho bản thân và đồng đội, trong đó lượng máu hồi phục được cộng thêm theo % Max MP của người dùng, và tiêu hao Mana khi thi triển.
+- Point 1 (Lv 15): Mỗi 0.5s hồi 30 HP + (1.0% Max MP) máu trong 5s | Buff đồng đội: +3% hiệu quả, hồi chiêu 10s | Mana sử dụng: 120MP + 3% tối đa
+- Point 6 (Lv 65): Mỗi 0.5s hồi 150 HP + (5.0% Max MP) máu trong 5s | Buff đồng đội: +15% hiệu quả, hồi chiêu 15s | Mana sử dụng: 200MP + 8% tối đa
 
 ---
 
@@ -432,3 +433,17 @@ if (targetMob != null && b.owner != null && !targetMob.isDead) {
 QUẠT - Oouchia (ID 48 - Tâm pháp bị động):
 - Point 1 (Lv 20): Tăng EXP đánh quái +10%, HP tối đa +100, MP tối đa +100, Công nội +1%, Tốc chạy +10, Phong lôi nội + 50, chính xác +10, chí mạng +10
 - Point 12 (Lv 31): Tăng EXP đánh quái +55%, HP tối đa +1000, MP tối đa +1000, Công nội +11%, Tốc chạy +30, Phong lôi nội + 150, chính xác +50, chí mạng +40
+
+---
+
+## 11. BẢNG MÔ TẢ ĐẦU CHUẨN CỦA CÁC CHIÊU ĐÃ MOD (SKILL_TEMPLATE)
+
+| Phái | ID | Tên chiêu | Cấp | Loại | Dòng mô tả chuẩn |
+| :--- | :---: | :--- | :---: | :---: | :--- |
+| **Kiếm** | **2** | Amagedon | 15 | Bị động | **Tâm pháp Kiếm thuật** |
+| **Tiêu** | **11** | Itotama | 15 | Bị động | **Tâm pháp Tiêu thuật** |
+| **Kunai** | **20** | Akaiame | 15 | Bị động | **Tâm pháp Ảnh Nhận thuật** |
+| **Cung** | **29** | Washihitomi | 15 | Bị động | **Tâm pháp Tiễn thuật** |
+| **Đao** | **38** | Konoitoame | 15 | Bị động | **Tâm pháp Đao thuật** |
+| **Quạt** | **47** | Suishou | 15 | Chủ động | **Chủ động hồi phục cho bản thân và đồng đội** |
+| **Quạt** | **48** | Oouchia | 20 | Bị động | **Tâm pháp Thiết Phiến thuật** |

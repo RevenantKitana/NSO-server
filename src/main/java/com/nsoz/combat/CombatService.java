@@ -94,6 +94,21 @@ public class CombatService {
                 break;
         }
 
+        // Step 4.1: Elemental Counter System (Cơ chế xung khắc hệ: Hỏa khắc Phong khắc Băng khắc Hỏa)
+        int relation = getSysRelation(attacker.getSys(), target.getSys());
+        if (relation == 1) {
+            // Khắc hệ mục tiêu: Tăng 10% sát thương + Cường khắc (sysUp)
+            int bonusPercent = 10 + Math.max(0, attacker.sysUp);
+            dameHit += (dameHit * bonusPercent) / 100;
+        } else if (relation == -1) {
+            // Bị mục tiêu khắc hệ: Giảm 10% sát thương + Hạ khắc (sysDown)
+            int reducePercent = 10 + Math.max(0, target.sysDown);
+            if (reducePercent > 50) {
+                reducePercent = 50;
+            }
+            dameHit -= (dameHit * reducePercent) / 100;
+        }
+
         // Step 5: Percent Damage Mitigation (Áp trần tối đa 75% để triệt tiêu bug bất tử 0 dame)
         int rawMitigation = target.options[63] + target.options[98];
         int mitigation = Math.min(75, Math.max(0, rawMitigation));
@@ -118,7 +133,12 @@ public class CombatService {
         int reactDame = 0;
         boolean isIceReflect = false;
         if (!attacker.isNhanBan) {
-            reactDame = target.reactDame;
+            // Phản đòn cận chiến kích hoạt cho TẤT CẢ các phái khi khoảng cách từ nguồn sát thương đến người chơi đủ gần (bán kính <= 60)
+            int distance = NinjaUtils.getDistance(attacker.x, attacker.y, target.x, target.y);
+            boolean isCloseRange = distance <= 60;
+            if (isCloseRange) {
+                reactDame = target.reactDame;
+            }
             if (target.options[135] > 0) {
                 if (NinjaUtils.nextInt(100) < target.options[135]) {
                     reactDame = attacker.hp * 20 / 100;
@@ -221,6 +241,18 @@ public class CombatService {
                 break;
         }
 
+        // Cơ chế xung khắc hệ (PvE: Người chơi đánh quái)
+        int pveRelation = getSysRelation(attacker.getSys(), mob.sys);
+        if (pveRelation == 1) {
+            // Người chơi khắc hệ quái: Tăng 10% sát thương + Cường khắc (sysUp)
+            int bonusPercent = 10 + Math.max(0, attacker.sysUp);
+            dameHit += (dameHit * bonusPercent) / 100;
+        } else if (pveRelation == -1) {
+            // Quái khắc hệ người chơi: Giảm 10% sát thương gây ra
+            int reducePercent = 10;
+            dameHit -= (dameHit * reducePercent) / 100;
+        }
+
         // Trạng thái suy yếu & đóng băng của người tấn công
         if (attacker.isInfected()) {
             dameHit -= dameHit * 80 / 100;
@@ -238,5 +270,30 @@ public class CombatService {
         dameHit += attacker.options[113];
 
         return dameHit;
+    }
+
+    /**
+     * Xác định mối quan hệ tương khắc ngũ hành giữa 2 hệ (Hỏa, Băng, Phong).
+     * Quy tắc chuẩn NSO:
+     * - Hỏa (1) khắc Phong (3)
+     * - Phong (3) khắc Băng (2)
+     * - Băng (2) khắc Hỏa (1)
+     *
+     * @param attSys    Hệ của người/nguồn tấn công (1: Hỏa, 2: Băng, 3: Phong, 0: Vô phái)
+     * @param targetSys Hệ của mục tiêu (1: Hỏa, 2: Băng, 3: Phong, 0: Vô phái)
+     * @return 1 nếu attSys khắc chế targetSys (ưu thế),
+     *        -1 nếu attSys bị targetSys khắc chế (yếu thế),
+     *         0 nếu cùng hệ hoặc vô phái (trung lập).
+     */
+    public static int getSysRelation(int attSys, int targetSys) {
+        if (attSys <= 0 || targetSys <= 0 || attSys == targetSys) {
+            return 0;
+        }
+        if ((attSys == 1 && targetSys == 3)
+                || (attSys == 3 && targetSys == 2)
+                || (attSys == 2 && targetSys == 1)) {
+            return 1;
+        }
+        return -1;
     }
 }

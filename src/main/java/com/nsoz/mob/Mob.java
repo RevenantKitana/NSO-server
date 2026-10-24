@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.nsoz.server.SpawnBossManager;
-import org.jetbrains.annotations.NotNull;
+import com.nsoz.combat.CombatService;
 import com.nsoz.constants.ItemName;
 import com.nsoz.constants.MapName;
 import com.nsoz.constants.MobName;
@@ -911,6 +911,20 @@ public class Mob {
                         break;
                 }
 
+                // Cơ chế xung khắc hệ (PvE: Quái đánh người chơi)
+                int mobRelation = CombatService.getSysRelation(this.sys, pl.getSys());
+                if (mobRelation == 1) {
+                    // Quái khắc hệ người chơi: Tăng 10% sát thương quái gây ra
+                    dameHp += (dameHp * 10) / 100;
+                } else if (mobRelation == -1) {
+                    // Người chơi khắc hệ quái: Giảm 10% sát thương quái gây ra + Hạ khắc (sysDown)
+                    int reducePercent = 10 + Math.max(0, pl.sysDown);
+                    if (reducePercent > 50) {
+                        reducePercent = 50;
+                    }
+                    dameHp -= (dameHp * reducePercent) / 100;
+                }
+
                 Effect eff2 = pl.getEm().findByID((byte) 37);
                 if (eff2 != null) {
                     dameHp -= dameHp * eff2.param / 100;
@@ -972,26 +986,67 @@ public class Mob {
                 if ((pl.taskId == TaskName.NV_LAY_NUOC_HANG_SAU || pl.taskId == TaskName.NV_LAY_NUOC_HANG_SAU || pl.taskId == TaskName.NV_HAI_NAM) && pl.isCatchItem) {
                     pl.isFailure = true;
                 }
-                if (isMobMe) {
+                if (dameHp > 0) {
+                    pl.addHp(-dameHp);
+                }
 
+                // Xử lý phản đòn cận chiến của người chơi lên quái vật khi quái vật ở cự ly gần
+                if (!isMobMe && dameHp > 0 && !this.isDead && (pl.reactDame > 0 || pl.options[135] > 0)) {
+                    int distance = NinjaUtils.getDistance(this.x, this.y, pl.x, pl.y);
+                    boolean isCloseRange = distance <= (template.rangeMove + 60);
+                    if (isCloseRange) {
+                        int reactDame = pl.reactDame;
+                        boolean isIceReflect = false;
+                        if (pl.options[135] > 0 && NinjaUtils.nextInt(100) < pl.options[135]) {
+                            reactDame = (int) ((long) this.maxHP * 20 / 100);
+                            isIceReflect = true;
+                        }
+                        if (reactDame > 0) {
+                            if (reactDame > this.hp) {
+                                reactDame = this.hp;
+                            }
+                            int preHP = this.hp;
+                            if (this.template.id == MobName.BU_NHIN) {
+                                addHp(-(this.maxHP / 5));
+                            } else {
+                                addHp(-reactDame);
+                            }
+                            if (this.hp < 0) {
+                                this.hp = 0;
+                            }
+                            this.Fight(pl, reactDame);
+                            zone.getService().attackMonster(reactDame, false, this);
+                            int nextHP = this.hp;
+                            int hp = Math.abs(nextHP - preHP);
+                            pl.addExp(this, hp);
+
+                            if (isIceReflect) {
+                                zone.getService().addEffect(this, 64, 5, 5, 0);
+                            }
+
+                            if (this.hp <= 0) {
+                                this.die();
+                            }
+                            if (this.isDead) {
+                                Char master = sortNinjaFight();
+                                Char killer = pl.getOriginChar();
+                                this.dead(killer, master);
+                            }
+                        }
+                    }
+                }
+
+                if (isMobMe) {
                     if (dameHp > 0) {
                         owner.zone.getService().mobMeAttack(owner, pl);
-
                         owner.zone.getService().attackCharacter(dameHp, dameMp, pl);
                     }
                 } else {
                     attack(pl, dameHp, dameMp);
                 }
-                dameHp = dameHp - dameHp * 80 / 100;
 
-                if (dameHp < 0) {
-                    dameHp = -1;
-                }
-                if (dameHp > 0) {
-                    pl.addHp(-dameHp);
-                    if (pl.hp <= 0) {
-                        pl.startDie();
-                    }
+                if (pl.hp <= 0) {
+                    pl.startDie();
                 }
 
             } finally {
