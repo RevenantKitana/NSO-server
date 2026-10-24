@@ -12,7 +12,7 @@
 2. [Phái Ninja Tiêu: Chiêu 35 Hoshitama ("Đổi Mana Lấy Sức Tấn Công")](#2-phái-ninja-tiêu-chiêu-35-hoshitama-đổi-mana-lấy-sức-tấn-công)
 3. [Phái Ninja Đao: Chiêu 25 Magumandari ("Bùa Hại Suy Yếu & Phá Giáp")](#3-phái-ninja-đao-chiêu-25-magumandari-bùa-hại-suy-yếu--phá-giáp)
 4. [Phái Ninja Cung: Chiêu 25 Sogekihei ("Tối Ưu Hiệu Suất Khiên Mana")](#4-phái-ninja-cung-chiêu-25-sogekihei-tối-ưu-hiệu-suất-khiên-mana)
-5. [Phái Ninja Kunai: Chiêu 25 Aoiame ("Bù Nhìn Bộc Phá Tích Động Năng")](#5-phái-ninja-kunai-chiêu-25-aoiame-bù-nhìn-bộc-phá-tích-động-năng)
+5. [Phái Ninja Kunai: Chiêu 25 Aoiame ("Bù Nhìn Nổ Động Năng Chuẩn Chỉ Số")](#5-phái-ninja-kunai-chiêu-25-aoiame-bù-nhìn-nổ-động-năng-chuẩn-chỉ-số)
 6. [Bảng So Sánh Chỉ Số: Trước vs Sau Khi Mod](#6-bảng-so-sánh-chỉ-số-trước-vs-sau-khi-mod)
 7. [Kế Hoạch Triển Khai Vào Codebase (Server & Database)](#7-kế-hoạch-triển-khai-vào-codebase)
 8. [Đánh Giá Cân Bằng Game (Balance & Counterplay)](#8-đánh-giá-cân-bằng-game)
@@ -134,34 +134,36 @@
 
 ---
 
-## 5. PHÁI NINJA KUNAI: CHIÊU 25 AOIAME (BÙ NHÌN BỘC PHÁ TÍCH ĐỘNG NĂNG)
+## 5. PHÁI NINJA KUNAI: CHIÊU 25 AOIAME (BÙ NHÌN NỔ ĐỘNG NĂNG CHUẨN CHỈ SỐ)
 
 ### 5.1. Thực trạng kỹ năng gốc
 - **ID Skill Template**: `22` (Chiêu Aoiame - Cấp 25 Kunai - Hệ Băng).
-- **Cơ chế cũ**: Cắm một khúc gỗ bù nhìn tại chỗ hút đòn quái trong 300px. Khi hết giờ đếm ngược, bù nhìn biến mất trong làn khói mà không để lại bất kỳ dấu ấn hay tác dụng nào tiếp theo. Lối chơi bị động, thiếu tính bộc phá.
+- **Cơ chế cũ**: Cắm bù nhìn hút đòn quái trong 300px. Khi hết giờ đếm ngược, bù nhìn biến mất vô nghĩa, không để lại bất kỳ sát thương hay giá trị tấn công nào.
 
-### 5.2. Concept Rework: "Bù Nhìn Nổ Động Năng" (Kinetic Decoy Bomb)
-> *"Khúc gỗ bù nhìn không chỉ hút đòn đánh của kẻ thù mà còn đóng vai trò như một bình chứa động năng: Mỗi đòn đánh của quái/Boss vả vào bù nhìn sẽ tích tụ nội lực nén lại. Khi bù nhìn hết giờ và biến mất, toàn bộ nội lực nén sẽ nổ tung dồn thẳng vào con quái gần nhất!"*
+### 5.2. Concept Rework: "Bù Nhìn Nổ Động Năng Mang Chỉ Số Chiêu Thuần"
+> *"Khác với chiêu hỗ trợ đơn thuần, chiêu Aoiame được thiết kế mang đầy đủ các chỉ số sát thương của một CHIÊU THUẦN TẤN CÔNG (như chiêu 10 Yokobatan của Kunai): Bao gồm Tấn công cơ bản, Băng sát và Tấn công nội công (%). Đồng thời tích lũy thêm +5% sát thương cho mỗi phát đòn mà bù nhìn đã gánh chịu trước khi kích nổ vào con quái gần nhất!"*
 
-- **Thuần Sát Thương Bộc Phá (Không cần hiệu ứng đóng băng rườm rà)**:
-  - Cú nổ kích hoạt công thức tính toán sát thương PvE chuẩn mực của Server (`CombatService.calculatePvEDamage`):
-    - Đầy đủ sát thương gốc theo lực chiến của chủ nhân Kunai (`damage2` - `damage`).
-    - Có tỷ lệ nổ **Chí Mạng (Bạo Kích)** theo chỉ số bạo kích của chủ nhân.
-    - Tính trọn vẹn **Khắc Hệ Thủy/Băng** lên hệ của mục tiêu.
-- **Cơ chế gia tăng sát thương theo số đòn chịu đựng (+5%/hit)**:
-  - Cứ mỗi lần quái hoặc Boss đánh trúng bù nhìn $\rightarrow$ Sát thương nổ tăng thêm **+3.0% -> +5.0%**!
-  $$\text{Sát Thương Nổ Cuối} = \text{Sát Thương Kỹ Năng Gốc} \times \left(1 + \text{Số Hit Chịu Đựng} \times 5\%\right)$$
+- **Bộ 3 Chỉ Số Sát Thương Chuẩn Phong Cách Chiêu Thuần**:
+  1. **Tấn công cơ bản** (`Option ID = 0`): Cộng thêm sát thương cố định (+50 -> +250).
+  2. **Băng sát** (`Option ID = 3`): Sát thương nguyên tố Băng đặc trưng của Kunai (+150 -> +700).
+  3. **Tấn công nội công (%)** (`Option ID = 11`): Khuếch đại sát thương theo điểm tiềm năng Chakra (+100% -> +180%).
+- **Cơ chế Gia Tăng Động Năng (+5% Sát thương / Hit gánh chịu)**:
+  - Cứ mỗi lần quái hoặc Boss vả trúng bù nhìn $\rightarrow$ Sát thương nổ tăng thêm **+5%**!
+  $$\text{Sát Thương Nổ Cuối} = \left(\text{Sát Thương Kỹ Năng Chuẩn}\right) \times \left(1 + \text{Số Hit Chịu Đựng} \times 5\%\right)$$
+  - Cú nổ kích hoạt qua `CombatService.calculatePvEDamage` (có nổ Chí Mạng, có tính tương khắc hệ Băng/Thủy của Kunai).
 
-### 5.3. Bảng thông số 6 cấp độ kỹ năng Kunai:
+### 5.3. Bảng thông số chi tiết 6 cấp độ chiêu thuần của Kunai 25:
 
-| Cấp Chiêu (Point) | Yêu Cầu Level | Thời Gian Bù Nhìn | Sát Thương Nổ Gốc (% Dame Kunai) | % Sát Thương Thêm Mỗi Hit Bị Đánh | Ví dụ Bù Nhìn Gánh 10 Hit |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| **Point 1** | Cấp 25 | 6.0 giây | **120%** | **+3.0%** / hit | $120\% \times (1 + 30\%) = \mathbf{156\%}$ Dame |
-| **Point 2** | Cấp 26 | 7.0 giây | **135%** | **+3.5%** / hit | $135\% \times (1 + 35\%) = \mathbf{182\%}$ Dame |
-| **Point 3** | Cấp 27 | 8.0 giây | **150%** | **+4.0%** / hit | $150\% \times (1 + 40\%) = \mathbf{210\%}$ Dame |
-| **Point 4** | Cấp 28 | 9.0 giây | **165%** | **+4.5%** / hit | $165\% \times (1 + 45\%) = \mathbf{239\%}$ Dame |
-| **Point 5** | Cấp 29 | 10.0 giây | **180%** | **+5.0%** / hit | $180\% \times (1 + 50\%) = \mathbf{270\%}$ Dame |
-| **Point 6 (Max)** | Cấp 30 | **12.0 giây** | **200%** | **+5.0%** / hit | $200\% \times (1 + 50\%) = \mathbf{300\%}$ Dame |
+| Cấp Chiêu (Point) | Yêu Cầu Level | Thời Gian Bù Nhìn | Tấn Công Cơ Bản (Opt 0) | Băng Sát (Opt 3) | Tấn Công Nội Công (Opt 11) | Gia Tăng Mỗi Hit Chịu Đòn |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Point 1** | Cấp 25 | 6.0 giây | **+50** | **+150** | **+100%** | **+3.0%** / hit |
+| **Point 2** | Cấp 26 | 7.0 giây | **+80** | **+230** | **+115%** | **+3.5%** / hit |
+| **Point 3** | Cấp 27 | 8.0 giây | **+120** | **+320** | **+130%** | **+4.0%** / hit |
+| **Point 4** | Cấp 28 | 9.0 giây | **+160** | **+420** | **+145%** | **+4.5%** / hit |
+| **Point 5** | Cấp 29 | 10.0 giây | **+200** | **+550** | **+160%** | **+5.0%** / hit |
+| **Point 6 (Max)** | Cấp 30 | **12.0 giây** | **+250** | **+700** | **+180%** | **+5.0%** / hit |
+
+*Ví dụ*: Ở Point 6, đòn nổ gốc tính ra là **3,500 Dame Băng**. Nếu bù nhìn đứng gánh được 10 hit từ quái/Boss $\rightarrow$ Sát thương tăng thêm $+50\% \rightarrow$ **Nổ thẳng 5,250 Dame** (nếu nổ bạo kích chí mạng có thể nhảy số **8,000 - 10,000 Dame**) lên quái gần nhất!
 
 ---
 
@@ -190,7 +192,7 @@ graph TD
     end
 
     subgraph KUNAI 25 (AOIAME)
-        KN1["Bản Gốc: Cắm cọc gỗ hút quái<br/>Hết giờ biến mất vô nghĩa"] --> KN2["Bản Mod: Bù Nhìn Bộc Phá Động Năng<br/>Cú nổ chuẩn Engine (Có Chí Mạng)<br/>Mỗi hit quái đánh tăng thêm +5% Dame<br/>Nổ dồn thẳng vào quái gần nhất"]
+        KN1["Bản Gốc: Cọc gỗ hút đòn 5-15s<br/>Hết giờ biến mất vô nghĩa"] --> KN2["Bản Mod: Bù Nhìn Mang Chỉ Số Chiêu Thuần<br/>Tấn công cơ bản + Băng sát + Nội công %<br/>Mỗi hit quái vả tăng thêm +5% Dame nổ<br/>Kích nổ cực mạnh dồn vào quái gần nhất"]
     end
 ```
 
@@ -238,9 +240,9 @@ UPDATE `skill` SET `cooldown` = 25000 WHERE `template_id` = 31 AND `point` = 4;
 UPDATE `skill` SET `cooldown` = 22000 WHERE `template_id` = 31 AND `point` = 5;
 UPDATE `skill` SET `cooldown` = 20000 WHERE `template_id` = 31 AND `point` = 6;
 
--- 6. Cập nhật mô tả cho skill 25 Kunai (ID 22)
+-- 6. Cập nhật mô tả và Options chiêu thuần cho skill 25 Kunai (ID 22)
 UPDATE `skill_template` 
-SET `description` = 'Bù Nhìn Bộc Phá: Triệu hồi bù nhìn rơm thu hút kẻ địch. Khi biến mất, bù nhìn phát nổ gây sát thương lớn lên quái gần nhất, tăng thêm 5% sát thương với mỗi đòn đã gánh chịu.' 
+SET `description` = 'Bù Nhìn Bộc Phá: Triệu hồi bù nhìn rơm thu hút kẻ địch. Khi biến mất, phát nổ gây sát thương Băng cực lớn lên quái gần nhất, tăng thêm 5% sát thương với mỗi đòn đã gánh chịu.' 
 WHERE `id` = 22;
 ```
 
@@ -256,11 +258,13 @@ public class Figurehead {
     public short y;
     public int countDown;
     
-    // Thuộc tính tích trữ bộc phá:
+    // Thuộc tính tích trữ bộc phá chiêu thuần:
     public Char owner;
     public int hitsTaken = 0;
-    public int baseSkillPercent = 120;
-    public int bonusPercentPerHit = 5;
+    public int baseAttack = 50;       // Tấn công cơ bản (Opt 0)
+    public int iceAttack = 150;       // Băng sát (Opt 3)
+    public int percentAttack = 100;   // Tấn công nội công % (Opt 11)
+    public int bonusPercentPerHit = 5;// % cộng thêm mỗi hit
     
     public Figurehead(String name, short x, short y, int countDown) {
         this.name = name;
@@ -282,8 +286,14 @@ public class Figurehead {
     }
     Figurehead buNhin = new Figurehead(this.name, x, y, options[0].param);
     buNhin.owner = this;
-    buNhin.baseSkillPercent = 105 + (skill.point * 15); // 120% -> 200%
-    buNhin.bonusPercentPerHit = (skill.point >= 5) ? 5 : (3 + (skill.point / 2)); // 3% -> 5%
+    
+    // Nạp các chỉ số chiêu thuần theo cấp kỹ năng
+    int pt = skill.point;
+    buNhin.baseAttack = 50 + (pt * 40);         // +50 -> +250 Tấn công cơ bản
+    buNhin.iceAttack = 150 + (pt * 110);        // +150 -> +700 Băng sát
+    buNhin.percentAttack = 85 + (pt * 16);      // +100% -> +180% Tấn công nội công
+    buNhin.bonusPercentPerHit = (pt >= 5) ? 5 : (3 + (pt / 2)); // 3% -> 5% / hit
+    
     zone.add(buNhin);
     zone.getService().createBuNhin(buNhin);
 }
@@ -316,13 +326,26 @@ for (Mob m : this.mobs) {
     }
 }
 
-// 2. Kích nổ sát thương chuẩn Engine lên con quái gần nhất
+// 2. Kích nổ sát thương chuẩn Engine (mang đầy đủ Tấn công cơ bản, Băng sát, Nội công %)
 if (targetMob != null && b.owner != null && !targetMob.isDead) {
     boolean isFatal = b.owner.fatal > NinjaUtils.nextInt(1000);
-    int damageBasic = CombatService.calculatePvEDamage(b.owner, targetMob, isFatal, 0);
-    int skillDamage = damageBasic * b.baseSkillPercent / 100;
     
-    // Nhân thêm % theo số hit bù nhìn đã gánh (mỗi hit +5%)
+    // Sát thương nội công & cơ bản
+    int dameBasic = NinjaUtils.nextInt(b.owner.damage2, b.owner.damage);
+    int skillDamage = b.baseAttack + (dameBasic * b.percentAttack / 100) + b.iceAttack;
+    
+    // Tính bạo kích nếu nổ chí mạng
+    if (isFatal) {
+        skillDamage += dameBasic;
+        skillDamage += (dameBasic * b.owner.percentFatalDame / 100) + b.owner.fatalDame;
+    }
+    
+    // Tương khắc hệ Thủy/Băng của Kunai lên hệ quái
+    if (targetMob.sys == 1) { // Khắc quái hệ Hỏa
+        skillDamage += skillDamage * 20 / 100;
+    }
+    
+    // 3. Nhân thêm % theo số hit bù nhìn đã gánh (+5% / hit)
     int totalDamage = skillDamage + (skillDamage * (b.hitsTaken * b.bonusPercentPerHit) / 100);
     
     targetMob.addHp(-totalDamage);
@@ -341,7 +364,7 @@ if (targetMob != null && b.owner != null && !targetMob.isDead) {
 2. **Ninja Đao**: Chiêu 25 biến thành công cụ debuff mở giao tranh cốt lõi (Giảm công mục tiêu 15% & Tăng sát thương nhận 15%).
 3. **Ninja Tiêu**: Biến thể ám sát dồn sát thương bùng nổ theo Mana, đưa Tiêu trở thành xạ thủ burst dame tầm xa đích thực.
 4. **Ninja Cung**: Khắc phục triệt để tình trạng cháy sạch Mana / kẹt chiêu, lớp khiên hộ thể mềm 25% với chi phí rẻ (1:1) giúp Cung duy trì hỏa lực liên tục.
-5. **Ninja Kunai**: Bù nhìn trở thành quả bom động năng thông minh, trừng phạt thích đáng bầy quái bu lại tấn công và mang lại công cụ dồn dame đơn mục tiêu cực mạnh cho Kunai khi solo quái to/Boss.
+5. **Ninja Kunai**: Chiêu 25 mang đầy đủ thông số của một CHIÊU THUẦN TẤN CÔNG (Tấn công cơ bản, Băng sát, Tấn công nội công %), kết hợp cơ chế tích tụ +5% sát thương mỗi hit khiến bù nhìn trở thành chiếc bẫy phản công cực kỳ đáng sợ đối với quái vật và Boss.
 
 ---
 
