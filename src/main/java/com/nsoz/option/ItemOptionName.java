@@ -104,6 +104,7 @@ public class ItemOptionName {
     public static final int MOI_NUA_GIAY_HOI_PHUC_HP_VA_MP_8 = 99;
     public static final int TANG_KINH_NGHIEM_KHI_DANH_QUAI_8 = 100;
     public static final int BO_QUA_KHANG_DOI_PHUONG_8 = 101;
+    public static final int HA_KHAC_8 = 101;
     public static final int ST_LEN_QUAI_1 = 102;
     public static final int ST_LEN_NGUOI_1 = 103;
     public static final int EXP_0 = 104;

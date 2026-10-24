@@ -195,7 +195,7 @@ public class OptionMapper {
             case 135:
                 return new StatModifier(StatType.REFLECT_ICE_CHANCE, ModType.PERCENT, param);
 
-            // Xuyên kháng
+            // Hạ khắc (% Bỏ qua kháng)
             case 101:
                 return new StatModifier(StatType.IGNORE_RESISTANCE, ModType.FLAT, param);
 

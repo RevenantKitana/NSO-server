@@ -112,6 +112,7 @@ public class ItemOptionName {
     public static final int MOI_NUA_GIAY_HOI_PHUC_POINT_HP_VA_MP_TYPE_8 = 99;
     public static final int TANG_POINT_PERCENT_KINH_NGHIEM_KHI_DANH_QUAI_TYPE_8 = 100;
     public static final int POINT_PERCENT_BO_QUA_KHANG_DOI_PHUONG_TYPE_8 = 101;
+    public static final int POINT_PERCENT_HA_KHAC_TYPE_8 = 101;
     public static final int ST_LEN_QUAI_POINT_TYPE_1 = 102;
     public static final int ST_LEN_NGUOI_POINT_TYPE_1 = 103;
     public static final int EXP_POINT_TYPE_0 = 104;

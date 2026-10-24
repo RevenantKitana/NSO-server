@@ -1055,6 +1055,18 @@ public class Char {
             int hp = this.options[30] + this.options[120];
             int mp = this.options[27] + this.options[119];
 
+            // Chiêu 25 Kiếm (Kakyuu - Hỏa Vị Tiêu Hóa): Tăng hồi phục thức ăn mỗi nhịp 5 giây
+            Effect foodEff = this.em.findByType((byte) 0);
+            if (foodEff != null || this.options[30] > 0) {
+                Skill k25 = getSkill(4);
+                if (k25 != null && k25.point > 0) {
+                    int pt = k25.point;
+                    int flatBonus = (pt == 1) ? 100 : (pt == 2 ? 150 : (pt == 3 ? 200 : (pt == 4 ? 250 : (pt == 5 ? 300 : 400))));
+                    int percentBonus = (pt == 1) ? 5 : (pt == 2 ? 8 : (pt == 3 ? 11 : (pt == 4 ? 14 : (pt == 5 ? 17 : 20))));
+                    hp += flatBonus + (int) ((long) this.maxHP * percentBonus / 1000);
+                }
+            }
+
             if (isCool()) {
                 hp /= 2;
                 mp /= 2;
@@ -1243,6 +1255,17 @@ public class Char {
                 }
             }
         }
+    }
+
+    public Skill getSkill(int templateId) {
+        if (this.vSkill != null) {
+            for (Skill s : this.vSkill) {
+                if (s != null && s.template != null && s.template.id == templateId) {
+                    return s;
+                }
+            }
+        }
+        return null;
     }
 
     /// fix skill phân thân
@@ -7002,6 +7025,12 @@ public class Char {
                         return;
                     }
                     Figurehead buNhin = new Figurehead(this.name, x, y, options[0].param);
+                    buNhin.owner = this;
+                    int pt = skill.point;
+                    buNhin.baseAttack = 50 + (pt * 40);
+                    buNhin.iceAttack = 150 + (pt * 110);
+                    buNhin.percentAttack = 85 + (pt * 16);
+                    buNhin.bonusPercentPerHit = (pt >= 5) ? 5 : (3 + (pt / 2));
                     zone.add(buNhin);
                     zone.getService().createBuNhin(buNhin);
                 } else if (skill.template.id == 31) {
@@ -7325,40 +7354,6 @@ public class Char {
             int skillTemplateId = selectedSkill.template.id;
 
             if (skillTemplateId == 4) {
-                Mob mob = mobs.get(0);
-                if (mob != null && !mob.isBoss && mob.levelBoss == 0 && mob.template.id != MobName.BACH_LONG_TRU && mob.template.id != MobName.HAC_LONG_TRU) {
-                    if (zone.tilemap.isDungeo()) {
-                        Dungeon dun = (Dungeon) findWorld(World.DUNGEON);
-                        if (dun != null) {
-                            if (dun.level == 5) {
-
-                                if (mob.isBoss) {  // fix tích lũy hd9x
-                                    dun.addPointPB(NinjaUtils.nextInt(10, 20));
-                                } else {
-                                    dun.addPointPB(1);
-                                }
-
-                            } else {
-                                if (mob.levelBoss == 2) {
-                                    dun.addPointPB(NinjaUtils.nextInt(5, 20));
-                                } else if (mob.levelBoss == 1) {
-
-                                    dun.addPointPB(6);
-                                } else {
-
-                                    dun.addPointPB(1);
-                                }
-                            }
-
-                        }
-                    }
-                    mob.die();
-                    zone.addMobForWatingListRespawn(mob);
-                    mob.dropItem(this, Mob.SUSHI, this); // fix dame boss
-                    zone.getService().npcChange(mob);
-                } else {
-                    serverMessage("Đối phương quá mạnh bạn không thể thi triển thuật này!");
-                }
                 return;
             } else if (skillTemplateId == 25 || skillTemplateId == 34) {
                 SkillOption[] option = selectedSkill.options;
@@ -7377,11 +7372,33 @@ public class Char {
                 zone.setMove(mob, true);
                 return;
             } else if (skillTemplateId == 40) {
-                SkillOption[] option = selectedSkill.options;
-                Effect eff = new Effect(0, option[0].param * 1000L, 0);
-                Mob mob = mobs.get(0);
-                mob.effects.put(eff.template.type, eff);
-                zone.setDisable(mob, true);
+                int pt = selectedSkill.point;
+                int maxTarget = (pt >= 6) ? 3 : (pt >= 4 ? 2 : 1);
+                int duration = (pt == 1) ? 6000 : (pt == 2 ? 6500 : (pt == 3 ? 7000 : (pt == 4 ? 7500 : 8000)));
+                int atkReduction = 10 + (pt - 1);
+                int resReduction = 30 + (pt - 1) * 6;
+                ArrayList<Mob> targets = new ArrayList<>();
+                for (Mob m : mobs) {
+                    if (m != null && !m.isDead && !targets.contains(m)) {
+                        targets.add(m);
+                        if (targets.size() >= maxTarget) break;
+                    }
+                }
+                if (targets.size() < maxTarget && !targets.isEmpty()) {
+                    Mob primary = targets.get(0);
+                    for (Mob m : zone.monsters) {
+                        if (m != null && !m.isDead && !targets.contains(m)) {
+                            if (NinjaUtils.getDistance(primary.x, primary.y, m.x, m.y) <= 200) {
+                                targets.add(m);
+                                if (targets.size() >= maxTarget) break;
+                            }
+                        }
+                    }
+                }
+                for (Mob mob : targets) {
+                    mob.setMagumandariDebuff(System.currentTimeMillis() + duration, atkReduction, resReduction);
+                    zone.getService().addEffectAuto((byte) 0, (short) mob.x, (short) mob.y, (byte) 0, (short) 1);
+                }
                 return;
             } else if (skillTemplateId == 43) {
                 SkillOption[] option = selectedSkill.options;
@@ -8175,7 +8192,10 @@ public class Char {
         selectedSkill.lastTimeUseThisSkill = System.currentTimeMillis();
         int skillTemplateId = selectedSkill.template.id;
         if (skillTemplateId == 4) {
-            serverMessage("Không thể thi triển thuật này lên người");
+            serverMessage("Kỹ năng bị động không thể kích hoạt!");
+            return;
+        } else if (skillTemplateId == 40) {
+            serverMessage("Chiêu thức này chỉ có tác dụng lên quái vật!");
             return;
         } else if (skillTemplateId == 25 || skillTemplateId == 34) {
             SkillOption[] option = selectedSkill.options;
@@ -8377,8 +8397,21 @@ public class Char {
                     if (isMiss) {
                         dameHit = 0;
                         dameMp = 0;
+                    } else if (pl.isShieldMana && (pl.mp * 100 / Math.max(1, pl.maxMP)) >= 10) {
+                        int absorption = 10;
+                        Effect eff = pl.em.findByType((byte) 6);
+                        if (eff != null && eff.param > 0) {
+                            absorption = eff.param;
+                        }
+                        Skill c25 = pl.getSkill(31);
+                        int pt = (c25 != null) ? c25.point : 1;
+                        int absorbDame = (dameHit * absorption) / 100;
+                        dameHit -= absorbDame;
+                        int ratio10 = Math.max(10, 20 - (pt - 1) * 2);
+                        dameMp = absorbDame * ratio10 / 10;
+                        pl.addMp(-dameMp);
                     }
-                    int num = dameHit + dameMp;
+                    int num = dameHit;
 
                     if (num >= 0) {
                         if (isFatal) {

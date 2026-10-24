@@ -62,51 +62,54 @@ public class CombatService {
             }
         }
 
+        // Xác định kháng nguyên tố thô của target đối với hệ của attacker
+        int rawRes = 0;
         switch (attacker.getSys()) {
             case 1: // Hỏa
-                if (!isSkipResistance) {
-                    dameHit -= target.resFire;
-                }
+                rawRes = target.resFire + target.options[48];
+                break;
+            case 2: // Băng
+                rawRes = target.resIce + target.options[49];
+                break;
+            case 3: // Phong
+                rawRes = target.resWind + target.options[50];
+                break;
+        }
+        if (isSkipResistance) {
+            rawRes = 0;
+        }
+
+        // TẦNG 1: TÍNH TOÁN KHÁNG & XUYÊN KHÁNG (Cường khắc & Hạ khắc)
+        int sysUp = Math.max(0, attacker.sysUp);
+        int haKhac = Math.max(0, attacker.sysDown + attacker.options[101]);
+        dameHit = applyResistanceAndPenetration(dameHit, rawRes, sysUp, haKhac);
+
+        // Kháng % hệ theo option trang bị (Opt 127: % Kháng Hỏa, Opt 130: % Kháng Băng, Opt 131: % Kháng Phong)
+        // và cộng thêm sát thương hệ từ trang bị (Opt 51..56)
+        switch (attacker.getSys()) {
+            case 1:
                 dameHit -= dameHit * target.options[127] / 100;
-                dameHit -= target.options[48];
                 dameHit += attacker.options[51];
                 dameHit += dameBasic * attacker.options[55] / 100;
                 break;
-
-            case 2: // Băng (ĐÃ FIX: Không cộng đúp optionsSupportSkill[65] tại đây)
-                if (!isSkipResistance) {
-                    dameHit -= target.resIce;
-                }
+            case 2:
                 dameHit -= dameHit * target.options[130] / 100;
-                dameHit -= target.options[49];
                 dameHit += attacker.options[52];
                 dameHit += dameBasic * attacker.options[56] / 100;
                 break;
-
-            case 3: // Phong
-                if (!isSkipResistance) {
-                    dameHit -= target.resWind;
-                }
+            case 3:
                 dameHit -= dameHit * target.options[131] / 100;
-                dameHit -= target.options[50];
                 dameHit += attacker.options[53];
                 dameHit += dameBasic * attacker.options[54] / 100;
                 break;
         }
 
-        // Step 4.1: Elemental Counter System (Cơ chế xung khắc hệ: Hỏa khắc Phong khắc Băng khắc Hỏa)
+        // TẦNG 2: TƯƠNG KHẮC HỆ NGŨ HÀNH (Tách biệt hoàn toàn: Nhân 1.1 nếu khắc, 0.9 nếu bị khắc)
         int relation = getSysRelation(attacker.getSys(), target.getSys());
         if (relation == 1) {
-            // Khắc hệ mục tiêu: Tăng 10% sát thương + Cường khắc (sysUp)
-            int bonusPercent = 10 + Math.max(0, attacker.sysUp);
-            dameHit += (dameHit * bonusPercent) / 100;
+            dameHit = (int) Math.round(dameHit * 1.1);
         } else if (relation == -1) {
-            // Bị mục tiêu khắc hệ: Giảm 10% sát thương + Hạ khắc (sysDown)
-            int reducePercent = 10 + Math.max(0, target.sysDown);
-            if (reducePercent > 50) {
-                reducePercent = 50;
-            }
-            dameHit -= (dameHit * reducePercent) / 100;
+            dameHit = (int) Math.round(dameHit * 0.9);
         }
 
         // Step 5: Percent Damage Mitigation (Áp trần tối đa 75% để triệt tiêu bug bất tử 0 dame)
@@ -241,16 +244,21 @@ public class CombatService {
                 break;
         }
 
-        // Cơ chế xung khắc hệ (PvE: Người chơi đánh quái)
+        // TẦNG 1: TÍNH TOÁN KHÁNG & XUYÊN KHÁNG CHO MOB (Cường khắc & Hạ khắc)
+        int mobRawRes = getMobResistance(mob.level, mob.sys, attacker.getSys());
+        if (mob.isMagumandari()) {
+            mobRawRes -= mob.magumandariResReduction; // Chiêu 25 Đao: Trừ 30 - 60 Kháng tất cả
+        }
+        int sysUp = Math.max(0, attacker.sysUp);
+        int haKhac = Math.max(0, attacker.sysDown + attacker.options[101]);
+        dameHit = applyResistanceAndPenetration(dameHit, mobRawRes, sysUp, haKhac);
+
+        // TẦNG 2: TƯƠNG KHẮC HỆ NGŨ HÀNH (Tách biệt hoàn toàn: Nhân 1.1 nếu khắc, 0.9 nếu bị khắc)
         int pveRelation = getSysRelation(attacker.getSys(), mob.sys);
         if (pveRelation == 1) {
-            // Người chơi khắc hệ quái: Tăng 10% sát thương + Cường khắc (sysUp)
-            int bonusPercent = 10 + Math.max(0, attacker.sysUp);
-            dameHit += (dameHit * bonusPercent) / 100;
+            dameHit = (int) Math.round(dameHit * 1.1);
         } else if (pveRelation == -1) {
-            // Quái khắc hệ người chơi: Giảm 10% sát thương gây ra
-            int reducePercent = 10;
-            dameHit -= (dameHit * reducePercent) / 100;
+            dameHit = (int) Math.round(dameHit * 0.9);
         }
 
         // Trạng thái suy yếu & đóng băng của người tấn công
@@ -295,5 +303,63 @@ public class CombatService {
             return 1;
         }
         return -1;
+    }
+
+    /**
+     * Tính toán giảm trừ / gia tăng sát thương qua hệ thống Kháng & Xuyên kháng (Cường khắc, Hạ khắc).
+     * Công thức giảm ST theo kháng: y = ((77 * x) / (x + 231)) (%)
+     * Cường khắc (sysUp) trừ kháng phẳng trước.
+     * - Nếu delta >= 0: Hạ khắc (gộp với Opt 101) giảm trừ tiếp % lượng kháng còn lại.
+     * - Nếu delta < 0 (kháng âm): Chịu thêm x_neg * (1 + haKhac / 100) sát thương.
+     *
+     * @param dameHit Sát thương trước khi qua lớp kháng
+     * @param rawRes  Kháng ban đầu của mục tiêu đối với hệ của đòn đánh
+     * @param sysUp   Cường khắc / tương khắc của người tấn công (xuyên kháng phẳng)
+     * @param haKhac  Hạ khắc + Bỏ qua % kháng (Opt 101) của người tấn công
+     * @return Sát thương sau khi tính kháng và xuyên kháng
+     */
+    public static int applyResistanceAndPenetration(int dameHit, int rawRes, int sysUp, int haKhac) {
+        int delta = rawRes - sysUp;
+        if (delta >= 0) {
+            int ignorePercent = Math.min(100, Math.max(0, haKhac));
+            double effectiveRes = delta * (1.0 - (ignorePercent / 100.0));
+            double reducePercent = (77.0 * effectiveRes) / (effectiveRes + 231.0);
+            dameHit -= (int) (dameHit * reducePercent / 100.0);
+        } else {
+            int xNeg = -delta;
+            int extraDamage = (int) (xNeg * (1.0 + Math.max(0, haKhac) / 100.0));
+            dameHit += extraDamage;
+        }
+        return Math.max(1, dameHit);
+    }
+
+    /**
+     * Tính toán chỉ số kháng nguyên tố của Quái vật (Mob) theo cấp độ.
+     * Công thức: y = ((12 * level^2) / (level + 144))
+     * - Kháng tương khắc (hệ bị quái khắc): y
+     * - Kháng đúng nguyên tố (cùng hệ với quái): 0.77 * y
+     * - Kháng bị khắc (hệ khắc chế quái): 0.33 * y
+     *
+     * @param mobLevel Cấp độ quái vật
+     * @param mobSys   Hệ của quái vật (1: Hỏa, 2: Băng, 3: Phong)
+     * @param attSys   Hệ của đòn đánh (1: Hỏa, 2: Băng, 3: Phong)
+     * @return Chỉ số kháng ban đầu (raw resistance)
+     */
+    public static int getMobResistance(int mobLevel, int mobSys, int attSys) {
+        if (mobLevel <= 0 || mobSys <= 0 || attSys <= 0) {
+            return 0;
+        }
+        double y = (12.0 * Math.pow(mobLevel, 2)) / (mobLevel + 144.0);
+        int relation = getSysRelation(mobSys, attSys);
+        if (relation == 1) {
+            // Quái khắc hệ đòn đánh -> kháng tương khắc = y
+            return (int) Math.round(y);
+        } else if (mobSys == attSys) {
+            // Cùng hệ -> kháng đúng nguyên tố = 0.77 * y
+            return (int) Math.round(0.77 * y);
+        } else {
+            // Quái bị đòn đánh khắc -> kháng bị khắc = 0.33 * y
+            return (int) Math.round(0.33 * y);
+        }
     }
 }

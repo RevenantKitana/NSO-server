@@ -43,6 +43,6 @@ public enum StatType {
     PVP_DAMAGE,          // Sát thương lên người (Opt 103)
     REFLECT_MELEE,       // Phản đòn cận chiến (Opt 15, 91, 126)
     REFLECT_ICE_CHANCE,  // % Tỷ lệ phản đòn băng giá 20% HP (Opt 135)
-    IGNORE_RESISTANCE,   // Xuyên kháng (Opt 101)
+    IGNORE_RESISTANCE,   // Hạ khắc / Bỏ qua % kháng (Opt 101 & Skill Opt 32)
     MOVE_SPEED           // Tốc độ di chuyển (Opt 93)
 }

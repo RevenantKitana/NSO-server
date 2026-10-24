@@ -52,6 +52,7 @@ Bảng quy chuẩn chuyển đổi toàn bộ mã phân mảnh cũ sang mã Cano
 | **% Miễn giảm sát thương** | `98` | **`98`** | `8` | Dòng PvE/All Mitigation |
 | **Sát thương lên người** | `103` | **`103`** | `1` | PvP Flat Damage |
 | **Sát thương chuẩn** | `113` | **`113`** | `0` | True Damage (xuyên giáp/debuff) |
+| **Hạ khắc (% Bỏ qua kháng)** | `101` | **`101`** | `8` | Đồng bộ 1:1 với Hạ khắc kỹ năng (Skill Opt 32) |
 | **% Kháng ST chí mạng** | `79, 121` | **`121`** | `1` | Gom về mã 121 (cap 100%) |
 | **% Kháng Hỏa/Băng/Phong** | `127, 130, 131` | **`127, 130, 131`**| `1` | Giữ nguyên |
 | **% HP sau khi mặc đồ** | `128` | **`128`** | `0` | Dòng VIP nhân trên tổng HP |

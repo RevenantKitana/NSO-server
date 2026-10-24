@@ -9,8 +9,10 @@
 1. [Phái Ninja Kiếm:](#1-phái-ninja-kiếm)
    - [1.1. Chiêu 25 Kakyuu: Nội Tại Hồi Phục Thức Ăn (Cố Định & %)](#11-chiêu-25-kakyuu-nội-tại-hồi-phục-thức-ăn-cố-định--)
    - [1.2. Chiêu 6x Pawaraikou: Chế Độ "Khô Máu" All-Out (Kiểu K'Sante)](#12-chiêu-6x-pawaraikou-chế-độ-khô-máu-all-out-kiểu-ksante)
-2. [Phái Ninja Tiêu: Chiêu 35 Hoshitama ("Đổi Mana Lấy Sức Tấn Công")](#2-phái-ninja-tiêu-chiêu-35-hoshitama-đổi-mana-lấy-sức-tấn-công)
-3. [Phái Ninja Đao: Chiêu 25 Magumandari ("Bùa Hại Suy Yếu & Phá Giáp")](#3-phái-ninja-đao-chiêu-25-magumandari-bùa-hại-suy-yếu--phá-giáp)
+2. [Phái Ninja Tiêu: Chiêu 25 Taiyoutama & Chiêu 35 Hoshitama](#2-phái-ninja-tiêu)
+   - [2.1. Chiêu 25 Taiyoutama: Tối Ưu Hồi Chiêu Vòng Lửa (45s -> 40s)](#21-chiêu-25-taiyoutama-tối-ưu-hồi-chiêu-vòng-lửa-45s---40s)
+   - [2.2. Chiêu 35 Hoshitama: Đổi Mana Lấy Sức Tấn Công](#22-chiêu-35-hoshitama-đổi-mana-lấy-sức-tấn-công)
+3. [Phái Ninja Đao: Chiêu 25 Magumandari ("Bùa Hại Trấn Áp Quái & Lan Mục Tiêu")](#3-phái-ninja-đao-chiêu-25-magumandari-bùa-hại-trấn-áp-quái--lan-mục-tiêu)
 4. [Phái Ninja Cung: Chiêu 25 Sogekihei ("Tối Ưu Hiệu Suất Khiên Mana")](#4-phái-ninja-cung-chiêu-25-sogekihei-tối-ưu-hiệu-suất-khiên-mana)
 5. [Phái Ninja Kunai: Chiêu 25 Aoiame ("Bù Nhìn Nổ Động Năng Chuẩn Chỉ Số")](#5-phái-ninja-kunai-chiêu-25-aoiame-bù-nhìn-nổ-động-năng-chuẩn-chỉ-số)
 6. [Bảng So Sánh Chỉ Số: Trước vs Sau Khi Mod](#6-bảng-so-sánh-chỉ-số-trước-vs-sau-khi-mod)
@@ -70,7 +72,25 @@
 
 ---
 
-## 2. PHÁI NINJA TIÊU: CHIÊU 35 HOSHITAMA (ĐỔI MANA LẤY SỨC TẤN CÔNG)
+## 2. PHÁI NINJA TIÊU
+
+### 2.1. Chiêu 25 Taiyoutama: Tối Ưu Hồi Chiêu Vòng Lửa (45s -> 40s)
+- **ID Skill Template**: `13` (Chiêu Taiyoutama - Cấp 25 Tiêu - Hệ Hỏa).
+- **Loại chiêu**: `type = 2` (Buff chủ động tạo vòng lửa thiêu đốt quái vật bị tấn công).
+- **Điều chỉnh cốt lõi**:
+  - **Bản gốc**: Hồi chiêu cố định **45 giây** ở tất cả 6 cấp độ khiến nhịp thi triển vòng lửa bị gượng gạo, thiếu tính cơ động khi dọn quái.
+  - **Bản Mod**: **Giảm nhẹ thời gian hồi chiêu từ 45s giảm dần về 40s** theo từng cấp kỹ năng (mỗi cấp giảm 1 giây).
+
+| Cấp Chiêu (Point) | Yêu Cầu Level | Sát Thương Đốt (% Tấn Công / 30s) | Cooldown Mới *(Gốc 45s)* | Mana Sử Dụng |
+| :---: | :---: | :---: | :---: | :---: |
+| **Point 1** | Cấp 25 | 25% | **45 giây** *(45000ms)* | 120 MP |
+| **Point 2** | Cấp 26 | 30% | **44 giây** *(44000ms)* | 120 MP |
+| **Point 3** | Cấp 27 | 35% | **43 giây** *(43000ms)* | 120 MP |
+| **Point 4** | Cấp 28 | 40% | **42 giây** *(42000ms)* | 120 MP |
+| **Point 5** | Cấp 29 | 50% | **41 giây** *(41000ms)* | 120 MP |
+| **Point 6 (Max)** | Cấp 30 | 60% | **40 giây** *(40000ms)* | 120 MP |
+
+### 2.2. Chiêu 35 Hoshitama (Đổi Mana Lấy Sức Tấn Công)
 
 - **ID Skill Template**: `15` (Ẩn thân / Hồi phục - Cấp 35 Tiêu).
 - **Rework mới**:
@@ -83,24 +103,32 @@
 
 ---
 
-## 3. PHÁI NINJA ĐAO: CHIÊU 25 MAGUMANDARI (BÙA HẠI SUY YẾU & PHÁ GIÁP)
+## 3. PHÁI NINJA ĐAO: CHIÊU 25 MAGUMANDARI (BÙA HẠI TRẤN ÁP QUÁI & LAN MỤC TIÊU)
 
 - **ID Skill Template**: `40` (Bùa chú cấp 25 Đao - Hệ Phong).
-- **Cách thức thi triển**: Giữ nguyên cơ chế chọn mục tiêu từ xa (`dx = 100, dy = 50`, `type = 3`) và animation bay bùa của Client.
-- **Phạm vi tác dụng**: Tác dụng lên **cả Quái thường, Quái Tinh Anh, Thủ Lĩnh, BOSS Thế Giới và Người chơi (PvP)**.
-- **Cơ chế Bùa Hại 2 chiều (Cân bằng chuẩn kỹ năng cấp 25)**:
-  - **Giảm sát thương mục tiêu gây ra**: `10% - 15%`.
-  - **Tăng sát thương mục tiêu nhận vào**: `10% - 15%`.
-  - Thời gian bùa: `6.0s -> 8.0s`. Hồi chiêu: `25s -> 20s`.
+- **Cách thức thi triển**: Chọn mục tiêu từ xa (`dx = 100, dy = 50`, `type = 3`), giữ nguyên animation bay bùa của Client.
+- **Phạm vi tác dụng**: **CHỈ tác dụng lên QUÁI, TUYỆT ĐỐI KHÔNG tác dụng lên Người chơi (PvP)**.
+  - Tác dụng đầy đủ và hiệu quả lên: **Quái thường, Quái Tinh Anh, Quái Thủ Lĩnh và Tà Thú (Boss Thế Giới)**.
+- **Cơ chế Bùa Hại Chuyên Trị Quái (PvE Debuff Specialist)**:
+  - **Giảm sức tấn công của quái**: `10% - 15%`. Giúp Đao và đồng đội giảm tải áp lực sát thương khi ôm quái đông hoặc tank Boss.
+  - **Giảm Kháng tất cả của quái (`resFire, resIce, resWind`)**: `30 - 60 điểm`.
+    > *Hiệu quả cực lớn*: Với công thức kháng quái theo level ($y = \frac{12 \cdot \text{level}^2}{\text{level} + 144}$), việc trừ thẳng 30-60 điểm kháng trực tiếp sẽ kéo tụt lớp phòng thủ của quái về mức âm hoặc xuyên thủng giáp, khiến sát thương của toàn đội dồn vào mục tiêu tăng vọt!
+- **Cơ chế Lan theo tầm đánh (Multi-target Spread)**:
+  - **Point 1 - 3**: Đơn mục tiêu (1 quái).
+  - **Point 4 - 5**: Đạt Point 4 trở lên sẽ **lan ra 2 mục tiêu** trong phạm vi tầm đánh (`dx = 100, dy = 50`).
+  - **Point 6 (Max)**: Đạt Point 6 sẽ **lan ra 3 mục tiêu** trong phạm vi tầm đánh, biến bùa chú thành công cụ gom quái / dọn bãi / debuff Boss kèm quái đệ cực kỳ bá đạo.
+- **Thời gian bùa & Cooldown**:
+  - Thời gian bùa: `6.0s -> 8.0s`.
+  - Hồi chiêu: `25s -> 20s`.
 
-| Cấp Chiêu (Point) | Yêu Cầu Level | Giảm Sát Thương Mục Tiêu Gây Ra | Tăng Sát Thương Mục Tiêu Nhận Vào | Thời Gian Bùa | Cooldown | Mana Use |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Point 1** | Cấp 25 | **-10%** | **+10%** | 6.0 giây | 25 giây | 30 MP |
-| **Point 2** | Cấp 26 | **-11%** | **+11%** | 6.5 giây | 24 giây | 40 MP |
-| **Point 3** | Cấp 27 | **-12%** | **+12%** | 7.0 giây | 23 giây | 50 MP |
-| **Point 4** | Cấp 28 | **-13%** | **+13%** | 7.5 giây | 22 giây | 60 MP |
-| **Point 5** | Cấp 29 | **-14%** | **+14%** | 8.0 giây | 21 giây | 70 MP |
-| **Point 6 (Max)** | Cấp 30 | **-15%** | **+15%** | **8.0 giây** | **20 giây** | 80 MP |
+| Cấp Chiêu (Point) | Yêu Cầu Level | Giảm Tấn Công Quái | Giảm Kháng Tất Cả Quái | Số Mục Tiêu (Lan) | Thời Gian Bùa | Cooldown | Mana Use |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Point 1** | Cấp 25 | **-10%** | **-30 Kháng** | 1 mục tiêu | 6.0 giây | 25 giây | 30 MP |
+| **Point 2** | Cấp 26 | **-11%** | **-36 Kháng** | 1 mục tiêu | 6.5 giây | 24 giây | 40 MP |
+| **Point 3** | Cấp 27 | **-12%** | **-42 Kháng** | 1 mục tiêu | 7.0 giây | 23 giây | 50 MP |
+| **Point 4** | Cấp 28 | **-13%** | **-48 Kháng** | **Lan 2 mục tiêu** | 7.5 giây | 22 giây | 60 MP |
+| **Point 5** | Cấp 29 | **-14%** | **-54 Kháng** | **Lan 2 mục tiêu** | 8.0 giây | 21 giây | 70 MP |
+| **Point 6 (Max)** | Cấp 30 | **-15%** | **-60 Kháng** | **Lan 3 mục tiêu** | **8.0 giây** | **20 giây** | 80 MP |
 
 ---
 
@@ -181,12 +209,16 @@ graph TD
         K6x_1["Bản Gốc: Bị động<br/>+Hỏa sát thụ động<br/>Ôm thủ trâu bò cù nhây"] --> K6x_2["Bản Mod: Buff Chủ Động (15s)<br/>-50% Kháng, -40% Né<br/>+100% Sức tấn công<br/>Kích hoạt 25% Sát Thương Chuẩn"]
     end
 
+    subgraph TIÊU 25 (TAIYOUTAMA)
+        T25_1["Bản Gốc: Cooldown cố định 45s<br/>Đốt 25-60% HP quái / 30s"] --> T25_2["Bản Mod: Tối ưu Cooldown 45s -> 40s<br/>Mỗi cấp giảm 1s<br/>Mượt mà nhịp thi triển vòng lửa"]
+    end
+
     subgraph TIÊU 35 (HOSHITAMA)
         T1["Bản Gốc: Ẩn thân 5s<br/>Hồi nhiều Máu & Mana<br/>Chạy trốn câu giờ"] --> T2["Bản Mod: Xạ Thủ Ám Sát<br/>Hồi máu nhẹ, Xóa hồi Mana<br/>Mỗi đòn đốt 8% Max MP<br/>Nổ Sát thương = 2.5 x Mana đốt"]
     end
 
     subgraph ĐAO 25 (MAGUMANDARI)
-        D1["Bản Gốc: Cấm quái thường đánh<br/>Vô dụng với Boss & PvP"] --> D2["Bản Mod: Bùa Hại Đa Mục Tiêu (8s)<br/>Dùng lên Quái, Boss & PvP<br/>Mục tiêu Giảm 10-15% Dame gây ra<br/>Mục tiêu Nhận Thêm 10-15% Dame"]
+        D1["Bản Gốc: Cấm quái thường đánh<br/>Vô dụng với Boss & PvP"] --> D2["Bản Mod: Bùa Hại Chuyên Trị Quái (8s)<br/>Chỉ tác dụng lên Quái, Tinh Anh, Thủ Lĩnh & Tà Thú<br/>Giảm 10-15% Công & Trừ 30-60 Kháng Tất Cả<br/>Cấp 4 lan 2 mục tiêu, Cấp 6 lan 3 mục tiêu"]
     end
 
     subgraph CUNG 25 (SOGEKIHEI)
@@ -220,17 +252,32 @@ UPDATE `skill`
 SET `cooldown` = 45000, `mana_use` = 150 
 WHERE `template_id` = 55;
 
--- 3. Cập nhật mô tả cho skill 35 Tiêu (ID 15)
+-- 3. Cập nhật Cooldown cho skill 25 Tiêu (ID 13): 45s -> 40s
+UPDATE `skill` SET `cooldown` = 45000 WHERE `template_id` = 13 AND `point` = 1;
+UPDATE `skill` SET `cooldown` = 44000 WHERE `template_id` = 13 AND `point` = 2;
+UPDATE `skill` SET `cooldown` = 43000 WHERE `template_id` = 13 AND `point` = 3;
+UPDATE `skill` SET `cooldown` = 42000 WHERE `template_id` = 13 AND `point` = 4;
+UPDATE `skill` SET `cooldown` = 41000 WHERE `template_id` = 13 AND `point` = 5;
+UPDATE `skill` SET `cooldown` = 40000 WHERE `template_id` = 13 AND `point` = 6;
+
+-- 4. Cập nhật mô tả cho skill 35 Tiêu (ID 15)
 UPDATE `skill_template` 
 SET `description` = 'Ẩn thân xạ thủ: Hồi phục nhẹ HP, tiêu hao lượng lớn Mana trong mỗi đòn đánh để tăng vọt sát thương.' 
 WHERE `id` = 15;
 
--- 4. Cập nhật mô tả cho skill 25 Đao (ID 40)
+-- 5. Cập nhật mô tả & Cooldown cho skill 25 Đao (ID 40)
 UPDATE `skill_template` 
-SET `description` = 'Bùa Hại Trấn Áp: Yểm bùa lên mục tiêu khiến mục tiêu giảm 10-15% sức tấn công và nhận thêm 10-15% sát thương.' 
+SET `description` = 'Bùa Hại Trấn Áp Quái: Yểm bùa lên quái vật (kể cả Tinh Anh, Thủ Lĩnh, Tà Thú) làm giảm 10-15% sức tấn công và trừ 30-60 kháng tất cả. Cấp 4 lan 2 mục tiêu, Cấp 6 lan 3 mục tiêu theo tầm.' 
 WHERE `id` = 40;
 
--- 5. Cập nhật mô tả & Cooldown cho skill 25 Cung (ID 31)
+UPDATE `skill` SET `cooldown` = 25000 WHERE `template_id` = 40 AND `point` = 1;
+UPDATE `skill` SET `cooldown` = 24000 WHERE `template_id` = 40 AND `point` = 2;
+UPDATE `skill` SET `cooldown` = 23000 WHERE `template_id` = 40 AND `point` = 3;
+UPDATE `skill` SET `cooldown` = 22000 WHERE `template_id` = 40 AND `point` = 4;
+UPDATE `skill` SET `cooldown` = 21000 WHERE `template_id` = 40 AND `point` = 5;
+UPDATE `skill` SET `cooldown` = 20000 WHERE `template_id` = 40 AND `point` = 6;
+
+-- 6. Cập nhật mô tả & Cooldown cho skill 25 Cung (ID 31)
 UPDATE `skill_template` 
 SET `description` = 'Khiên Mana Hộ Mệnh: Chuyển 8-25% sát thương nhận vào sang Mana theo tỷ lệ tiêu hao tối ưu (2.0 -> 1.0 MP/ST).' 
 WHERE `id` = 31;
@@ -242,7 +289,7 @@ UPDATE `skill` SET `cooldown` = 25000 WHERE `template_id` = 31 AND `point` = 4;
 UPDATE `skill` SET `cooldown` = 22000 WHERE `template_id` = 31 AND `point` = 5;
 UPDATE `skill` SET `cooldown` = 20000 WHERE `template_id` = 31 AND `point` = 6;
 
--- 6. Cập nhật mô tả và Options chiêu thuần cho skill 25 Kunai (ID 22)
+-- 7. Cập nhật mô tả và Options chiêu thuần cho skill 25 Kunai (ID 22)
 UPDATE `skill_template` 
 SET `description` = 'Bù Nhìn Bộc Phá: Triệu hồi bù nhìn rơm thu hút kẻ địch. Khi biến mất, phát nổ gây sát thương Băng cực lớn lên quái gần nhất, tăng thêm 5% sát thương với mỗi đòn đã gánh chịu.' 
 WHERE `id` = 22;
@@ -363,8 +410,8 @@ if (targetMob != null && b.owner != null && !targetMob.isDead) {
 ## 8. ĐÁNH GIÁ CÂN BẰNG GAME
 
 1. **Ninja Kiếm**: "Pháo đài sinh tồn" với lượng hồi phục tự nhiên vô địch từ thức ăn (Flat + % Max HP).
-2. **Ninja Đao**: Chiêu 25 biến thành công cụ debuff mở giao tranh cốt lõi (Giảm công mục tiêu 15% & Tăng sát thương nhận 15%).
-3. **Ninja Tiêu**: Biến thể ám sát dồn sát thương bùng nổ theo Mana, đưa Tiêu trở thành xạ thủ burst dame tầm xa đích thực.
+2. **Ninja Đao**: Chiêu 25 trở thành vũ khí săn Quái, Tinh Anh, Thủ Lĩnh và Tà Thú cực mạnh: làm suy yếu 10-15% công quái giúp Đao tank vững vàng, đồng thời xé toạc 30-60 kháng tất cả và lan tới 2-3 mục tiêu ở cấp 4/6 để dọn bãi và hỗ trợ đồng đội dồn sát thương. Không áp dụng PvP để đảm bảo công bằng.
+3. **Ninja Tiêu**: Chiêu 25 tối ưu hồi chiêu 45s -> 40s giúp Tiêu duy trì vòng lửa liên tục hơn khi cày quái. Chiêu 35 là biến thể ám sát dồn sát thương bùng nổ theo Mana, đưa Tiêu trở thành xạ thủ burst dame tầm xa đích thực.
 4. **Ninja Cung**: Khắc phục triệt để tình trạng cháy sạch Mana / kẹt chiêu, lớp khiên hộ thể mềm 25% với chi phí rẻ (1:1) giúp Cung duy trì hỏa lực liên tục.
 5. **Ninja Kunai**: Chiêu 25 mang đầy đủ thông số của một CHIÊU THUẦN TẤN CÔNG (Tấn công cơ bản, Băng sát, Tấn công nội công %), kết hợp cơ chế tích tụ +5% sát thương mỗi hit khiến bù nhìn trở thành chiếc bẫy phản công cực kỳ đáng sợ đối với quái vật và Boss.
 

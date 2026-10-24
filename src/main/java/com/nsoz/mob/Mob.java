@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.nsoz.server.SpawnBossManager;
 import com.nsoz.combat.CombatService;
+import com.nsoz.skill.Skill;
 import com.nsoz.constants.ItemName;
 import com.nsoz.constants.MapName;
 import com.nsoz.constants.MobName;
@@ -131,6 +132,21 @@ public class Mob {
     public boolean isCantRespawn;
     public Lock lock = new ReentrantLock();
     public Hashtable<Byte, Effect> effects = new Hashtable<>();
+
+    // Debuff chiêu 25 Đao (Magumandari)
+    public long magumandariExpiredTime = 0;
+    public int magumandariAtkReduction = 0;
+    public int magumandariResReduction = 0;
+
+    public boolean isMagumandari() {
+        return magumandariExpiredTime > System.currentTimeMillis();
+    }
+
+    public void setMagumandariDebuff(long expireAt, int atkReduc, int resReduc) {
+        this.magumandariExpiredTime = expireAt;
+        this.magumandariAtkReduction = atkReduc;
+        this.magumandariResReduction = resReduc;
+    }
     @Setter
     @Getter
     private boolean isBeast;
@@ -828,6 +844,7 @@ public class Mob {
                 continue;
             }
             zone.getService().npcAttackBuNhin(this, j);
+            buNhin.hitsTaken++; // Chiêu 25 Kunai: Tăng số hit gánh chịu
             return;
         }
         Vector<Char> list = new Vector<Char>();
@@ -891,38 +908,47 @@ public class Mob {
                 if (pl.isReductionDame) {
                     dameHp -= dameHp * pl.options[136] / 100;
                 }
+                // Xác định kháng thô của người chơi đối với hệ của quái
+                int rawRes = 0;
+                switch (sys) {
+                    case 1:
+                        rawRes = pl.resFire + pl.options[48];
+                        break;
+                    case 2:
+                        rawRes = pl.resIce + pl.options[49];
+                        break;
+                    case 3:
+                        rawRes = pl.resWind + pl.options[50];
+                        break;
+                }
+                // Người chơi dùng kháng giảm sát thương nhận vào từ quái (quái thường không có sysUp/haKhac)
+                dameHp = CombatService.applyResistanceAndPenetration(dameHp, rawRes, 0, 0);
+
                 switch (sys) {
                     case 1:
                         dameHp -= dameHp * pl.options[127] / 100;
-                        dameHp -= pl.resFire;
-                        dameHp -= pl.options[48];
                         break;
-
                     case 2:
                         dameHp -= dameHp * pl.options[130] / 100;
-                        dameHp -= pl.resIce;
-                        dameHp -= pl.options[49];
                         break;
-
                     case 3:
                         dameHp -= dameHp * pl.options[131] / 100;
-                        dameHp -= pl.resWind;
-                        dameHp -= pl.options[50];
                         break;
                 }
 
-                // Cơ chế xung khắc hệ (PvE: Quái đánh người chơi)
+                // TẦNG 2: TƯƠNG KHẮC HỆ NGŨ HÀNH (Tách biệt hoàn toàn: Nhân 1.1 nếu khắc, 0.9 nếu bị khắc)
                 int mobRelation = CombatService.getSysRelation(this.sys, pl.getSys());
                 if (mobRelation == 1) {
-                    // Quái khắc hệ người chơi: Tăng 10% sát thương quái gây ra
-                    dameHp += (dameHp * 10) / 100;
+                    // Quái khắc hệ người chơi: Nhân 1.1 sát thương quái gây ra
+                    dameHp = (int) Math.round(dameHp * 1.1);
                 } else if (mobRelation == -1) {
-                    // Người chơi khắc hệ quái: Giảm 10% sát thương quái gây ra + Hạ khắc (sysDown)
-                    int reducePercent = 10 + Math.max(0, pl.sysDown);
-                    if (reducePercent > 50) {
-                        reducePercent = 50;
-                    }
-                    dameHp -= (dameHp * reducePercent) / 100;
+                    // Người chơi khắc hệ quái: Nhân 0.9 sát thương quái gây ra
+                    dameHp = (int) Math.round(dameHp * 0.9);
+                }
+
+                // Bùa hại chiêu 25 Đao (Magumandari): Giảm 10 - 15% sức tấn công quái
+                if (isMagumandari()) {
+                    dameHp -= (dameHp * magumandariAtkReduction) / 100;
                 }
 
                 Effect eff2 = pl.getEm().findByID((byte) 37);
@@ -979,7 +1005,12 @@ public class Mob {
                         if ((pl.mp * 100 / pl.maxMP) >= 10) {
                             dameMp = dameHp * eff.param / 100;
                             dameHp -= dameMp;
-                            pl.addMp(-dameMp);
+                            // Chiêu 25 Cung: Tiêu hao Mana tối ưu dần theo cấp (2.0 -> 1.0 MP/ST)
+                            Skill c25 = pl.getSkill(31);
+                            int pt = (c25 != null) ? c25.point : 1;
+                            int ratio10 = Math.max(10, 20 - (pt - 1) * 2);
+                            int mpCost = dameMp * ratio10 / 10;
+                            pl.addMp(-mpCost);
                         }
                     }
                 }

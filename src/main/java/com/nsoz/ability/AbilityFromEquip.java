@@ -365,7 +365,7 @@ public class AbilityFromEquip implements AbilityStrategy {
         owner.reactDame = stats.getFlat(StatType.REFLECT_MELEE) + owner.optionsSupportSkill[15];
 
         // Hệ thống khắc hệ
-        owner.sysDown = 0;
+        owner.sysDown = owner.optionsSupportSkill[32];
         owner.sysUp = owner.optionsSupportSkill[33];
 
         // Tốc độ di chuyển

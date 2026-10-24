@@ -17,6 +17,7 @@ import com.nsoz.map.item.ItemMap;
 import com.nsoz.map.item.Mushroom;
 import com.nsoz.map.item.Ore;
 import com.nsoz.mob.*;
+import com.nsoz.combat.CombatService;
 import com.nsoz.model.Char;
 import com.nsoz.model.Figurehead;
 import com.nsoz.npc.Npc;
@@ -967,6 +968,52 @@ public class Zone extends Thread {
                 if (!list.isEmpty()) {
                     for (int index : list) {
                         try {
+                            Figurehead b = figureheads.get(index);
+                            if (b != null && b.owner != null && !b.owner.isCleaned) {
+                                Mob targetMob = null;
+                                int minDistance = 250;
+                                for (Mob m : this.monsters) {
+                                    if (m != null && !m.isDead) {
+                                        int d = NinjaUtils.getDistance(b.x, b.y, m.x, m.y);
+                                        if (d < minDistance) {
+                                            minDistance = d;
+                                            targetMob = m;
+                                        }
+                                    }
+                                }
+                                if (targetMob != null && !targetMob.isDead) {
+                                    boolean isFatal = b.owner.fatal > NinjaUtils.nextInt(1000);
+                                    int dameBasic = NinjaUtils.nextInt(b.owner.damage2, b.owner.damage);
+                                    int skillDamage = b.baseAttack + (dameBasic * b.percentAttack / 100) + b.iceAttack;
+                                    if (isFatal) {
+                                        skillDamage += dameBasic + (dameBasic * b.owner.percentFatalDame / 100) + b.owner.fatalDame;
+                                    }
+                                    int rel = CombatService.getSysRelation(2, targetMob.sys);
+                                    if (rel == 1) {
+                                        skillDamage = (int) Math.round(skillDamage * 1.1);
+                                    } else if (rel == -1) {
+                                        skillDamage = (int) Math.round(skillDamage * 0.9);
+                                    }
+                                    int totalDamage = skillDamage + (skillDamage * (b.hitsTaken * b.bonusPercentPerHit) / 100);
+                                    if (totalDamage > 0) {
+                                        targetMob.lock.lock();
+                                        try {
+                                            targetMob.addHp(-totalDamage);
+                                            if (targetMob.hp <= 0) {
+                                                targetMob.hp = 0;
+                                                targetMob.die();
+                                                Char killer = b.owner.getOriginChar();
+                                                Char master = targetMob.sortNinjaFight();
+                                                targetMob.dead(killer, master);
+                                            }
+                                            getService().attackMonster(totalDamage, isFatal, targetMob);
+                                        } finally {
+                                            targetMob.lock.unlock();
+                                        }
+                                    }
+                                }
+                                getService().addEffectAuto((byte) 8, (short) b.x, (short) b.y, (byte) 0, (short) 1);
+                            }
                             getService().removeBuNhin(index);
                             figureheads.remove(index);
                         } catch (Exception ex) {
