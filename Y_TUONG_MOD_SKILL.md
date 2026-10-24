@@ -265,17 +265,21 @@ UPDATE `skill_template`
 SET `description` = 'Ẩn thân xạ thủ: Hồi phục nhẹ HP, tiêu hao lượng lớn Mana trong mỗi đòn đánh để tăng vọt sát thương.' 
 WHERE `id` = 15;
 
--- 5. Cập nhật mô tả & Cooldown cho skill 25 Đao (ID 40)
+-- 5. Cập nhật mô tả gọn gàng & Details chỉ số chiêu 25 Đao (ID 40)
+UPDATE `skill_option` SET `name` = 'Giảm sức tấn công của quái: -#%' WHERE `id` = 48;
+INSERT INTO `skill_option` (`id`, `name`) VALUES (77, 'Giảm kháng tất cả các hệ: -#') ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
+INSERT INTO `skill_option` (`id`, `name`) VALUES (78, 'Duy trì bùa hại: # giây') ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
+
 UPDATE `skill_template` 
-SET `description` = 'Bùa Hại Trấn Áp Quái: Yểm bùa lên quái vật (kể cả Tinh Anh, Thủ Lĩnh, Tà Thú) làm giảm 10-15% sức tấn công và trừ 30-60 kháng tất cả. Cấp 4 lan 2 mục tiêu, Cấp 6 lan 3 mục tiêu theo tầm.' 
+SET `description` = 'Bùa Hại Trấn Áp: Yểm bùa lên quái vật làm suy giảm sức tấn công và kháng tất cả các hệ.' 
 WHERE `id` = 40;
 
-UPDATE `skill` SET `cooldown` = 25000 WHERE `template_id` = 40 AND `point` = 1;
-UPDATE `skill` SET `cooldown` = 24000 WHERE `template_id` = 40 AND `point` = 2;
-UPDATE `skill` SET `cooldown` = 23000 WHERE `template_id` = 40 AND `point` = 3;
-UPDATE `skill` SET `cooldown` = 22000 WHERE `template_id` = 40 AND `point` = 4;
-UPDATE `skill` SET `cooldown` = 21000 WHERE `template_id` = 40 AND `point` = 5;
-UPDATE `skill` SET `cooldown` = 20000 WHERE `template_id` = 40 AND `point` = 6;
+UPDATE `skill` SET `max_fight` = 1, `cooldown` = 25000, `options` = '[{"param":10,"id":48},{"param":30,"id":77},{"param":6,"id":78}]' WHERE `template_id` = 40 AND `point` = 1;
+UPDATE `skill` SET `max_fight` = 1, `cooldown` = 24000, `options` = '[{"param":11,"id":48},{"param":36,"id":77},{"param":6,"id":78}]' WHERE `template_id` = 40 AND `point` = 2;
+UPDATE `skill` SET `max_fight` = 1, `cooldown` = 23000, `options` = '[{"param":12,"id":48},{"param":42,"id":77},{"param":7,"id":78}]' WHERE `template_id` = 40 AND `point` = 3;
+UPDATE `skill` SET `max_fight` = 2, `cooldown` = 22000, `options` = '[{"param":13,"id":48},{"param":48,"id":77},{"param":7,"id":78}]' WHERE `template_id` = 40 AND `point` = 4;
+UPDATE `skill` SET `max_fight` = 2, `cooldown` = 21000, `options` = '[{"param":14,"id":48},{"param":54,"id":77},{"param":8,"id":78}]' WHERE `template_id` = 40 AND `point` = 5;
+UPDATE `skill` SET `max_fight` = 3, `cooldown` = 20000, `options` = '[{"param":15,"id":48},{"param":60,"id":77},{"param":8,"id":78}]' WHERE `template_id` = 40 AND `point` = 6;
 
 -- 6. Cập nhật mô tả & Cooldown cho skill 25 Cung (ID 31)
 UPDATE `skill_template` 

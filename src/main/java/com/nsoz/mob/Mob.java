@@ -1685,7 +1685,8 @@ public class Mob {
                         }
                     }
                 }
-                if (!isIce && !isWind && !isDisable && template.id != MobName.BU_NHIN && template.id != MobName.MOC_NHAN && template.id != MobName.THAO_DUOC && chars.size() > 0) {
+                boolean cannotAttack = isIce || isWind || (isDisable && !isMagumandari());
+                if (!cannotAttack && template.id != MobName.BU_NHIN && template.id != MobName.MOC_NHAN && template.id != MobName.THAO_DUOC && chars.size() > 0) {
                     long now = System.currentTimeMillis();
                     if (now - this.lastTimeAttack > this.attackDelay) {
                         this.lastTimeAttack = now;

@@ -7373,10 +7373,15 @@ public class Char {
                 return;
             } else if (skillTemplateId == 40) {
                 int pt = selectedSkill.point;
-                int maxTarget = (pt >= 6) ? 3 : (pt >= 4 ? 2 : 1);
-                int duration = (pt == 1) ? 6000 : (pt == 2 ? 6500 : (pt == 3 ? 7000 : (pt == 4 ? 7500 : 8000)));
+                int maxTarget = (selectedSkill.maxFight > 0) ? selectedSkill.maxFight : ((pt >= 6) ? 3 : (pt >= 4 ? 2 : 1));
                 int atkReduction = 10 + (pt - 1);
                 int resReduction = 30 + (pt - 1) * 6;
+                int duration = (pt == 1) ? 6000 : (pt == 2 ? 6500 : (pt == 3 ? 7000 : (pt == 4 ? 7500 : 8000)));
+                if (selectedSkill.options != null && selectedSkill.options.length >= 3) {
+                    atkReduction = selectedSkill.options[0].param;
+                    resReduction = selectedSkill.options[1].param;
+                    duration = selectedSkill.options[2].param * 1000;
+                }
                 ArrayList<Mob> targets = new ArrayList<>();
                 for (Mob m : mobs) {
                     if (m != null && !m.isDead && !targets.contains(m)) {
@@ -7396,8 +7401,10 @@ public class Char {
                     }
                 }
                 for (Mob mob : targets) {
+                    Effect eff = new Effect(0, duration, 0);
+                    mob.effects.put(eff.template.type, eff);
                     mob.setMagumandariDebuff(System.currentTimeMillis() + duration, atkReduction, resReduction);
-                    zone.getService().addEffectAuto((byte) 0, (short) mob.x, (short) mob.y, (byte) 0, (short) 1);
+                    zone.setDisable(mob, true);
                 }
                 return;
             } else if (skillTemplateId == 43) {
