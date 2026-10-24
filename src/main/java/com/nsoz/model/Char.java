@@ -4669,37 +4669,41 @@ public class Char {
                     } else if (item.template.type == ItemTemplate.TYPE_TASK_WAIT) {
                         useItemTaskWait(item);
                         return;
-                    } else if (item.template.type == ItemTemplate.TYPE_DRAGONBALL) {
+                    } else if (item.template.type == ItemTemplate.TYPE_DRAGONBALL || (item.id >= ItemName.NGOC_1_SAO && item.id <= ItemName.NGOC_7_SAO)) {
                         if (isCatchItem) {
+                            return;
+                        }
+                        if (this.classId == 0 || getSys() == 0) {
+                            serverDialog("Bạn cần gia nhập một trường phái ninja trước khi sử dụng 7 viên ngọc rồng!");
                             return;
                         }
                         int[] index = new int[7];
                         for (int i = 222; i <= 228; i++) {
                             int in = this.getIndexItemByIdInBag(i);
                             if (in == -1) {
-                                serverMessage("Cần phải hội tụ 7 viên ngọc mới có thể sử dụng");
+                                serverDialog("Cần phải hội tụ đủ 7 viên ngọc rồng (1 sao đến 7 sao) mới có thể sử dụng!");
                                 return;
                             }
                             index[i - 222] = in;
                         }
-                        if (getSlotNull() == 0) {
-                            warningBagFull();
-                            return;
-                        }
-                        isCatchItem = true;
-                        getService().callEffectBall();
-                        Thread.sleep(1500);
-                        if (!isCleaned) {
-                            int id = (new int[]{420, 421, 422})[getSys() - 1];
-                            Item itm = ItemFactory.getInstance().newItem(id);
-                            itm.isLock = true;
-                            itm.sys = getSys();
-                            addItemToBag(itm);
-                            for (int i : index) {
-                                removeItem(i, 1, true);
+                        try {
+                            isCatchItem = true;
+                            getService().callEffectBall();
+                            for (int in : index) {
+                                removeItem(in, 1, true);
                             }
+                            if (!isCleaned) {
+                                int sys = getSys();
+                                int id = (new int[]{ItemName.FAIYAA_YOROI, ItemName.MIZU_YOROI, ItemName.WINDO_YOROI})[sys - 1];
+                                Item itm = ItemFactory.getInstance().newItem(id);
+                                itm.isLock = true;
+                                itm.sys = (byte) sys;
+                                addItemToBag(itm);
+                                serverDialog("Bạn đã hội tụ thành công 7 viên ngọc rồng và nhận được " + itm.template.name + "!");
+                            }
+                        } finally {
+                            isCatchItem = false;
                         }
-                        isCatchItem = false;
                     } else if (item.template.type == ItemTemplate.TYPE_HP) {
                         if (this.hieuChien >= 10) {
                             serverMessage("Điểm hiếu chiến quá cao.");
@@ -13076,49 +13080,62 @@ public class Char {
         }));
 
         menus.add(new Menu(CMDMenu.EXECUTE, "Bỏ qua nhiệm vụ", () -> {
+            if (this.taskId >= 43) {
+                getService().npcChat(NpcName.ADMIN, "Con đã hoàn thành hoặc bỏ qua toàn bộ nhiệm vụ rồi, không thể thực hiện thêm!");
+                return;
+            }
+            if (this.taskId < 9) {
+                getService().npcChat(NpcName.ADMIN, "Ngươi cần làm hết nhiệm vụ làng tone mới có thể thực hiện");
+                return;
+            }
             menus.clear();
             getService().npcChat(NpcName.ADMIN, "Con có muốn bỏ qua toàn bộ nhiệm vụ với giá 3.000 lượng không?");
             menus.add(new Menu(CMDMenu.EXECUTE, "Đồng ý", () -> {
-                if (this.taskId >= 9) {//sau open sua >= 9
-                    if (getSlotNull() < 7) {
-                        warningBagFull();
-                        return;
-                    }
-                    if (user.gold < 3000) {
-                        serverDialog("Bạn không đủ 3.000 lượng");
-                        return;
-                    }
-                    addGold(-3000);
-                    for (int i = ItemName.NGOC_1_SAO; i <= ItemName.NGOC_7_SAO; i++) {
-                        Item ngoc = ItemFactory.getInstance().newItem(i);
-                        ngoc.isLock = true;
-                        addItemToBag(ngoc);
-                    }
-                    this.taskId = 43;
-                    this.taskMain = null;
-                    for (int i = 0; i < this.bag.length; i++) {
-                        if (this.bag[i] != null && ((int) this.bag[i].template.type == 25
-                                || (int) this.bag[i].template.type == 23 || (int) this.bag[i].template.type == 24)) {
-                            this.bag[i] = null;
-                        }
-                    }
-                    getService().clearTask();
-                    serverDialog("Bỏ qua nhiệm vụ thành công, máy chủ sẽ ngắt kết nối sau 3 giây");
-                    int TimeSeconds = 3;
-                    while (TimeSeconds > 0) {
-                        TimeSeconds--;
-                        try {
-                            Thread.sleep(1000L);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(Char.class
-                                    .getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    if (!isCleaned) {
-                        this.user.session.closeMessage();
-                    }
-                } else {
+                if (this.taskId >= 43) {
+                    serverDialog("Con đã hoàn thành hoặc bỏ qua toàn bộ nhiệm vụ rồi, không thể thực hiện thêm!");
+                    return;
+                }
+                if (this.taskId < 9) {
                     getService().npcChat(NpcName.ADMIN, "Ngươi cần làm hết nhiệm vụ làng tone mới có thể thực hiện");
+                    return;
+                }
+                if (getSlotNull() < 7) {
+                    warningBagFull();
+                    return;
+                }
+                if (user.gold < 3000) {
+                    serverDialog("Bạn không đủ 3.000 lượng");
+                    return;
+                }
+                addGold(-3000);
+                for (int i = ItemName.NGOC_1_SAO; i <= ItemName.NGOC_7_SAO; i++) {
+                    Item ngoc = ItemFactory.getInstance().newItem(i);
+                    ngoc.isLock = true;
+                    addItemToBag(ngoc);
+                }
+                this.taskId = 43;
+                this.taskMain = null;
+                for (int i = 0; i < this.bag.length; i++) {
+                    if (this.bag[i] != null && ((int) this.bag[i].template.type == 25
+                            || (int) this.bag[i].template.type == 23 || (int) this.bag[i].template.type == 24)) {
+                        this.bag[i] = null;
+                    }
+                }
+                getService().clearTask();
+                this.saveData();
+                serverDialog("Bỏ qua nhiệm vụ thành công, máy chủ sẽ ngắt kết nối sau 3 giây");
+                int TimeSeconds = 3;
+                while (TimeSeconds > 0) {
+                    TimeSeconds--;
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Char.class
+                                .getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                if (!isCleaned) {
+                    this.user.session.closeMessage();
                 }
             }));
             menus.add(new Menu(CMDMenu.EXECUTE, "Hủy bỏ", () -> {
@@ -16475,14 +16492,13 @@ public class Char {
                             serverDialog("Làm xong hết nhiệm vụ ở làng Tone mới có thể sử dụng tính năng này!");
                             return;
                         }
-                        if (taskMain != null) {
-                            taskMain = null;
-                            taskId += 43;
-                            getService().taskFinish();
-                        } else {
-                            taskId += 43;
-                            getService().taskFinish();
+                        if (taskId >= 43) {
+                            serverDialog("Bạn đã hoàn thành hoặc bỏ qua toàn bộ nhiệm vụ rồi!");
+                            return;
                         }
+                        taskMain = null;
+                        taskId = 43;
+                        getService().taskFinish();
                         getService().loadAll();
                         for (int i = ItemName.NGOC_1_SAO; i <= ItemName.NGOC_7_SAO; i++) {
                             Item ngoc = ItemFactory.getInstance().newItem(i);
@@ -16491,6 +16507,7 @@ public class Char {
                         }
                         addGold(-2000);
                         initListCanEnterMap();
+                        this.saveData();
                         break;
                     case CMDConfirmPopup.UPGRADE_SOUL_STONE:
                         this.upgradeSoulStone();
