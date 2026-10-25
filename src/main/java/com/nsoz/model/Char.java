@@ -224,7 +224,10 @@ public class Char {
     public byte nAnswer = 0;
     public long lastTimeChatGlobal;
     public long lastTimeTeleport;
+    public long lastTimeUseHp;
+    public long lastTimeUseMp;
     public Mob mobMe, mobBijuu;
+    public Mob mobFocus;
     public Char enemy;
     public boolean isCatchItem = false;
     public boolean isFailure = false;
@@ -1062,8 +1065,12 @@ public class Char {
                 if (k25 != null && k25.point > 0) {
                     int pt = k25.point;
                     int flatBonus = (pt == 1) ? 100 : (pt == 2 ? 150 : (pt == 3 ? 200 : (pt == 4 ? 250 : (pt == 5 ? 300 : 400))));
-                    int percentBonus = (pt == 1) ? 5 : (pt == 2 ? 8 : (pt == 3 ? 11 : (pt == 4 ? 14 : (pt == 5 ? 17 : 20))));
-                    hp += flatBonus + (int) ((long) this.maxHP * percentBonus / 1000);
+                    int percentBonus = (pt == 1 || pt == 2) ? 1 : ((pt == 3) ? 2 : ((pt == 4) ? 3 : ((pt == 5) ? 4 : 5)));
+                    if (k25.options != null && k25.options.length >= 2) {
+                        flatBonus = k25.options[0].param;
+                        percentBonus = k25.options[1].param;
+                    }
+                    hp += flatBonus + (int) ((long) this.maxHP * percentBonus / 100);
                 }
             }
 
@@ -4736,21 +4743,28 @@ public class Char {
                             serverMessage("HP đã đầy.");
                             return;
                         }
+                        long now = System.currentTimeMillis();
+                        if (now - this.lastTimeUseHp < 5000L) {
+                            long remain = (5000L - (now - this.lastTimeUseHp) + 999) / 1000;
+                            serverMessage("Chờ " + remain + "s để tiếp tục dùng bình HP.");
+                            return;
+                        }
+                        this.lastTimeUseHp = now;
 
                         int time = 3000;
                         short param = 0;
                         if (item.id == 13) {
-                            param = 25;
+                            param = 12;
                         } else if (item.id == 14) {
-                            param = 90;
+                            param = 45;
                         } else if (item.id == 15) {
-                            param = 230;
+                            param = 115;
                         } else if (item.id == 16) {
-                            param = 400;
+                            param = 200;
                         } else if (item.id == 17) {
-                            param = 650;
+                            param = 325;
                         } else if (item.id == 565) {
-                            param = 1500;
+                            param = 750;
                         }
                         byte template = 21;
                         Effect effect = new Effect(template, time, param);
@@ -4767,33 +4781,41 @@ public class Char {
                         }
                         if (this.mp >= this.maxMP) {
                             serverMessage("MP đã đầy.");
+                            return;
                         }
+                        long now = System.currentTimeMillis();
+                        if (now - this.lastTimeUseMp < 5000L) {
+                            long remain = (5000L - (now - this.lastTimeUseMp) + 999) / 1000;
+                            serverMessage("Chờ " + remain + "s để tiếp tục dùng bình MP.");
+                            return;
+                        }
+                        this.lastTimeUseMp = now;
 
                         int mp = 0;
                         switch (item.id) {
 
                             case 18:
-                                mp = 150;
+                                mp = 75;
                                 break;
 
                             case 19:
-                                mp = 500;
+                                mp = 250;
                                 break;
 
                             case 20:
-                                mp = 1000;
+                                mp = 500;
                                 break;
 
                             case 21:
-                                mp = 2000;
+                                mp = 1000;
                                 break;
 
                             case 22:
-                                mp = 3500;
+                                mp = 1750;
                                 break;
 
                             case 566:
-                                mp = 5000;
+                                mp = 2500;
                                 break;
                         }
                         this.mp += mp;
@@ -6880,6 +6902,7 @@ public class Char {
 
             if (!m.isEmpty()) {
                 Mob mob = m.get(0);
+                this.mobFocus = mob;
                 int skillTemplateId = selectedSkill.template.id;
                 if (skillTemplateId == 42) {
                     setXY(mob.x, mob.y);
@@ -7049,6 +7072,90 @@ public class Char {
                 } else if (skill.template.id == 52) {
                     // skill bufff lv 40 quạt
                     effectResistance(skill);
+                } else if (skill.template.id == 40) {
+                    int pt = skill.point;
+                    int maxTarget = (skill.maxFight > 0) ? skill.maxFight : ((pt >= 6) ? 3 : (pt >= 4 ? 2 : 1));
+                    int atkReduction = 10 + (pt - 1);
+                    int resReduction = 30 + (pt - 1) * 6;
+                    int duration = (pt == 1) ? 6000 : (pt == 2 ? 6500 : (pt == 3 ? 7000 : (pt == 4 ? 7500 : 8000)));
+                    if (skill.options != null && skill.options.length >= 3) {
+                        atkReduction = skill.options[0].param;
+                        resReduction = skill.options[1].param;
+                        duration = skill.options[2].param * 1000;
+                    }
+                    ArrayList<Mob> targets = new ArrayList<>();
+                    if (zone != null && zone.monsters != null) {
+                        synchronized (zone.monsters) {
+                            // 1. Ưu tiên mục tiêu nhân vật đang trỏ tới / tấn công (mobFocus)
+                            Mob primaryTarget = null;
+                            if (this.mobFocus != null && !this.mobFocus.isDead && zone.monsters.contains(this.mobFocus)) {
+                                if (NinjaUtils.getDistance(this.x, this.y, this.mobFocus.x, this.mobFocus.y) <= 300) {
+                                    primaryTarget = this.mobFocus;
+                                }
+                            }
+
+                            // 2. Nếu không có mobFocus, tìm quái theo hướng mặt nhân vật đang trỏ tới (dir)
+                            if (primaryTarget == null) {
+                                Mob closestInFront = null;
+                                int minFrontDist = Integer.MAX_VALUE;
+                                Mob closestAny = null;
+                                int minAnyDist = Integer.MAX_VALUE;
+
+                                for (Mob m : zone.monsters) {
+                                    if (m != null && !m.isDead) {
+                                        int dist = NinjaUtils.getDistance(this.x, this.y, m.x, m.y);
+                                        if (dist <= 250) {
+                                            boolean inFront = (dir > 0 && m.x >= this.x - 30) || (dir < 0 && m.x <= this.x + 30);
+                                            if (inFront && dist < minFrontDist) {
+                                                minFrontDist = dist;
+                                                closestInFront = m;
+                                            }
+                                            if (dist < minAnyDist) {
+                                                minAnyDist = dist;
+                                                closestAny = m;
+                                            }
+                                        }
+                                    }
+                                }
+                                primaryTarget = (closestInFront != null) ? closestInFront : closestAny;
+                            }
+
+                            // 3. Nếu tìm được primaryTarget, đưa vào danh sách và lan sang quái gần mục tiêu đó nhất
+                            if (primaryTarget != null) {
+                                targets.add(primaryTarget);
+
+                                if (maxTarget > 1) {
+                                    final Mob fPrimary = primaryTarget;
+                                    ArrayList<Mob> candidates = new ArrayList<>();
+                                    for (Mob m : zone.monsters) {
+                                        if (m != null && !m.isDead && !m.equals(fPrimary)) {
+                                            int distFromPrimary = NinjaUtils.getDistance(fPrimary.x, fPrimary.y, m.x, m.y);
+                                            int distFromChar = NinjaUtils.getDistance(this.x, this.y, m.x, m.y);
+                                            if (distFromPrimary <= 200 && distFromChar <= 300) {
+                                                candidates.add(m);
+                                            }
+                                        }
+                                    }
+                                    candidates.sort((m1, m2) -> {
+                                        int d1 = NinjaUtils.getDistance(fPrimary.x, fPrimary.y, m1.x, m1.y);
+                                        int d2 = NinjaUtils.getDistance(fPrimary.x, fPrimary.y, m2.x, m2.y);
+                                        return Integer.compare(d1, d2);
+                                    });
+                                    for (Mob m : candidates) {
+                                        targets.add(m);
+                                        if (targets.size() >= maxTarget) break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    zone.getService().setSkillPaint_1(targets, this, (byte) skill.template.id);
+                    for (Mob mob : targets) {
+                        Effect eff = new Effect(0, duration, 0);
+                        mob.effects.put(eff.template.type, eff);
+                        mob.setMagumandariDebuff(System.currentTimeMillis() + duration, atkReduction, resReduction);
+                        zone.setDisable(mob, true);
+                    }
                 }
             }
         }
@@ -7146,6 +7253,20 @@ public class Char {
     public void useSkillBuff(Message ms) {
         try {
             byte dir = ms.reader().readByte();
+            if (ms.reader().available() > 0) {
+                int targetId = -1;
+                if (ms.reader().available() == 1) {
+                    targetId = ms.reader().readUnsignedByte();
+                } else if (ms.reader().available() >= 2) {
+                    targetId = ms.reader().readShort();
+                }
+                if (targetId >= 0 && zone != null) {
+                    Mob m = zone.findMoLivebByID(targetId);
+                    if (m != null) {
+                        this.mobFocus = m;
+                    }
+                }
+            }
             useSkillBuff(dir, selectedSkill);
         } catch (IOException ex) {
             Log.logException("Use Skill Buff Err: ", Char.class, ex);
@@ -7400,6 +7521,7 @@ public class Char {
                         }
                     }
                 }
+                zone.getService().setSkillPaint_1(targets, this, (byte) selectedSkill.template.id);
                 for (Mob mob : targets) {
                     Effect eff = new Effect(0, duration, 0);
                     mob.effects.put(eff.template.type, eff);
@@ -8598,6 +8720,9 @@ public class Char {
                     m.add(mob);
                 }
             }
+            if (!m.isEmpty()) {
+                this.mobFocus = m.get(0);
+            }
             Vector<Char> m2 = new Vector<>();
             while (ms.reader().available() > 0) {
                 int id = ms.reader().readInt();
@@ -8706,7 +8831,7 @@ public class Char {
         if (isLockFire) {
             return false;
         }
-        if (mob == null || this.selectedSkill == null || this.selectedSkill.template.type == 2 || this.selectedSkill.template.type == 3 || (this.selectedSkill.template.type == 4 && !mob.isDead)) {
+        if (mob == null || this.selectedSkill == null || (this.selectedSkill.template.type == 2 && this.selectedSkill.template.id != 40) || (this.selectedSkill.template.type == 3 && this.selectedSkill.template.id != 40) || (this.selectedSkill.template.type == 4 && !mob.isDead)) {
             return false;
         }
         if (mob != null) {
@@ -23994,6 +24119,7 @@ public class Char {
         this.mount = null;
         this.mobMe = null;
         this.mob = null;
+        this.mobFocus = null;
         this.enemy = null;
         this.friends = null;
         this.selectedSkill = null;

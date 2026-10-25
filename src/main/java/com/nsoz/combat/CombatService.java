@@ -13,7 +13,7 @@ import com.nsoz.util.NinjaUtils;
  * Các sửa đổi và chuẩn hóa quan trọng:
  * 1. Khắc phục bug Option 121 (Kháng ST Chí Mạng): Áp trần tối đa 100%.
  * 2. Khắc phục bug Hệ Băng nổ chí mạng cộng 2 lần kỹ năng hỗ trợ optionsSupportSkill[65].
- * 3. Chống bất tử trong PvP: Áp trần Miễn giảm sát thương (Opt 63 + Opt 98) tối đa 75%.
+ * 3. Loại bỏ hoàn toàn Miễn giảm sát thương % thô: Quy đổi Opt 98 về Kháng tất cả và Opt 63 về Kháng ST Chí mạng.
  * 4. Chuẩn hóa thứ tự Sát Thương Chuẩn (Option 113): Cộng trực tiếp sau khi trừ giáp/dameDown,
  *    không bị giảm trừ bởi trạng thái suy yếu (80%), đóng băng (50%) hay dameDown.
  */
@@ -46,8 +46,8 @@ public class CombatService {
             dameFatal -= dameHit * (target.options[46] + target.options[79]) / 100;
         }
 
-        // Trừ % Kháng Sát thương Chí mạng (Option 121) - Áp trần tối đa 100%
-        int kstcm = Math.min(100, Math.max(0, target.options[121]));
+        // Trừ % Kháng Sát thương Chí mạng (Option 63 & 121) - Áp trần tối đa 100%
+        int kstcm = Math.min(100, Math.max(0, target.options[121] + target.options[63]));
         dameFatal -= dameFatal * kstcm / 100;
         if (dameFatal < 0) {
             dameFatal = 0;
@@ -74,6 +74,10 @@ public class CombatService {
             case 3: // Phong
                 rawRes = target.resWind + target.options[50];
                 break;
+        }
+        // Kích hoạt bùa hộ thể (Option 136): Tăng trực tiếp điểm kháng tất cả trong 5s
+        if (target.isReductionDame) {
+            rawRes += target.options[136];
         }
         if (isSkipResistance) {
             rawRes = 0;
@@ -112,16 +116,7 @@ public class CombatService {
             dameHit = (int) Math.round(dameHit * 0.9);
         }
 
-        // Step 5: Percent Damage Mitigation (Áp trần tối đa 75% để triệt tiêu bug bất tử 0 dame)
-        int rawMitigation = target.options[63] + target.options[98];
-        int mitigation = Math.min(75, Math.max(0, rawMitigation));
-        dameHit -= dameHit * mitigation / 100;
-
-        if (target.isReductionDame) {
-            dameHit -= dameHit * target.options[136] / 100;
-        }
-
-        // Step 6: PvP Scale & Level Difference
+        // Step 5: PvP Scale & Level Difference
         int levelDiff = (target.level - attacker.level) / 40;
         int scale = 6 - levelDiff;
         if (scale < 1) {

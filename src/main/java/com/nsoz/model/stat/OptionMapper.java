@@ -146,6 +146,7 @@ public class OptionMapper {
             case 20:
             case 36:
             case 81:
+            case 98:
             case 118:
                 return new StatModifier(StatType.RES_ALL, ModType.FLAT, param);
 
@@ -165,6 +166,7 @@ public class OptionMapper {
 
             case 46:
                 return new StatModifier(StatType.RES_CRIT_DAMAGE, ModType.PERCENT, param);
+            case 63:
             case 79:
             case 121:
                 return new StatModifier(StatType.RES_CRIT_PERCENT, ModType.PERCENT, param);
@@ -175,11 +177,6 @@ public class OptionMapper {
             case 80:
             case 124:
                 return new StatModifier(StatType.DAMAGE_REDUCTION, ModType.FLAT, param);
-
-            case 98:
-                return new StatModifier(StatType.DAMAGE_MITIGATION, ModType.PERCENT, param);
-            case 63:
-                return new StatModifier(StatType.PVP_DAMAGE_MITIGATION, ModType.PERCENT, param);
 
             // Sát thương đặc biệt
             case 113:

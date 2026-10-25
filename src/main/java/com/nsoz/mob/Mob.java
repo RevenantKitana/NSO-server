@@ -905,9 +905,6 @@ public class Mob {
                     }
                 }
                 dameHp -= pl.dameDown;
-                if (pl.isReductionDame) {
-                    dameHp -= dameHp * pl.options[136] / 100;
-                }
                 // Xác định kháng thô của người chơi đối với hệ của quái
                 int rawRes = 0;
                 switch (sys) {
@@ -920,6 +917,10 @@ public class Mob {
                     case 3:
                         rawRes = pl.resWind + pl.options[50];
                         break;
+                }
+                // Kích hoạt bùa hộ thể (Option 136): Tăng trực tiếp điểm kháng tất cả trong 5s
+                if (pl.isReductionDame) {
+                    rawRes += pl.options[136];
                 }
                 // Người chơi dùng kháng giảm sát thương nhận vào từ quái (quái thường không có sysUp/haKhac)
                 dameHp = CombatService.applyResistanceAndPenetration(dameHp, rawRes, 0, 0);
