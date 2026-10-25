@@ -147,6 +147,8 @@ public class Mob {
         this.magumandariAtkReduction = atkReduc;
         this.magumandariResReduction = resReduc;
     }
+
+
     @Setter
     @Getter
     private boolean isBeast;
@@ -844,7 +846,16 @@ public class Mob {
                 continue;
             }
             zone.getService().npcAttackBuNhin(this, j);
-            buNhin.hitsTaken++; // Chiêu 25 Kunai: Tăng số hit gánh chịu
+            int dameToBuNhin = NinjaUtils.nextInt(this.damageOnPlayer2, this.damageOnPlayer);
+            if (this.levelBoss == 1) {
+                dameToBuNhin *= 2;
+            } else if (this.levelBoss == 2) {
+                dameToBuNhin *= 3;
+            }
+            if (dameToBuNhin <= 0) {
+                dameToBuNhin = 100;
+            }
+            buNhin.addHp(-dameToBuNhin);
             return;
         }
         Vector<Char> list = new Vector<Char>();

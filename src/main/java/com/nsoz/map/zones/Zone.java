@@ -18,6 +18,7 @@ import com.nsoz.map.item.Mushroom;
 import com.nsoz.map.item.Ore;
 import com.nsoz.mob.*;
 import com.nsoz.combat.CombatService;
+import com.nsoz.combat.CombatResult;
 import com.nsoz.model.Char;
 import com.nsoz.model.Figurehead;
 import com.nsoz.npc.Npc;
@@ -433,6 +434,34 @@ public class Zone extends Thread {
             try {
                 this.interrupt();
             } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public int getFreeMobId() {
+        boolean[] used = new boolean[128];
+        if (monsters != null) {
+            for (Mob m : monsters) {
+                if (m != null && m.id >= 0 && m.id < 128) {
+                    used[m.id] = true;
+                }
+            }
+        }
+        for (int id = 100; id < 127; id++) {
+            if (!used[id]) {
+                return id;
+            }
+        }
+        return 126;
+    }
+
+    public void addMonster(Mob mob) {
+        if (monsters != null) {
+            lockMob.writeLock().lock();
+            try {
+                this.monsters.add(mob);
+            } finally {
+                lockMob.writeLock().unlock();
             }
         }
     }
@@ -959,42 +988,61 @@ public class Zone extends Thread {
                 ArrayList<Integer> list = new ArrayList<>();
                 for (int i = figureheads.size() - 1; i >= 0; i--) {
                     Figurehead b = figureheads.get(i);
-                    if (b == null || b.countDown <= 0) {
+                    if (b == null || b.isExpired()) {
                         list.add(i);
-                        continue;
                     }
-                    b.countDown--;
                 }
                 if (!list.isEmpty()) {
                     for (int index : list) {
                         try {
                             Figurehead b = figureheads.get(index);
                             if (b != null && b.owner != null && !b.owner.isCleaned) {
+                                // 1. Hiệu ứng khúc gỗ bù nhìn tan biến tại đúng vị trí khúc gỗ (b.x, b.y)
+                                getService().addEffectAuto((byte) 8, (short) b.x, (short) b.y, (byte) 0, (short) 1);
+
+                                // 2. Tìm ĐƠN MỤC TIÊU quái vật gần nhất trong bán kính tác động 250px
                                 Mob targetMob = null;
                                 int minDistance = 250;
-                                for (Mob m : this.monsters) {
-                                    if (m != null && !m.isDead) {
-                                        int d = NinjaUtils.getDistance(b.x, b.y, m.x, m.y);
-                                        if (d < minDistance) {
-                                            minDistance = d;
-                                            targetMob = m;
+                                lockMob.readLock().lock();
+                                try {
+                                    for (Mob m : this.monsters) {
+                                        if (m != null && !m.isDead) {
+                                            int d = NinjaUtils.getDistance(b.x, b.y, m.x, m.y);
+                                            if (d <= minDistance) {
+                                                minDistance = d;
+                                                targetMob = m;
+                                            }
                                         }
                                     }
+                                } finally {
+                                    lockMob.readLock().unlock();
                                 }
-                                if (targetMob != null && !targetMob.isDead) {
-                                    boolean isFatal = b.owner.fatal > NinjaUtils.nextInt(1000);
+
+                                if (targetMob != null) {
+                                    // 3. Vụ nổ bộc phá cũ kích hoạt ĐÚNG TẠI VỊ TRÍ CỦA ĐƠN MỤC TIÊU dính sát thương
+                                    getService().addEffectAuto((byte) 8, (short) targetMob.x, (short) targetMob.y, (byte) 0, (short) 1);
+
                                     int dameBasic = NinjaUtils.nextInt(b.owner.damage2, b.owner.damage);
-                                    int skillDamage = b.baseAttack + (dameBasic * b.percentAttack / 100) + b.iceAttack;
+                                    int baseSkillDamage = b.baseAttack + (dameBasic * b.percentAttack / 100);
+                                    boolean isFatal = b.owner.fatal > NinjaUtils.nextInt(1000);
                                     if (isFatal) {
-                                        skillDamage += dameBasic + (dameBasic * b.owner.percentFatalDame / 100) + b.owner.fatalDame;
+                                        baseSkillDamage += dameBasic + (dameBasic * b.owner.percentFatalDame / 100) + b.owner.fatalDame;
                                     }
+                                    int damageTaken = Math.max(0, b.maxHp - b.hp);
+
+                                    int mobSkillDamage = baseSkillDamage;
                                     int rel = CombatService.getSysRelation(2, targetMob.sys);
                                     if (rel == 1) {
-                                        skillDamage = (int) Math.round(skillDamage * 1.1);
+                                        mobSkillDamage = (int) Math.round(mobSkillDamage * 1.1);
                                     } else if (rel == -1) {
-                                        skillDamage = (int) Math.round(skillDamage * 0.9);
+                                        mobSkillDamage = (int) Math.round(mobSkillDamage * 0.9);
                                     }
-                                    int totalDamage = skillDamage + (skillDamage * (b.hitsTaken * b.bonusPercentPerHit) / 100);
+
+                                    int mobRawRes = CombatService.getMobResistance(targetMob.level, targetMob.sys, 2);
+                                    int haKhac = Math.max(0, b.owner.sysDown + b.owner.options[101]);
+                                    int damageAfterRes = CombatService.applyResistanceAndPenetration(mobSkillDamage, mobRawRes, b.sysUp, haKhac);
+
+                                    int totalDamage = damageAfterRes + damageTaken;
                                     if (totalDamage > 0) {
                                         targetMob.lock.lock();
                                         try {
@@ -1011,8 +1059,38 @@ public class Zone extends Thread {
                                             targetMob.lock.unlock();
                                         }
                                     }
+                                } else {
+                                    // Kiểm tra trường hợp PvP nếu không có quái xung quanh
+                                    Char targetPlayer = null;
+                                    List<Char> chars = getChars();
+                                    if (chars != null) {
+                                        for (Char p : chars) {
+                                            if (p != null && !p.isDead && !p.isCleaned && !p.isInvisible() && b.owner.isMeCanAttackOtherPlayer(p)) {
+                                                int d = NinjaUtils.getDistance(b.x, b.y, p.x, p.y);
+                                                if (d <= minDistance) {
+                                                    minDistance = d;
+                                                    targetPlayer = p;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (targetPlayer != null) {
+                                        getService().addEffectAuto((byte) 8, (short) targetPlayer.x, (short) targetPlayer.y, (byte) 0, (short) 1);
+                                        boolean isFatal = b.owner.fatal > NinjaUtils.nextInt(1000);
+                                        CombatResult cRes = CombatService.calculatePvPDamage(b.owner, targetPlayer, isFatal);
+                                        int damageBasic = (cRes != null ? cRes.getDamage() : 100) * b.percentAttack / 100;
+                                        int damageTaken = Math.max(0, b.maxHp - b.hp);
+                                        int totalDamage = damageBasic + damageTaken;
+                                        if (totalDamage > 0) {
+                                            targetPlayer.addHp(-totalDamage);
+                                            if (targetPlayer.hp <= 0) {
+                                                targetPlayer.hp = 0;
+                                                targetPlayer.startDie();
+                                            }
+                                            getService().attackCharacter(totalDamage, 0, targetPlayer);
+                                        }
+                                    }
                                 }
-                                getService().addEffectAuto((byte) 8, (short) b.x, (short) b.y, (byte) 0, (short) 1);
                             }
                             getService().removeBuNhin(index);
                             figureheads.remove(index);

@@ -47,12 +47,12 @@
 
 | Cấp Chiêu (Point) | Yêu Cầu Level | HP Hồi Cố Định (Mỗi 5s) | % Max HP Hồi Thêm (Mỗi 5s) | Ví dụ với Kiếm có 10,000 HP (Mỗi 5s hồi thêm) |
 | :---: | :---: | :---: | :---: | :---: |
-| **Point 1** | Cấp 25 | **+100 HP** | **+0.5% Max HP** | +150 HP / nhịp |
-| **Point 2** | Cấp 26 | **+150 HP** | **+0.8% Max HP** | +230 HP / nhịp |
-| **Point 3** | Cấp 27 | **+200 HP** | **+1.1% Max HP** | +310 HP / nhịp |
-| **Point 4** | Cấp 28 | **+250 HP** | **+1.4% Max HP** | +390 HP / nhịp |
-| **Point 5** | Cấp 29 | **+300 HP** | **+1.7% Max HP** | +470 HP / nhịp |
-| **Point 6 (Max)** | Cấp 30 | **+400 HP** | **+2.0% Max HP** | **+600 HP / nhịp** |
+| **Point 1** | Cấp 25 | **+50 HP** | **+1.0% Max HP** | +150 HP / nhịp |
+| **Point 2** | Cấp 26 | **+75 HP** | **+1.0% Max HP** | +175 HP / nhịp |
+| **Point 3** | Cấp 27 | **+100 HP** | **+2.0% Max HP** | +300 HP / nhịp |
+| **Point 4** | Cấp 28 | **+125 HP** | **+3.0% Max HP** | +425 HP / nhịp |
+| **Point 5** | Cấp 29 | **+150 HP** | **+4.0% Max HP** | +550 HP / nhịp |
+| **Point 6 (Max)** | Cấp 30 | **+200 HP** | **+5.0% Max HP** | **+700 HP / nhịp** |
 
 ---
 
@@ -184,16 +184,23 @@
 
 ### 5.3. Bảng thông số chi tiết 6 cấp độ chiêu thuần của Kunai 25:
 
-| Cấp Chiêu (Point) | Yêu Cầu Level | Thời Gian Bù Nhìn | Tấn Công Cơ Bản (Opt 0) | Băng Sát (Opt 3) | Tấn Công Nội Công (Opt 11) | Gia Tăng Mỗi Hit Chịu Đòn |
+| Cấp Chiêu (Point) | Yêu Cầu Level | Thời Gian Bù Nhìn (Opt 49) | HP Khúc Gỗ (Opt 82 + 83) | Tấn Công Nội (Opt 1) | Tương Khắc (Opt 33) | Sát Thương Bộc Phá (Opt 81) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Point 1** | Cấp 25 | 6.0 giây | **+50** | **+150** | **+100%** | **+3.0%** / hit |
-| **Point 2** | Cấp 26 | 7.0 giây | **+80** | **+230** | **+115%** | **+3.5%** / hit |
-| **Point 3** | Cấp 27 | 8.0 giây | **+120** | **+320** | **+130%** | **+4.0%** / hit |
-| **Point 4** | Cấp 28 | 9.0 giây | **+160** | **+420** | **+145%** | **+4.5%** / hit |
-| **Point 5** | Cấp 29 | 10.0 giây | **+200** | **+550** | **+160%** | **+5.0%** / hit |
-| **Point 6 (Max)** | Cấp 30 | **12.0 giây** | **+250** | **+700** | **+180%** | **+5.0%** / hit |
+| **Point 1** | Cấp 25 | **6.0 giây** | **600 + 10% HP** | **+130%** | **+50** | **+100% HP đã mất** |
+| **Point 2** | Cấp 26 | **7.0 giây** | **800 + 15% HP** | **+150%** | **+75** | **+100% HP đã mất** |
+| **Point 3** | Cấp 27 | **8.0 giây** | **1,000 + 20% HP** | **+175%** | **+100** | **+100% HP đã mất** |
+| **Point 4** | Cấp 28 | **9.0 giây** | **1,200 + 25% HP** | **+200%** | **+130** | **+100% HP đã mất** |
+| **Point 5** | Cấp 29 | **10.0 giây** | **1,400 + 30% HP** | **+225%** | **+165** | **+100% HP đã mất** |
+| **Point 6 (Max)** | Cấp 30 | **12.0 giây** | **1,600 + 40% HP** | **+260%** | **+200** | **+100% HP đã mất** |
 
-*Ví dụ*: Ở Point 6, đòn nổ gốc tính ra là **3,500 Dame Băng**. Nếu bù nhìn đứng gánh được 10 hit từ quái/Boss $\rightarrow$ Sát thương tăng thêm $+50\% \rightarrow$ **Nổ thẳng 5,250 Dame** (nếu nổ bạo kích chí mạng có thể nhảy số **8,000 - 10,000 Dame**) lên quái gần nhất!
+*Đặc tính chiến đấu*:
+- **Hiện thực hóa qua thực thể Mob đồng minh (Mob Template ID 0 - Bù nhìn)**:
+  - Bù nhìn xuất hiện như một đối tượng Mob đồng minh có **Thanh Máu (Health Bar)** hiển thị trực quan ở giao diện mục tiêu góc màn hình của người chơi.
+  - Người chơi và đồng đội được bảo vệ (không thể tấn công nhầm vào bù nhìn).
+  - Quái vật trong phạm vi bị thu hút khiêu khích và lao vào tấn công bù nhìn, đòn đánh quái làm thanh máu bù nhìn tụt trực tiếp trên màn hình.
+- Khúc gỗ không có hệ và không có phòng thủ (nhận trọn sát thương từ quái).
+- Khi hết giờ (6s - 12s) HOẶC khi bị quái đánh hết HP: Bù nhìn lập tức phát nổ dồn sát thương lên quái xung quanh.
+- Sát thương nổ = Sát thương nội công % (có tính Bạo kích, Ngũ hành & Tương khắc Cường Khắc) + **100% Lượng máu bù nhìn đã mất** (nếu bù nhìn vỡ hết máu thì được cộng trọn vẹn 100% Max HP của bù nhìn)!
 
 ---
 
@@ -416,7 +423,7 @@ if (targetMob != null && b.owner != null && !targetMob.isDead) {
 1. **Ninja Kiếm**: "Pháo đài sinh tồn" với lượng hồi phục tự nhiên vô địch từ thức ăn (Flat + % Max HP).
 2. **Ninja Đao**: Chiêu 25 trở thành vũ khí săn Quái, Tinh Anh, Thủ Lĩnh và Tà Thú cực mạnh: làm suy yếu 10-15% công quái giúp Đao tank vững vàng, đồng thời xé toạc 30-60 kháng tất cả và lan tới 2-3 mục tiêu ở cấp 4/6 để dọn bãi và hỗ trợ đồng đội dồn sát thương. Không áp dụng PvP để đảm bảo công bằng.
 3. **Ninja Tiêu**: Chiêu 25 tối ưu hồi chiêu 45s -> 40s giúp Tiêu duy trì vòng lửa liên tục hơn khi cày quái. Chiêu 35 là biến thể ám sát dồn sát thương bùng nổ theo Mana, đưa Tiêu trở thành xạ thủ burst dame tầm xa đích thực.
-4. **Ninja Cung**: Khắc phục triệt để tình trạng cháy sạch Mana / kẹt chiêu, lớp khiên hộ thể mềm 25% với chi phí rẻ (1:1) giúp Cung duy trì hỏa lực liên tục.
+4. **Ninja Cung**: Khắc phục triệt để tình trạng cháy sạch Mana / kẹt chiêu, lớp khiên hộ thể chuyển đổi sát thương sang MP với hiệu suất chống đỡ 10% - 40%, thời gian hiệu lực 45s - 60s và hồi chiêu 60s - 40s (cho phép duy trì 100% thời gian khi max cấp) kết hợp chi phí MP tối ưu dần (2.0 -> 1.0 MP/ST).
 5. **Ninja Kunai**: Chiêu 25 mang đầy đủ thông số của một CHIÊU THUẦN TẤN CÔNG (Tấn công cơ bản, Băng sát, Tấn công nội công %), kết hợp cơ chế tích tụ +5% sát thương mỗi hit khiến bù nhìn trở thành chiếc bẫy phản công cực kỳ đáng sợ đối với quái vật và Boss.
 
 ---

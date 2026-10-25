@@ -1064,7 +1064,7 @@ public class Char {
                 Skill k25 = getSkill(4);
                 if (k25 != null && k25.point > 0) {
                     int pt = k25.point;
-                    int flatBonus = (pt == 1) ? 100 : (pt == 2 ? 150 : (pt == 3 ? 200 : (pt == 4 ? 250 : (pt == 5 ? 300 : 400))));
+                    int flatBonus = (pt == 1) ? 50 : (pt == 2 ? 75 : (pt == 3 ? 100 : (pt == 4 ? 125 : (pt == 5 ? 150 : 200))));
                     int percentBonus = (pt == 1 || pt == 2) ? 1 : ((pt == 3) ? 2 : ((pt == 4) ? 3 : ((pt == 5) ? 4 : 5)));
                     if (k25.options != null && k25.options.length >= 2) {
                         flatBonus = k25.options[0].param;
@@ -7047,17 +7047,37 @@ public class Char {
                         serverMessage("Cần phải có khoảng trống phía trước mới có thể thi triển chiêu này");
                         return;
                     }
-                    Figurehead buNhin = new Figurehead(this.name, x, y, options[0].param);
-                    buNhin.owner = this;
                     int pt = skill.point;
-                    buNhin.baseAttack = 50 + (pt * 40);
-                    buNhin.iceAttack = 150 + (pt * 110);
-                    buNhin.percentAttack = 85 + (pt * 16);
-                    buNhin.bonusPercentPerHit = (pt >= 5) ? 5 : (3 + (pt / 2));
+                    int baseAttack = 50 + (pt * 40);
+                    int flatHp = (pt == 1) ? 600 : (pt == 2 ? 800 : (pt == 3 ? 1000 : (pt == 4 ? 1200 : (pt == 5 ? 1400 : 1600))));
+                    int inheritPercent = (pt == 1) ? 10 : (pt == 2 ? 15 : (pt == 3 ? 20 : (pt == 4 ? 25 : (pt == 5 ? 30 : 40))));
+                    int tcnPercent = (pt == 1) ? 130 : (pt == 2 ? 150 : (pt == 3 ? 175 : (pt == 4 ? 200 : (pt == 5 ? 225 : 260))));
+                    int sysUpVal = (pt == 1) ? 50 : (pt == 2 ? 75 : (pt == 3 ? 100 : (pt == 4 ? 130 : (pt == 5 ? 165 : 200))));
+                    int durationSec = (pt == 6) ? 12 : (5 + pt);
+
+                    if (options != null && options.length >= 5) {
+                        durationSec = options[0].param;
+                        flatHp = options[1].param;
+                        inheritPercent = options[2].param;
+                        tcnPercent = options[3].param;
+                        sysUpVal = options[4].param;
+                    }
+                    int calculatedMaxHp = flatHp + (int) ((long) this.maxHP * inheritPercent / 100);
+                    Figurehead buNhin = new Figurehead(this.name, x, y, durationSec);
+                    buNhin.owner = this;
+                    buNhin.baseAttack = baseAttack;
+                    buNhin.maxHp = calculatedMaxHp;
+                    buNhin.hp = calculatedMaxHp;
+                    buNhin.percentAttack = tcnPercent;
+                    buNhin.sysUp = sysUpVal;
                     zone.add(buNhin);
                     zone.getService().createBuNhin(buNhin);
                 } else if (skill.template.id == 31) {
-                    Effect eff = new Effect(10, 90000, options[0].param);
+                    long duration = (45L + (skill.point - 1) * 3L) * 1000L;
+                    if (options != null && options.length >= 3 && options[2] != null && options[2].param > 0) {
+                        duration = options[2].param * 1000L;
+                    }
+                    Effect eff = new Effect(10, duration, options[0].param);
                     em.setEffect(eff);
                 } else if (skill.template.id == 33) {
                     Effect eff = new Effect(17, 5000, options[0].param);
