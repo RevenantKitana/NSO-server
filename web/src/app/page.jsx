@@ -97,7 +97,7 @@ export default function HomePage() {
             <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Tải Client (MioNso.jar)
+            Tải Client (NSO.jar)
           </a>
           <a
             href="/giftcodes"
@@ -218,7 +218,7 @@ export default function HomePage() {
                 <div>
                   <h4 className="font-bold text-white text-base">Tải Game &amp; Trải Nghiệm</h4>
                   <p className="text-xs text-slate-400 mt-1">
-                    Tải file <code className="text-orange-300">MioNso.jar</code> bên dưới, mở bằng giả lập tương ứng và đăng nhập vào game!
+                    Tải file <code className="text-orange-300">NSO.jar</code> bên dưới, mở bằng giả lập tương ứng và đăng nhập vào game!
                   </p>
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function HomePage() {
             TẢI CLIENT MÁY CHỦ
           </h2>
           <p className="mt-2 text-slate-400 text-sm">
-            Tải tệp game MioNso.jar và trình giả lập phù hợp với thiết bị của bạn
+            Tải tệp game NSO.jar và trình giả lập phù hợp với thiết bị của bạn
           </p>
         </div>
 
@@ -249,7 +249,7 @@ export default function HomePage() {
                 JAR
               </div>
               <div>
-                <h4 className="font-bold text-white text-base">MioNso.jar (Bản Chuẩn)</h4>
+                <h4 className="font-bold text-white text-base">NSO.jar (Bản Chuẩn - MioNso)</h4>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                   Tệp Java Client đã cấu hình sẵn kết nối đến máy chủ. Kích thước ~1.04 MB.
                 </p>
@@ -259,13 +259,13 @@ export default function HomePage() {
               <span className="text-[11px] text-slate-400">Dành cho PC &amp; Android</span>
               <a
                 href="/api/download"
-                download="MioNso.jar"
+                download="NSO.jar"
                 className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 transition-all hover:scale-105 flex items-center gap-1.5"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                Tải MioNso.jar
+                Tải NSO.jar
               </a>
             </div>
           </div>
@@ -279,7 +279,7 @@ export default function HomePage() {
               <div>
                 <h4 className="font-bold text-white text-base">Giả Lập J2MELoader (Android)</h4>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Ứng dụng giả lập Java chuẩn trên điện thoại Android để mở file MioNso.jar mượt mà.
+                  Ứng dụng giả lập Java chuẩn trên điện thoại Android để mở file NSO.jar mượt mà.
                 </p>
               </div>
             </div>

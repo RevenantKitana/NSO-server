@@ -5,24 +5,14 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const bridgeUrl = (process.env.BRIDGE_API_URL || 'http://168.107.66.164').replace(/\/$/, '');
-    let targetUrl = `${bridgeUrl}/download/MioNso.jar`;
+    const targetUrl = `${bridgeUrl}/download/NSO.jar`;
 
-    let response = await fetch(targetUrl, {
+    const response = await fetch(targetUrl, {
       cache: 'no-store',
       headers: {
         Accept: 'application/java-archive, application/octet-stream, */*',
       },
     });
-
-    if (!response.ok) {
-      targetUrl = `${bridgeUrl}/download/NSO.jar`;
-      response = await fetch(targetUrl, {
-        cache: 'no-store',
-        headers: {
-          Accept: 'application/java-archive, application/octet-stream, */*',
-        },
-      });
-    }
 
     if (!response.ok) {
       console.warn(`[Download] VM Bridge returned status ${response.status} from ${targetUrl}`);
@@ -41,7 +31,7 @@ export async function GET() {
 
     const headers = new Headers();
     headers.set('Content-Type', contentType);
-    headers.set('Content-Disposition', 'attachment; filename="MioNso.jar"');
+    headers.set('Content-Disposition', 'attachment; filename="NSO.jar"');
     if (contentLength) {
       headers.set('Content-Length', contentLength);
     }
