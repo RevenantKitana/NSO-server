@@ -19,12 +19,17 @@ public class Effect {
     public EffectTemplate template;
     private long startAt;
     private long endAt;
+    public int tickCount = 0;
+    public int maxTicks = -1;
 
     public Effect(int templateId, long startAt, long endAt, int param) {
         this.template = EffectTemplateManager.getInstance().find(templateId);
         this.startAt = startAt;
         this.endAt = endAt;
         this.param = param;
+        if (this.template != null && (this.template.type == 4 || this.template.type == 17) && (endAt - startAt) <= 30000) {
+            this.maxTicks = (int) ((endAt - startAt) / 500);
+        }
     }
 
     public Effect(int templateId, long length, int param) {
@@ -32,9 +37,15 @@ public class Effect {
         this.startAt = System.currentTimeMillis();
         this.endAt = startAt + length;
         this.param = param;
+        if (this.template != null && (this.template.type == 4 || this.template.type == 17) && length <= 30000) {
+            this.maxTicks = (int) (length / 500);
+        }
     }
 
     public boolean isExpired() {
+        if (maxTicks > 0) {
+            return tickCount >= maxTicks || System.currentTimeMillis() >= endAt + 3000L;
+        }
         return System.currentTimeMillis() >= endAt;
     }
 

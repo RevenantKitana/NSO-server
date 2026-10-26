@@ -854,21 +854,37 @@ public class Zone extends Thread {
         try {
             if (this.players != null && !this.players.isEmpty()) {
                 long now = System.currentTimeMillis();
-                boolean isUpdateEverySecond = ((now - this.lastUpdateEverySecond) >= 1000);
-                if (isUpdateEverySecond) {
-                    this.lastUpdateEverySecond = now;
-                }
-                boolean isUpdateEveryHalfSecond = ((now - this.lastUpdateEveryHalfSecond) >= 500);
+                boolean isUpdateEveryHalfSecond = ((now - this.lastUpdateEveryHalfSecond) >= 450);
                 if (isUpdateEveryHalfSecond) {
-                    this.lastUpdateEveryHalfSecond = now;
+                    if (this.lastUpdateEveryHalfSecond == 0 || (now - this.lastUpdateEveryHalfSecond) >= 1000) {
+                        this.lastUpdateEveryHalfSecond = now;
+                    } else {
+                        this.lastUpdateEveryHalfSecond += 500;
+                    }
                 }
-                boolean isUpdateEveryFiveSecond = ((now - this.lastUpdateEveryFiveSecond) >= 5000);
-                if (isUpdateEveryFiveSecond) {
-                    this.lastUpdateEveryFiveSecond = now;
+                boolean isUpdateEverySecond = ((now - this.lastUpdateEverySecond) >= 950);
+                if (isUpdateEverySecond) {
+                    if (this.lastUpdateEverySecond == 0 || (now - this.lastUpdateEverySecond) >= 2000) {
+                        this.lastUpdateEverySecond = now;
+                    } else {
+                        this.lastUpdateEverySecond += 1000;
+                    }
                 }
-                boolean isUpdateEveryThirtSecond = ((now - this.lastUpdateEveryFiveThirtSecond) >= 3000);
+                boolean isUpdateEveryThirtSecond = ((now - this.lastUpdateEveryFiveThirtSecond) >= 2950);
+                if (isUpdateEveryThirtSecond) {
+                    if (this.lastUpdateEveryFiveThirtSecond == 0 || (now - this.lastUpdateEveryFiveThirtSecond) >= 6000) {
+                        this.lastUpdateEveryFiveThirtSecond = now;
+                    } else {
+                        this.lastUpdateEveryFiveThirtSecond += 3000;
+                    }
+                }
+                boolean isUpdateEveryFiveSecond = ((now - this.lastUpdateEveryFiveSecond) >= 4950);
                 if (isUpdateEveryFiveSecond) {
-                    this.lastUpdateEveryFiveThirtSecond = now;
+                    if (this.lastUpdateEveryFiveSecond == 0 || (now - this.lastUpdateEveryFiveSecond) >= 10000) {
+                        this.lastUpdateEveryFiveSecond = now;
+                    } else {
+                        this.lastUpdateEveryFiveSecond += 5000;
+                    }
                 }
 
                 if (isUpdateEveryHalfSecond || isUpdateEverySecond || isUpdateEveryFiveSecond

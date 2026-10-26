@@ -135,12 +135,11 @@ public class CombatService {
             int distance = NinjaUtils.getDistance(attacker.x, attacker.y, target.x, target.y);
             boolean isCloseRange = distance <= 60;
             if (isCloseRange) {
-                reactDame = target.reactDame;
-            }
-            if (target.options[135] > 0) {
-                if (NinjaUtils.nextInt(100) < target.options[135]) {
+                if (target.options[135] > 0 && NinjaUtils.nextInt(100) < target.options[135]) {
                     reactDame = attacker.hp * 20 / 100;
                     isIceReflect = true;
+                } else if (target.reactDame > 0) {
+                    reactDame = calculateReflectDamageOnChar(target, attacker, target.reactDame);
                 }
             }
         }
@@ -356,5 +355,119 @@ public class CombatService {
             // Quái bị đòn đánh khắc -> kháng bị khắc = 0.33 * y
             return (int) Math.round(0.33 * y);
         }
+    }
+
+    /**
+     * Tính toán sát thương phản đòn cận chiến lên Quái vật (PvE).
+     * Sát thương phản đòn đi qua hệ thống kháng nguyên tố của Quái (theo hệ của người phản đòn)
+     * và tương khắc ngũ hành.
+     *
+     * @param reflector    Người chơi phản đòn
+     * @param targetMob    Quái vật chịu sát thương phản đòn
+     * @param rawReactDame Sát thương phản đòn thô ban đầu
+     * @return Sát thương phản đòn sau khi giảm trừ
+     */
+    public static int calculateReflectDamageOnMob(Char reflector, Mob targetMob, int rawReactDame) {
+        if (rawReactDame <= 0) {
+            return 0;
+        }
+        int dame = rawReactDame;
+        int reflectorSys = reflector.getSys();
+
+        // TẦNG 1: Kháng & Xuyên kháng của Quái vật theo hệ của người phản đòn
+        int mobRawRes = getMobResistance(targetMob.level, targetMob.sys, reflectorSys);
+        if (targetMob.isMagumandari()) {
+            mobRawRes -= targetMob.magumandariResReduction;
+        }
+        int sysUp = Math.max(0, reflector.sysUp);
+        int haKhac = Math.max(0, reflector.sysDown + reflector.options[101]);
+        dame = applyResistanceAndPenetration(dame, mobRawRes, sysUp, haKhac);
+
+        // TẦNG 2: Tương khắc ngũ hành (Nhân 1.1 nếu người phản đòn khắc hệ quái, 0.9 nếu quái khắc hệ)
+        int pveRelation = getSysRelation(reflectorSys, targetMob.sys);
+        if (pveRelation == 1) {
+            dame = (int) Math.round(dame * 1.1);
+        } else if (pveRelation == -1) {
+            dame = (int) Math.round(dame * 0.9);
+        }
+
+        // Quái đặc biệt (ví dụ: Người tuyết chỉ nhận tối đa 1 dame)
+        if (targetMob.template.id == MobName.NGUOI_TUYET) {
+            dame = 1;
+        }
+
+        if (dame < 0) {
+            dame = 0;
+        }
+        return dame;
+    }
+
+    /**
+     * Tính toán sát thương phản đòn cận chiến lên Người chơi (PvP).
+     * Sát thương phản đòn đi qua hệ thống kháng nguyên tố của mục tiêu (theo hệ của người phản đòn),
+     * % kháng hệ, tương khắc ngũ hành và trừ qua dameDown của mục tiêu.
+     *
+     * @param reflector    Người chơi phản đòn
+     * @param targetChar   Mục tiêu chịu sát thương phản đòn
+     * @param rawReactDame Sát thương phản đòn thô ban đầu
+     * @return Sát thương phản đòn sau khi giảm trừ
+     */
+    public static int calculateReflectDamageOnChar(Char reflector, Char targetChar, int rawReactDame) {
+        if (rawReactDame <= 0) {
+            return 0;
+        }
+        int dame = rawReactDame;
+        int reflectorSys = reflector.getSys();
+
+        // Xác định kháng nguyên tố thô của targetChar đối với hệ của reflector
+        int rawRes = 0;
+        switch (reflectorSys) {
+            case 1: // Hỏa
+                rawRes = targetChar.resFire + targetChar.options[48];
+                break;
+            case 2: // Băng
+                rawRes = targetChar.resIce + targetChar.options[49];
+                break;
+            case 3: // Phong
+                rawRes = targetChar.resWind + targetChar.options[50];
+                break;
+        }
+        if (targetChar.isReductionDame) {
+            rawRes += targetChar.options[136];
+        }
+
+        // TẦNG 1: Tính toán Kháng & Xuyên kháng (Cường khắc & Hạ khắc)
+        int sysUp = Math.max(0, reflector.sysUp);
+        int haKhac = Math.max(0, reflector.sysDown + reflector.options[101]);
+        dame = applyResistanceAndPenetration(dame, rawRes, sysUp, haKhac);
+
+        // Kháng % hệ theo option trang bị của targetChar
+        switch (reflectorSys) {
+            case 1:
+                dame -= dame * targetChar.options[127] / 100;
+                break;
+            case 2:
+                dame -= dame * targetChar.options[130] / 100;
+                break;
+            case 3:
+                dame -= dame * targetChar.options[131] / 100;
+                break;
+        }
+
+        // TẦNG 2: Tương khắc ngũ hành giữa người phản đòn và mục tiêu
+        int relation = getSysRelation(reflectorSys, targetChar.getSys());
+        if (relation == 1) {
+            dame = (int) Math.round(dame * 1.1);
+        } else if (relation == -1) {
+            dame = (int) Math.round(dame * 0.9);
+        }
+
+        // Trừ giảm trừ cố định (dameDown) của mục tiêu
+        dame -= targetChar.dameDown;
+        if (dame < 0) {
+            dame = 0;
+        }
+
+        return dame;
     }
 }

@@ -176,8 +176,8 @@ public class Char {
     public int pheGtc = 0;
     @Getter
     public long yen;
-    public int hp, maxHP;
-    public int mp, maxMP;
+    public volatile int hp, maxHP;
+    public volatile int mp, maxMP;
     public int damage, damage2, basicAttack;
     public int dameDown;
     public int exactly, miss, fatalDame, percentFatalDame;
@@ -791,8 +791,10 @@ public class Char {
         }
         int hp = 0;
         int mp = 0;
+        boolean hasOption99 = false;
+        boolean hasDamageEffect = false;
+
         if (em != null) {
-            em.update();
             if (!this.isDead) {
                 List<Effect> effects = em.filter(e -> {
                     int id = e.template.id;
@@ -815,10 +817,12 @@ public class Char {
                                     break;
                                 case 13:
                                     hp -= maxHP * 3 / 100;
+                                    hasDamageEffect = true;
                                     break;
                                 case 4:
                                 case 17:
                                     hp += eff.param;
+                                    eff.tickCount++;
                                     break;
                                 default:
                                     break;
@@ -839,35 +843,48 @@ public class Char {
                 }
             }
 
-            // ecuong fix ldcc die
-            if (!this.isDead) {
+            // Option 99: "Mỗi nửa giây hồi phục # HP và MP" từ trang bị / ngọc (chạy mỗi 500ms)
+            if (!this.isDead && this.options[99] > 0) {
                 hp += this.options[99];
                 mp += this.options[99];
+                hasOption99 = true;
             }
             if (isCool()) {
                 hp /= 2;
                 mp /= 2;
             }
             if (hp != 0 || mp != 0) {
-                int preHP = this.hp;
-                int preMP = this.mp;
-                this.hp += hp;
-                this.mp += mp;
-                if (this.hp > this.maxHP) {
-                    this.hp = this.maxHP;
-                }
-                if (this.mp > this.maxMP) {
-                    this.mp = this.maxMP;
-                }
-                if (this.hp != preHP || this.mp != preMP) {
-                    zone.getService().loadHP(this);
-                    getService().updateHp();
-                    getService().updateMp();
-                    if (this.hp <= 0) {
-                        startDie();
+                synchronized (this) {
+                    int preHP = this.hp;
+                    int preMP = this.mp;
+                    this.hp += hp;
+                    this.mp += mp;
+                    if (this.hp > this.maxHP) {
+                        this.hp = this.maxHP;
+                    }
+                    if (this.mp > this.maxMP) {
+                        this.mp = this.maxMP;
+                    }
+                    if (this.hp != preHP || this.mp != preMP) {
+                        if (this.hp <= 0) {
+                            zone.getService().loadHP(this);
+                            getService().updateHp();
+                            startDie();
+                        } else {
+                            if (this.hp != preHP) {
+                                zone.getService().loadHP(this);
+                                getService().updateHp();
+                            }
+                            if (this.mp != preMP) {
+                                getService().updateMp();
+                            }
+                        }
                     }
                 }
             }
+
+            // Dọn dẹp effect hết hạn sau khi đã tick hồi phục ở nhịp hiện tại
+            em.update();
 
 //             hiệu ứng khai hóa
 
@@ -1058,9 +1075,9 @@ public class Char {
             int hp = this.options[30] + this.options[120];
             int mp = this.options[27] + this.options[119];
 
-            // Chiêu 25 Kiếm (Kakyuu - Hỏa Vị Tiêu Hóa): Tăng hồi phục thức ăn mỗi nhịp 5 giây
+            // Chiêu 25 Kiếm (Kakyuu - Hỏa Vị Tiêu Hóa): Tăng hồi phục thức ăn mỗi nhịp 5 giây (chỉ áp dụng cho phái Kiếm)
             Effect foodEff = this.em.findByType((byte) 0);
-            if (foodEff != null || this.options[30] > 0) {
+            if (this.classId == 1 && (foodEff != null || this.options[30] > 0)) {
                 Skill k25 = getSkill(4);
                 if (k25 != null && k25.point > 0) {
                     int pt = k25.point;
@@ -1086,25 +1103,34 @@ public class Char {
             }
 
             if (hp != 0 || mp != 0) {
-                int preHP = this.hp;
-                int preMP = this.mp;
-                this.hp += hp;
-                this.mp += mp;
-                if (this.hp > this.maxHP) {
-                    this.hp = this.maxHP;
-                }
-                if (this.mp > this.maxMP) {
-                    this.mp = this.maxMP;
-                }
-                if (this.hp != preHP || this.mp != preMP) {
-                    zone.getService().loadHP(this);
-                    getService().updateHp();
-                    getService().updateMp();
-                    if (this.hp <= 0) {
-                        startDie();
-                        return;
+                synchronized (this) {
+                    int preHP = this.hp;
+                    int preMP = this.mp;
+                    this.hp += hp;
+                    this.mp += mp;
+                    if (this.hp > this.maxHP) {
+                        this.hp = this.maxHP;
+                    }
+                    if (this.mp > this.maxMP) {
+                        this.mp = this.maxMP;
+                    }
+                    if (this.hp != preHP || this.mp != preMP) {
+                        if (this.hp != preHP) {
+                            zone.getService().loadHP(this);
+                            getService().updateHp();
+                        }
+                        if (this.mp != preMP) {
+                            getService().updateMp();
+                        }
+                        if (this.hp <= 0) {
+                            startDie();
+                            return;
+                        }
                     }
                 }
+            } else if (zone != null) {
+                getService().updateHp();
+                getService().updateMp();
             }
             if (haoQuang > -1) {
                 int sys = getSys();
@@ -9155,28 +9181,45 @@ public class Char {
                 return;
             }
             int manaUse = selectedSkill.manaUse;
-            if (this.mp < manaUse) {
+            if (this.mp < manaUse && this.isHuman) {
+                this.serverMessage("Không đủ MP để sử dụng");
+                this.getService().updateMp();
                 return;
             }
-            addMp(-manaUse);
+            if (this.isHuman) {
+                addMp(-manaUse);
+                getService().updateMp();
+            }
             attackCharacter(chars);
         } catch (Exception ex) {
             Log.logException("Attack player err: ", Char.class, ex);
         }
     }
 
-    public void addHp(int add) {
+    public synchronized void addHp(int add) {
         if (add < 0 && isCool()) {
             add *= 2;
         }
         this.hp += add;
+        if (this.hp > this.maxHP) {
+            this.hp = this.maxHP;
+        }
+        if (this.hp < 0) {
+            this.hp = 0;
+        }
     }
 
-    public void addMp(int add) {
+    public synchronized void addMp(int add) {
         if (add < 0 && isCool()) {
             add *= 2;
         }
         this.mp += add;
+        if (this.mp > this.maxMP) {
+            this.mp = this.maxMP;
+        }
+        if (this.mp < 0) {
+            this.mp = 0;
+        }
     }
 
     public void testInvite(Message msg) {

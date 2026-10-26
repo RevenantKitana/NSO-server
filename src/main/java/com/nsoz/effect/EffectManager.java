@@ -111,6 +111,11 @@ public class EffectManager {
             if (isSetAbility) {
                 player.setAbility();
             }
+            player.getService().updateHp();
+            player.getService().updateMp();
+            if (player.zone != null) {
+                player.zone.getService().loadHP(player);
+            }
         }
     }
 
@@ -124,7 +129,11 @@ public class EffectManager {
                     ds.writeByte(eff.template.id);
                     ds.writeInt(eff.getTimeStart());
                     ds.writeInt(eff.getTimeLength());
-                    ds.writeShort(eff.param);
+                    short clientParam = (short) eff.param;
+                    if (eff.template != null && (eff.template.type == 0 || eff.template.type == 4 || eff.template.type == 12 || eff.template.type == 17)) {
+                        clientParam = 0;
+                    }
+                    ds.writeShort(clientParam);
                 }
             }
             ds.flush();

@@ -326,7 +326,11 @@ public class Service extends AbsService {
             ds.writeByte(effect.template.id);// templateId
             ds.writeInt(effect.getTimeStart());// timeStart
             ds.writeInt(effect.getTimeLength());// tiemLenght
-            ds.writeShort(effect.param);// param
+            short clientParam = (short) effect.param;
+            if (effect.template != null && (effect.template.type == 0 || effect.template.type == 4 || effect.template.type == 12 || effect.template.type == 17)) {
+                clientParam = 0; // Server là Single Source of Truth, triệt tiêu desync do client timer 780ms
+            }
+            ds.writeShort(clientParam);// param
             if (effect.template.type == 14 || effect.template.type == 2 || effect.template.type == 3) {
                 ds.writeShort(player.x);
                 ds.writeShort(player.y);
@@ -412,7 +416,11 @@ public class Service extends AbsService {
             ds.writeByte(effect.template.id);// templateId
             ds.writeInt(effect.getTimeStart());
             ds.writeInt(effect.getTimeLength());
-            ds.writeShort(effect.param);
+            short clientParam = (short) effect.param;
+            if (effect.template != null && (effect.template.type == 0 || effect.template.type == 4 || effect.template.type == 12 || effect.template.type == 17)) {
+                clientParam = 0;
+            }
+            ds.writeShort(clientParam);
             ds.flush();
             sendMessage(ms);
             ms.cleanup();

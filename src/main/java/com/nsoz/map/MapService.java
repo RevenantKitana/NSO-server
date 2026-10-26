@@ -114,6 +114,16 @@ public class MapService extends AbsService {
         }
     }
 
+    public void sendMessage(Message ms, Char exclude) {
+        List<Char> chars = zone.getChars();
+        for (Char pl : chars) {
+            if (exclude != null && pl.id == exclude.id) {
+                continue;
+            }
+            pl.getService().sendMessage(ms);
+        }
+    }
+
     public void recoveryMonster(Mob mob) {
         try {
             int levelBoss = mob.levelBoss;
@@ -232,7 +242,11 @@ public class MapService extends AbsService {
             ds.writeByte(effect.template.id);// templateId
             ds.writeInt(effect.getTimeStart());// timeStart
             ds.writeInt(effect.getTimeLength());// tiemLenght
-            ds.writeShort(effect.param);// param
+            short clientParam = (short) effect.param;
+            if (effect.template != null && (effect.template.type == 0 || effect.template.type == 4 || effect.template.type == 12 || effect.template.type == 17)) {
+                clientParam = 0;
+            }
+            ds.writeShort(clientParam);// param
             if (effect.template.type == 14 || effect.template.type == 2 || effect.template.type == 3) {
                 ds.writeShort(_char.x);
                 ds.writeShort(_char.y);
@@ -279,7 +293,11 @@ public class MapService extends AbsService {
             ds.writeByte(effect.template.id);// templateId
             ds.writeInt(effect.getTimeStart());
             ds.writeInt(effect.getTimeLength());
-            ds.writeShort(effect.param);
+            short clientParam = (short) effect.param;
+            if (effect.template != null && (effect.template.type == 0 || effect.template.type == 4 || effect.template.type == 12 || effect.template.type == 17)) {
+                clientParam = 0;
+            }
+            ds.writeShort(clientParam);
             ds.flush();
             sendMessage(ms);
             ms.cleanup();
@@ -400,7 +418,7 @@ public class MapService extends AbsService {
                 }
             }
             ds.flush();
-            sendMessage(mss);
+            sendMessage(mss, _char);
             mss.cleanup();
         } catch (Exception ex) {
              Log.logException("skill paint 1 err: " , MapService.class, ex);
@@ -419,7 +437,7 @@ public class MapService extends AbsService {
                 }
             }
             ds.flush();
-            sendMessage(mss);
+            sendMessage(mss, _char);
             mss.cleanup();
         } catch (Exception ex) {
              Log.logException("skill paint 2 err: " , MapService.class, ex);
@@ -840,7 +858,7 @@ public class MapService extends AbsService {
             ds.writeByte(0);
             ds.writeByte(0);
             ds.flush();
-            sendMessage(ms);
+            sendMessage(ms, _char);
             ms.cleanup();
         } catch (Exception ex) {
              Log.logException("npc attack player err: " , MapService.class, ex);

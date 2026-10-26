@@ -1038,11 +1038,13 @@ public class Mob {
                     int distance = NinjaUtils.getDistance(this.x, this.y, pl.x, pl.y);
                     boolean isCloseRange = distance <= (template.rangeMove + 60);
                     if (isCloseRange) {
-                        int reactDame = pl.reactDame;
+                        int reactDame = 0;
                         boolean isIceReflect = false;
                         if (pl.options[135] > 0 && NinjaUtils.nextInt(100) < pl.options[135]) {
                             reactDame = (int) ((long) this.maxHP * 20 / 100);
                             isIceReflect = true;
+                        } else if (pl.reactDame > 0) {
+                            reactDame = CombatService.calculateReflectDamageOnMob(pl, this, pl.reactDame);
                         }
                         if (reactDame > 0) {
                             if (reactDame > this.hp) {

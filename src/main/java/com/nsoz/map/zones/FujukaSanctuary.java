@@ -430,7 +430,7 @@ public class FujukaSanctuary extends AreaWithCountdownTime {
         if (room != null) {
             Bot bot = room.getBot();
             if (!bot.isDead) {
-                bot.getEm().setEffect(effect);
+                bot.getEm().setEffect(new Effect(effect.template.id, effect.getTimeRemaining(), effect.param));
             }
         }
     }
