@@ -2251,7 +2251,7 @@ CREATE TABLE `users` (
   `last_logout_time` bigint(20) DEFAULT 0,
   `last_login_time` bigint(20) DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
-  KEY `nsotien` (`username`)
+  KEY `idx_username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
