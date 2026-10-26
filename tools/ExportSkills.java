@@ -313,11 +313,17 @@ public class ExportSkills {
 
     private static String formatOptions(String rawJson, Map<Integer, String> optionMap) {
         String clean = rawJson.replace("\\\"", "\"");
-        Matcher m = Pattern.compile("\\{\"param\":(-?\\d+),\"id\":(\\d+)\\}").matcher(clean);
+        Matcher m = Pattern.compile("\\{(?:\"param\":(-?\\d+),\"id\":(\\d+)|\"id\":(\\d+),\"param\":(-?\\d+))\\}").matcher(clean);
         List<String> list = new ArrayList<>();
         while (m.find()) {
-            int param = Integer.parseInt(m.group(1));
-            int id = Integer.parseInt(m.group(2));
+            int id, param;
+            if (m.group(1) != null) {
+                param = Integer.parseInt(m.group(1));
+                id = Integer.parseInt(m.group(2));
+            } else {
+                id = Integer.parseInt(m.group(3));
+                param = Integer.parseInt(m.group(4));
+            }
             if (param != 0 || id == 0) {
                 String tpl = optionMap.get(id);
                 if (tpl != null) {

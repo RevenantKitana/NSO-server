@@ -65,13 +65,13 @@ Trong Game Engine NSO:
 
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +30, Né đòn: +50, Kháng tất cả: +80, Tốc độ di chuyển: +35 |
-| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +35, Né đòn: +60, Kháng tất cả: +100, Tốc độ di chuyển: +40 |
-| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +40, Né đòn: +70, Kháng tất cả: +120, Tốc độ di chuyển: +45 |
-| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +50, Né đòn: +80, Kháng tất cả: +130, Tốc độ di chuyển: +50 |
-| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +60, Né đòn: +90, Kháng tất cả: +140, Tốc độ di chuyển: +55 |
-| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +70, Né đòn: +100, Kháng tất cả: +150, Tốc độ di chuyển: +60 |
+| Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công ngoại: +0% |
+| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Kháng tất cả: +35, Tấn công ngoại: +3%, Né đòn: +20, Tốc độ di chuyển: +6 |
+| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Kháng tất cả: +64, Tấn công ngoại: +5%, Né đòn: +32, Tốc độ di chuyển: +10 |
+| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Kháng tất cả: +93, Tấn công ngoại: +8%, Né đòn: +44, Tốc độ di chuyển: +13 |
+| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Kháng tất cả: +122, Tấn công ngoại: +10%, Né đòn: +56, Tốc độ di chuyển: +17 |
+| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Kháng tất cả: +151, Tấn công ngoại: +13%, Né đòn: +68, Tốc độ di chuyển: +20 |
+| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Kháng tất cả: +180, Tấn công ngoại: +15%, Né đòn: +80, Tốc độ di chuyển: +24 |
 
 ### Skill ID 3: Chiêu Jizokuzan
 * **Loại chiêu**: Chủ động tấn công
@@ -354,12 +354,12 @@ Trong Game Engine NSO:
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +20, Hỏa công nội: +20, Chính xác: +45, Phản đòn cận chiến: +20 |
-| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +24, Hỏa công nội: +25, Chính xác: +50, Phản đòn cận chiến: +40 |
-| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +28, Hỏa công nội: +30, Chính xác: +55, Phản đòn cận chiến: +60 |
-| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +32, Hỏa công nội: +35, Chính xác: +60, Phản đòn cận chiến: +80 |
-| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +36, Hỏa công nội: +40, Chính xác: +65, Phản đòn cận chiến: +90 |
-| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +40, Hỏa công nội: +45, Chính xác: +70, Phản đòn cận chiến: +100 |
+| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Hỏa công nội: +40, Né đòn: +30, Tốc độ di chuyển: +9, Tấn công nội: +3%, Chí mạng: +15, Chính xác: +15 |
+| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Hỏa công nội: +92, Né đòn: +54, Tốc độ di chuyển: +11, Tấn công nội: +5%, Chí mạng: +24, Chính xác: +28 |
+| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Hỏa công nội: +144, Né đòn: +78, Tốc độ di chuyển: +14, Tấn công nội: +8%, Chí mạng: +33, Chính xác: +41 |
+| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Hỏa công nội: +196, Né đòn: +102, Tốc độ di chuyển: +16, Tấn công nội: +10%, Chí mạng: +42, Chính xác: +54 |
+| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Hỏa công nội: +248, Né đòn: +126, Tốc độ di chuyển: +19, Tấn công nội: +13%, Chí mạng: +51, Chính xác: +67 |
+| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Hỏa công nội: +300, Né đòn: +150, Tốc độ di chuyển: +21, Tấn công nội: +15%, Chí mạng: +60, Chính xác: +80 |
 
 ### Skill ID 12: Chiêu Kasoushuriken
 * **Loại chiêu**: Chủ động tấn công
@@ -641,13 +641,13 @@ Trong Game Engine NSO:
 
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +20, Chính xác: +50, Băng sát ngoại: +45, Tốc độ di chuyển: +35 |
-| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +24, Chính xác: +60, Băng sát ngoại: +60, Tốc độ di chuyển: +40 |
-| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +28, Chính xác: +70, Băng sát ngoại: +75, Tốc độ di chuyển: +45 |
-| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +32, Chính xác: +80, Băng sát ngoại: +90, Tốc độ di chuyển: +50 |
-| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +36, Chính xác: +90, Băng sát ngoại: +105, Tốc độ di chuyển: +55 |
-| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +40, Chính xác: +100, Băng sát ngoại: +130, Tốc độ di chuyển: +60 |
+| Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công ngoại: +0% |
+| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chính xác: +20, Băng sát ngoại: +40, Tốc độ di chuyển: +12, Né đòn: +25, Tấn công ngoại: +4% |
+| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chính xác: +44, Băng sát ngoại: +72, Tốc độ di chuyển: +15, Né đòn: +40, Tấn công ngoại: +7% |
+| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chính xác: +68, Băng sát ngoại: +104, Tốc độ di chuyển: +18, Né đòn: +55, Tấn công ngoại: +10% |
+| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chính xác: +92, Băng sát ngoại: +136, Tốc độ di chuyển: +21, Né đòn: +70, Tấn công ngoại: +14% |
+| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chính xác: +116, Băng sát ngoại: +168, Tốc độ di chuyển: +24, Né đòn: +85, Tấn công ngoại: +17% |
+| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chính xác: +140, Băng sát ngoại: +200, Tốc độ di chuyển: +27, Né đòn: +100, Tấn công ngoại: +20% |
 
 ### Skill ID 21: Chiêu Mizuibatan
 * **Loại chiêu**: Chủ động tấn công
@@ -930,12 +930,12 @@ Trong Game Engine NSO:
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +20, Băng sát nội: +60, Chính xác: +20, Tấn công nội: +5% |
-| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +30, Băng sát nội: +70, Chính xác: +40, Tấn công nội: +10% |
-| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +40, Băng sát nội: +80, Chính xác: +60, Tấn công nội: +15% |
-| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +50, Băng sát nội: +90, Chính xác: +80, Tấn công nội: +20% |
-| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +60, Băng sát nội: +100, Chính xác: +100, Tấn công nội: +25% |
-| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +70, Băng sát nội: +110, Chính xác: +120, Tấn công nội: +30% |
+| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công nội: +9%, Chí mạng: +20, Chính xác: +20, Băng sát nội: +20 |
+| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công nội: +16%, Chí mạng: +36, Chính xác: +40, Băng sát nội: +36 |
+| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công nội: +23%, Chí mạng: +52, Chính xác: +60, Băng sát nội: +52 |
+| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công nội: +31%, Chí mạng: +68, Chính xác: +80, Băng sát nội: +68 |
+| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công nội: +38%, Chí mạng: +84, Chính xác: +100, Băng sát nội: +84 |
+| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tấn công nội: +45%, Chí mạng: +100, Chính xác: +120, Băng sát nội: +100 |
 
 ### Skill ID 30: Chiêu Kinkinsa
 * **Loại chiêu**: Chủ động tấn công
@@ -1218,12 +1218,12 @@ Trong Game Engine NSO:
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +20, Phong lôi ngoại: +75, Tỉ lệ HP tối đa: +10%, Tốc độ di chuyển: +20 |
-| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +24, Phong lôi ngoại: +90, Tỉ lệ HP tối đa: +15%, Tốc độ di chuyển: +23 |
-| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +28, Phong lôi ngoại: +105, Tỉ lệ HP tối đa: +20%, Tốc độ di chuyển: +26 |
-| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +32, Phong lôi ngoại: +120, Tỉ lệ HP tối đa: +25%, Tốc độ di chuyển: +30 |
-| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +36, Phong lôi ngoại: +135, Tỉ lệ HP tối đa: +30%, Tốc độ di chuyển: +35 |
-| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Chí mạng: +40, Phong lôi ngoại: +150, Tỉ lệ HP tối đa: +35%, Tốc độ di chuyển: +40 |
+| **Cấp 1** | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tỉ lệ HP tối đa: +5%, Phản đòn cận chiến: +40, Phong lôi ngoại: +90, Chí mạng: +20 |
+| **Cấp 2** | Lv.16 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tỉ lệ HP tối đa: +10%, Phản đòn cận chiến: +72, Phong lôi ngoại: +100, Chí mạng: +32 |
+| **Cấp 3** | Lv.17 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tỉ lệ HP tối đa: +15%, Phản đòn cận chiến: +104, Phong lôi ngoại: +110, Chí mạng: +44 |
+| **Cấp 4** | Lv.18 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tỉ lệ HP tối đa: +20%, Phản đòn cận chiến: +136, Phong lôi ngoại: +120, Chí mạng: +56 |
+| **Cấp 5** | Lv.19 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tỉ lệ HP tối đa: +25%, Phản đòn cận chiến: +168, Phong lôi ngoại: +130, Chí mạng: +68 |
+| **Cấp 6** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tỉ lệ HP tối đa: +30%, Phản đòn cận chiến: +200, Phong lôi ngoại: +140, Chí mạng: +80 |
 
 ### Skill ID 39: Chiêu Maroyakato
 * **Loại chiêu**: Chủ động tấn công
@@ -1506,12 +1506,12 @@ Trong Game Engine NSO:
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | Cấp 0 *(Gốc)* | Lv.15 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.15 | 10 | 9s | 3 | 90 x 90 | Nữa giây phục hồi HP: +70 duy trì 5 giây, Nữa giây phục hồi HP cho đồng đội: +80 duy trì 5 giây |
-| **Cấp 2** | Lv.25 | 20 | 10s | 3 | 100 x 100 | Nữa giây phục hồi HP: +100 duy trì 5 giây, Nữa giây phục hồi HP cho đồng đội: +150 duy trì 5 giây |
-| **Cấp 3** | Lv.35 | 30 | 12s | 4 | 110 x 110 | Nữa giây phục hồi HP: +150 duy trì 5 giây, Nữa giây phục hồi HP cho đồng đội: +300 duy trì 5 giây |
-| **Cấp 4** | Lv.45 | 40 | 13s | 4 | 120 x 120 | Nữa giây phục hồi HP: +300 duy trì 5 giây, Nữa giây phục hồi HP cho đồng đội: +450 duy trì 5 giây |
-| **Cấp 5** | Lv.55 | 50 | 15s | 5 | 130 x 130 | Nữa giây phục hồi HP: +400 duy trì 5 giây, Nữa giây phục hồi HP cho đồng đội: +600 duy trì 5 giây |
-| **Cấp 6** | Lv.65 | 60 | 17s | 6 | 140 x 140 | Nữa giây phục hồi HP: +600 duy trì 5 giây, Nữa giây phục hồi HP cho đồng đội: +800 duy trì 5 giây |
+| **Cấp 1** | Lv.15 | 120 | 10s | 3 | 90 x 90 | Nữa giây phục hồi HP: +30 duy trì 5 giây, Mỗi 0.5 giây phục hồi thêm: +1% MP tối đa, Hồi phục đồng đội tăng thêm: +3% hiệu quả, Tiêu hao thêm MP: +3% tối đa |
+| **Cấp 2** | Lv.25 | 136 | 11s | 3 | 100 x 100 | Nữa giây phục hồi HP: +54 duy trì 5 giây, Mỗi 0.5 giây phục hồi thêm: +2% MP tối đa, Hồi phục đồng đội tăng thêm: +5% hiệu quả, Tiêu hao thêm MP: +4% tối đa |
+| **Cấp 3** | Lv.35 | 152 | 12s | 4 | 110 x 110 | Nữa giây phục hồi HP: +78 duy trì 5 giây, Mỗi 0.5 giây phục hồi thêm: +3% MP tối đa, Hồi phục đồng đội tăng thêm: +8% hiệu quả, Tiêu hao thêm MP: +5% tối đa |
+| **Cấp 4** | Lv.45 | 168 | 13s | 4 | 120 x 120 | Nữa giây phục hồi HP: +102 duy trì 5 giây, Mỗi 0.5 giây phục hồi thêm: +3% MP tối đa, Hồi phục đồng đội tăng thêm: +10% hiệu quả, Tiêu hao thêm MP: +6% tối đa |
+| **Cấp 5** | Lv.55 | 184 | 14s | 5 | 130 x 130 | Nữa giây phục hồi HP: +126 duy trì 5 giây, Mỗi 0.5 giây phục hồi thêm: +4% MP tối đa, Hồi phục đồng đội tăng thêm: +13% hiệu quả, Tiêu hao thêm MP: +7% tối đa |
+| **Cấp 6** | Lv.65 | 200 | 15s | 6 | 140 x 140 | Nữa giây phục hồi HP: +150 duy trì 5 giây, Mỗi 0.5 giây phục hồi thêm: +5% MP tối đa, Hồi phục đồng đội tăng thêm: +15% hiệu quả, Tiêu hao thêm MP: +8% tối đa |
 
 ### Skill ID 48: Chiêu Oouchia
 * **Loại chiêu**: Bị động (Tâm pháp / Nội tại ẩn)
@@ -1521,18 +1521,18 @@ Trong Game Engine NSO:
 | Cấp Skill | Y/C Cấp Độ | MP Tiêu Hao | Thời Gian Hồi | Mục Tiêu | Tầm Đánh (dx x dy) | Chi Tiết Hiệu Ứng & Thuộc Tính |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | Cấp 0 *(Gốc)* | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | *(Chưa có hiệu ứng ở cấp 0)* |
-| **Cấp 1** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +3%, Tỉ lệ MP tối đa: +8%, Tỉ lệ HP tối đa: +8%, Tốc độ di chuyển: +20 |
-| **Cấp 2** | Lv.21 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +6%, Tỉ lệ MP tối đa: +10%, Tỉ lệ HP tối đa: +10%, Tốc độ di chuyển: +25 |
-| **Cấp 3** | Lv.22 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +9%, Tỉ lệ MP tối đa: +12%, Tỉ lệ HP tối đa: +12%, Tốc độ di chuyển: +25 |
-| **Cấp 4** | Lv.23 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +12%, Tỉ lệ MP tối đa: +14%, Tỉ lệ HP tối đa: +14%, Tốc độ di chuyển: +30 |
-| **Cấp 5** | Lv.24 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +15%, Tỉ lệ MP tối đa: +16%, Tỉ lệ HP tối đa: +16%, Tốc độ di chuyển: +30 |
-| **Cấp 6** | Lv.25 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +18%, Tỉ lệ MP tối đa: +18%, Tỉ lệ HP tối đa: +18%, Tốc độ di chuyển: +35 |
-| **Cấp 7** | Lv.26 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +21%, Tỉ lệ MP tối đa: +20%, Tỉ lệ HP tối đa: +20%, Tốc độ di chuyển: +35 |
-| **Cấp 8** | Lv.27 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +24%, Tỉ lệ MP tối đa: +22%, Tỉ lệ HP tối đa: +22%, Tốc độ di chuyển: +40 |
-| **Cấp 9** | Lv.28 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +27%, Tỉ lệ MP tối đa: +24%, Tỉ lệ HP tối đa: +24%, Tốc độ di chuyển: +40 |
-| **Cấp 10** | Lv.29 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +30%, Tỉ lệ MP tối đa: +26%, Tỉ lệ HP tối đa: +26%, Tốc độ di chuyển: +45 |
-| **Cấp 11** | Lv.30 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +32%, Tỉ lệ MP tối đa: +28%, Tỉ lệ HP tối đa: +28%, Tốc độ di chuyển: +45 |
-| **Cấp 12** | Lv.31 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +35%, Tỉ lệ MP tối đa: +30%, Tỉ lệ HP tối đa: +30%, Tốc độ di chuyển: +50 |
+| **Cấp 1** | Lv.20 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +10%, HP tối đa: +100, MP tối đa: +100, Tấn công nội: +1%, Tốc độ di chuyển: +6, Phong lôi nội: +50, Chính xác: +10, Chí mạng: +10 |
+| **Cấp 2** | Lv.21 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +14%, HP tối đa: +182, MP tối đa: +182, Tấn công nội: +2%, Tốc độ di chuyển: +7, Phong lôi nội: +59, Chính xác: +14, Chí mạng: +13 |
+| **Cấp 3** | Lv.22 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +18%, HP tối đa: +264, MP tối đa: +264, Tấn công nội: +3%, Tốc độ di chuyển: +8, Phong lôi nội: +68, Chính xác: +17, Chí mạng: +15 |
+| **Cấp 4** | Lv.23 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +22%, HP tối đa: +345, MP tối đa: +345, Tấn công nội: +4%, Tốc độ di chuyển: +9, Phong lôi nội: +77, Chính xác: +21, Chí mạng: +18 |
+| **Cấp 5** | Lv.24 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +26%, HP tối đa: +427, MP tối đa: +427, Tấn công nội: +5%, Tốc độ di chuyển: +10, Phong lôi nội: +86, Chính xác: +25, Chí mạng: +21 |
+| **Cấp 6** | Lv.25 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +30%, HP tối đa: +509, MP tối đa: +509, Tấn công nội: +6%, Tốc độ di chuyển: +11, Phong lôi nội: +95, Chính xác: +28, Chí mạng: +24 |
+| **Cấp 7** | Lv.26 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +35%, HP tối đa: +591, MP tối đa: +591, Tấn công nội: +6%, Tốc độ di chuyển: +13, Phong lôi nội: +105, Chính xác: +32, Chí mạng: +26 |
+| **Cấp 8** | Lv.27 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +39%, HP tối đa: +673, MP tối đa: +673, Tấn công nội: +7%, Tốc độ di chuyển: +14, Phong lôi nội: +114, Chính xác: +35, Chí mạng: +29 |
+| **Cấp 9** | Lv.28 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +43%, HP tối đa: +755, MP tối đa: +755, Tấn công nội: +8%, Tốc độ di chuyển: +15, Phong lôi nội: +123, Chính xác: +39, Chí mạng: +32 |
+| **Cấp 10** | Lv.29 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +47%, HP tối đa: +836, MP tối đa: +836, Tấn công nội: +9%, Tốc độ di chuyển: +16, Phong lôi nội: +132, Chính xác: +43, Chí mạng: +35 |
+| **Cấp 11** | Lv.30 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +51%, HP tối đa: +918, MP tối đa: +918, Tấn công nội: +10%, Tốc độ di chuyển: +17, Phong lôi nội: +141, Chính xác: +46, Chí mạng: +37 |
+| **Cấp 12** | Lv.31 | 0 | 0s (Bị động) | 1 | Bản thân / Ẩn | Tăng % kinh nghiệm khi đánh quái: +55%, HP tối đa: +1000, MP tối đa: +1000, Tấn công nội: +11%, Tốc độ di chuyển: +18, Phong lôi nội: +150, Chính xác: +50, Chí mạng: +40 |
 
 ### Skill ID 49: Chiêu Kusenmono
 * **Loại chiêu**: Hồi sinh đồng đội
