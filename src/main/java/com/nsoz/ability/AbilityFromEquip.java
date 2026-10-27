@@ -5,6 +5,7 @@
  */
 package com.nsoz.ability;
 
+import com.nsoz.combat.engine.NewDamageEngine;
 import com.nsoz.item.Equip;
 import com.nsoz.item.Item;
 import com.nsoz.item.ItemManager;
@@ -179,80 +180,88 @@ public class AbilityFromEquip implements AbilityStrategy {
     }
 
     /**
-     * Tính toán Sát thương cơ bản và Sát thương cực đại / cực tiểu.
+     * Tính toán Sát thương đầu ra theo mô hình chuẩn hóa (Simplified Damage Engine).
+     * Đặc tả: TAI_LIEU_THIET_KE_CONG_THUC_SAT_THUONG.md
+     * - Tinh giản bộ chỉ số: Tách biệt Tầng Tính Toán (Logic) và Tầng Hiển Thị (UI).
+     * - Quy tụ về 3 biến số trang bị (TC, VC, STC) + 1 biến số nhân vật (TN).
+     * - Công thức 2 cụm: Cụm 1 (Lực đánh cơ sở) * Cụm 2 (Hệ số chống lạm phát).
      */
     private void calculateDamage(Char owner, StatContainer stats, int[] skillOptions, int[] skillOptions2,
                                 int potentialBonus, int potentialPercent) {
-        int potentialDame;
-        switch (owner.getSideClass()) {
-            case 0: // Ngoại công (Sức khỏe potential[0])
-                potentialDame = (owner.potential[0] + potentialBonus) + (owner.potential[0] * potentialPercent / 100);
-                owner.basicAttack = potentialDame + owner.options[38] + (potentialDame * skillOptions[11] / 100);
-                if (owner.incrDame > 0) {
-                    owner.basicAttack += potentialDame * owner.incrDame / 100;
-                }
-                int flatEquipAtk0 = stats.getFlat(StatType.PHYSICAL_ATTACK) - owner.options[38];
-                int percent0 = stats.getPercent(StatType.PHYSICAL_ATTACK) + owner.optionsSupportSkill[0];
-                owner.damage = owner.basicAttack + flatEquipAtk0 + (potentialDame * percent0 / 100) + potentialDame;
-                break;
+        boolean isPhysical = (owner.getSideClass() == 0);
 
-            case 1: // Nội công (Chakra potential[3])
-            default:
-                potentialDame = (owner.potential[3] + potentialBonus) + (owner.potential[3] * potentialPercent / 100);
-                owner.basicAttack = potentialDame + owner.options[38] + (potentialDame * skillOptions[11] / 100);
-                if (owner.incrDame > 0) {
-                    owner.basicAttack += potentialDame * owner.incrDame / 100;
-                }
-                if (owner.incrDame2 > 0) {
-                    owner.basicAttack += potentialDame * owner.incrDame2 / 100;
-                }
-                int flatEquipAtk1 = stats.getFlat(StatType.MAGIC_ATTACK) - owner.options[38];
-                int percent1 = stats.getPercent(StatType.MAGIC_ATTACK) + owner.optionsSupportSkill[1];
-                owner.damage = owner.basicAttack + flatEquipAtk1 + (potentialDame * percent1 / 100) + potentialDame;
+        // 1. Tiềm năng hiệu dụng (TN): Sức khỏe cho phái Ngoại, Chakra cho phái Nội
+        int potentialIndex = isPhysical ? 0 : 3;
+        int potentialDame = (owner.potential[potentialIndex] + potentialBonus)
+                + (owner.potential[potentialIndex] * potentialPercent / 100);
+
+        // 2. Tổng điểm tấn công cố định (TC - Flat Attack)
+        int totalTC = isPhysical ? stats.getFlat(StatType.PHYSICAL_ATTACK) : stats.getFlat(StatType.MAGIC_ATTACK);
+
+        // Tấn công chiêu thức đang chọn (skillOptions 2..10)
+        for (int i = 2; i <= 10; i++) {
+            totalTC += skillOptions[i];
+        }
+
+        // Hỗ trợ nguyên tố từ kỹ năng bị động (optionsSupportSkill 5..10)
+        for (int i = 5; i <= 10; i++) {
+            totalTC += owner.optionsSupportSkill[i];
+        }
+
+        // Sát thương theo hệ nhân vật (Opt 88, 89, 90)
+        switch (owner.getSys()) {
+            case 1:
+                totalTC += stats.getFlat(StatType.ELEMENT_FIRE_ATTACK);
+                break;
+            case 2:
+                totalTC += stats.getFlat(StatType.ELEMENT_ICE_ATTACK);
+                break;
+            case 3:
+                totalTC += stats.getFlat(StatType.ELEMENT_WIND_ATTACK);
                 break;
         }
 
+        // Tấn công theo tiềm năng (Opt 94)
+        totalTC += ((potentialDame * 4) * stats.getPercent(StatType.POTENTIAL_ATTACK) / 100);
+
+        // 3. Tổng phần trăm vận công (% Scaling - VC)
+        int totalVC = isPhysical ? stats.getPercent(StatType.PHYSICAL_ATTACK) : stats.getPercent(StatType.MAGIC_ATTACK);
+        totalVC += isPhysical ? owner.optionsSupportSkill[0] : owner.optionsSupportSkill[1];
+        totalVC += skillOptions[11]; // Tấn công cơ bản từ chiêu thức: +#%
+
+        // Bùa buff / Dược phẩm tạm thời
+        if (owner.incrDame > 0) {
+            totalVC += owner.incrDame;
+        }
+        if (!isPhysical && owner.incrDame2 > 0) {
+            totalVC += owner.incrDame2;
+        }
         if (owner.incrDame3 > 0) {
-            owner.damage += potentialDame * owner.incrDame3 / 100;
+            totalVC += owner.incrDame3;
         }
 
-        // Tấn công theo tiềm năng (Option 94)
-        owner.damage += ((potentialDame * 4) * stats.getPercent(StatType.POTENTIAL_ATTACK) / 100);
-
-        // Hỗ trợ nguyên tố từ kỹ năng bị động (Option 5 đến 10)
-        owner.damage += owner.optionsSupportSkill[5] + owner.optionsSupportSkill[6] + owner.optionsSupportSkill[7]
-                + owner.optionsSupportSkill[8] + owner.optionsSupportSkill[9] + owner.optionsSupportSkill[10];
-
-        // Sát thương từ chiêu thức đang chọn
-        owner.damage += skillOptions[2] + skillOptions[3] + skillOptions[4] + skillOptions[5] + skillOptions[6]
-                + skillOptions[7] + skillOptions[8] + skillOptions[9] + skillOptions[10];
-
-        // Bonus kỹ năng 3x, 4x, 5x
+        // Hỗ trợ chiêu thức 3x, 4x, 5x
         if (owner.selectedSkill != null && !owner.selectedSkill.template.skills.isEmpty()) {
             int level = owner.selectedSkill.template.skills.get(0).level;
             if (level == 30) {
-                owner.damage += owner.basicAttack * skillOptions2[58] / 100;
+                totalVC += skillOptions2[58];
             } else if (level == 40) {
-                owner.damage += owner.basicAttack * skillOptions2[59] / 100;
+                totalVC += skillOptions2[59];
             } else if (level == 50) {
-                owner.damage += owner.basicAttack * skillOptions2[60] / 100;
+                totalVC += skillOptions2[60];
             }
         }
 
-        // Tấn công theo hệ nhân vật (Opt 88, 89, 90)
-        switch (owner.getSys()) {
-            case 1:
-                owner.damage += stats.getFlat(StatType.ELEMENT_FIRE_ATTACK);
-                break;
-            case 2:
-                owner.damage += stats.getFlat(StatType.ELEMENT_ICE_ATTACK);
-                break;
-            case 3:
-                owner.damage += stats.getFlat(StatType.ELEMENT_WIND_ATTACK);
-                break;
-        }
+        // 4. Hằng số đặc trưng môn phái (T)
+        double classT = NewDamageEngine.getClassMultiplier(owner.classId);
 
-        // Min Dame = 90% Max Dame
+        // Basic attack lưu trữ giá trị cơ sở (tương thích hệ thống)
+        owner.basicAttack = (int) Math.round(potentialDame * classT + totalTC);
+
+        // 5. Tính toán Sát thương hệ đầu ra qua NewDamageEngine (K = 25.0)
+        owner.damage = NewDamageEngine.calculateElementalDamage(owner.level, totalTC, potentialDame, classT, totalVC);
+
+        // 6. Min Dame = 90% Max Dame
         owner.damage2 = owner.damage - owner.damage / 10;
     }
 

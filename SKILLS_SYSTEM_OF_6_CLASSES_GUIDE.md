@@ -138,6 +138,7 @@ Mỗi môn phái trong NSO sở hữu một cây kỹ năng hoàn chỉnh bao g�
 | **10** | `37` | **Chiêu Enchokuto** | Chủ động (1 mục tiêu) | Đao pháp nhập môn - chém mạnh bản đao gây sát thương phong lôi. |
 | **15** | `38` | **Chiêu Konoitoame** | Bị động (Tâm pháp) | **Tăng lượng lớn HP tối đa**, lực tấn công và tốc độ di chuyển. |
 | **20** | `39` | **Chiêu Maroyakato** | Chủ động (1 mục tiêu) | Chém 2 nhát đao sấm sét uy lực liên tiếp vào mục tiêu. |
+| **25** | `40` | **Chiêu Magumandari** | Khống chế quái vật | Vô hiệu hóa khả năng tấn công của quái vật; trong CombatService trừ 30 - 60 Kháng tất cả của quái. |
 | **30** | `41` | **Chiêu Chousouto** | Chủ động (Đánh lan 3 mục tiêu) | Vung đao xuất ra luồng phong trảm càn quét 3 mục tiêu lân cận. |
 | **35** | `42` | **Chiêu Aisubaagu** | Dịch chuyển / Áp sát | Dịch phong thuật lướt chớp nhoáng áp sát và chém thẳng vào mục tiêu. |
 | **40** | `43` | **Chiêu Hayateto** | Chủ động (Dồn damage) | Nhát chém sấm sét cuồng phong giáng thẳng gây sát thương cực mạnh. |

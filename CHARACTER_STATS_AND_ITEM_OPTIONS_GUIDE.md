@@ -3,7 +3,7 @@
 > **Phiên bản máy chủ**: NSO Ninja School Private 2026  
 > **Áp dụng cho**: Hệ thống 6 Môn Phái (Kiếm, Tiêu, Kunai, Cung, Đao, Quạt) & Toàn bộ Trang Bị, Thú Cưỡi, Khảm Ngọc  
 > **Cơ sở dữ liệu**: MariaDB / MySQL (`nso_test`)  
-> **Mã nguồn tính toán**: `com.nsoz.ability.AbilityFromEquip.java` & `com.nsoz.model.Char.java`
+> **Mã nguồn tính toán**: `com.nsoz.ability.AbilityFromEquip.java`, `com.nsoz.model.stat.OptionMapper.java`, `com.nsoz.combat.CombatService.java` & `com.nsoz.model.Char.java`
 
 ---
 
@@ -26,17 +26,17 @@
 
 ## 1. SƠ ĐỒ & CƠ CHẾ TÍNH TOÁN CHỈ SỐ
 
-Mọi thuộc tính chiến đấu của nhân vật được Server tổng hợp theo thời gian thực từ 4 nguồn chính:
+Mọi thuộc tính chiến đấu của nhân vật được Server tổng hợp theo thời gian thực từ 4 nguồn chính thông qua `StatContainer` & `OptionMapper`:
 
 ```mermaid
 graph TD
     P[4 Điểm Tiềm Năng: Sức khỏe, Thân pháp, Thể lực, Chakra] -->|Công thức nền tảng| C[Chỉ Số Nhân Vật Cuối Cùng]
-    E[10 Trang Bị Mặc + Cấp Cường Hóa + Khảm Ngọc] -->|Cộng dồn Options| C
-    M[Thú Cưỡi + Xe Máy + Vẹt + Bijuu + Mặt Nạ] -->|Cộng dồn Options| C
+    E[10 Trang Bị Mặc + Cấp Cường Hóa + Khảm Ngọc] -->|OptionMapper + StatContainer| C
+    M[Thú Cưỡi + Xe Máy + Vẹt + Bijuu + Mặt Nạ] -->|OptionMapper + StatContainer| C
     S[Kỹ Năng Chủ Động + Bí Kíp Bị Động 6x/7x/10x] -->|Kích hoạt hiệu ứng| C
 
     C --> C1[Tấn Công: Min/Max Damage, Sát thương cơ bản, Chí mạng, Xuyên kháng]
-    C --> C2[Phòng Thủ: HP tối đa, Kháng Hỏa/Băng/Phong, Giảm trừ ST, Miễn ST]
+    C --> C2[Phòng Thủ: HP tối đa, Kháng Hỏa/Băng/Phong, Giảm trừ ST, Kháng STCM]
     C --> C3[Hỗ Trợ: Chính xác, Né đòn, Tốc độ chạy, Hồi phục HP/MP, Phản đòn]
 ```
 
@@ -48,8 +48,8 @@ Mỗi khi lên cấp hoặc dùng sách tiềm năng, nhân vật nhận đượ
 
 | Chỉ Số Tiềm Năng | Tên Gọi | Tác Dụng Cốt Lõi | Môn Phái Ưu Tiên |
 | :--- | :--- | :--- | :--- |
-| **Sức Khỏe** (`potential[0]`) | Ngoại công / Sức mạnh | Tăng **Tấn công Ngoại công** (Sát thương vật lý cận chiến/viễn chiến). | Kiếm, Tiêu, Cung, Đao |
-| **Thân Pháp** (`potential[1]`) | Nhanh nhẹn / Độ khéo | Tăng mạnh **Né đòn (`miss`)** và **Chính xác (`exactly`)**. | Cả 6 phái (rất quan trọng trong PvP) |
+| **Sức Khỏe** (`potential[0]`) | Ngoại công / Sức mạnh | Tăng **Tấn công Ngoại công** (Sát thương vật lý cận chiến/viễn chiến). | Kiếm, Kunai, Đao |
+| **Thân Pháp** (`potential[1]`) | Nhanh nhẹn / Độ khéo | Tăng mạnh **Né đòn (`miss = Thân pháp * 1.5`)** và **Chính xác (`exactly = Thân pháp`)**. | Cả 6 phái (rất quan trọng trong PvP) |
 | **Thể Lực** (`potential[2]`) | Thể chất / Sinh mệnh | Tăng **Máu tối đa (`maxHP`)**. Mỗi 1 điểm Thể lực = **+10 HP cơ bản**. | Mọi phái (tăng độ chống chịu) |
 | **Chakra** (`potential[3]`) | Nội công / Trí lực | Tăng **Tấn công Nội công** và **MP tối đa (`maxMP`)**. Quy đổi: **+5 MP/điểm** (phái Nội công), **+8 MP/điểm** (phái Ngoại công). | Tiêu, Cung, Quạt (Nội công) |
 
@@ -57,48 +57,47 @@ Mỗi khi lên cấp hoặc dùng sách tiềm năng, nhân vật nhận đượ
 
 ## 3. CHI TIẾT CÁC CHỈ SỐ CHIẾN ĐẤU CỦA NHÂN VẬT
 
-Dưới đây là các công thức giải mã trực tiếp từ mã nguồn [`AbilityFromEquip.java`](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/ability/AbilityFromEquip.java) của Server:
+Dưới đây là các công thức giải mã trực tiếp từ mã nguồn [`AbilityFromEquip.java`](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/ability/AbilityFromEquip.java) và [`CombatService.java`](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/combat/CombatService.java) của Server:
 
 ### 3.1. Nhóm Tấn Công & Sát Thương
 
-* **`basicAttack` (Tấn công cơ bản)**: Lực đánh từ điểm tiềm năng kết hợp với chỉ số sát thương thuần của vũ khí.
+* **`basicAttack` (Tấn công cơ bản)**: Lực đánh từ điểm tiềm năng kết hợp với chỉ số sát thương thuần của vũ khí và kỹ năng.
 * **`damage` (Tấn công tối đa)** & **`damage2` (Tấn công tối thiểu)**:
   * Là khoảng sát thương đầu ra thực tế khi nhân vật tung đòn đánh.
   * **Công thức**:
-    $$\text{damage} = \text{basicAttack} + \text{Công ngoại/nội} + \text{Hỏa/Băng/Phong} + (\text{Tiềm năng} \times \% \text{Vật công}) + \text{Sát thương Skill}$$
-    $$\text{damage2} = \text{damage} - \frac{\text{damage}}{10} \quad (\text{Dao động } 90\% - 100\%)$$
-* **`fatal` (Tỉ lệ chí mạng)**: Xác suất nổ đòn đánh chí mạng (hiển thị số vàng nhảy damage lớn).
-* **`percentFatalDame` (Sát thương chí mạng %)**: Tăng uy lực phần trăm khi nổ chí mạng (gốc 100% + % cộng thêm từ Option ID 39, 67).
+    $$\text{damage} = \text{basicAttack} + \text{Công flat trang bị} + \left(\text{potentialDame} \times \frac{\% \text{Vận công} + \text{Skill bị động}}{100}\right) + \text{potentialDame} + \dots$$
+    $$\text{damage2} = \text{damage} - \frac{\text{damage}}{10} \quad (\text{Min Dame cố định } 90\% \times \text{Max Dame})$$
+* **`fatal` (Tỉ lệ chí mạng)**: Điểm xác suất nổ đòn đánh chí mạng (gom Option 14, 37, 69, 92, 114 + kỹ năng bị động).
+* **`percentFatalDame` (Sát thương chí mạng %)**: Tăng uy lực phần trăm khi nổ chí mạng (Option ID 39, 67).
 * **`fatalDame` (Sát thương chí mạng cố định)**: Điểm cộng thẳng trực tiếp vào sát thương chí mạng (Option ID 105).
-* **`Hỏa công / Băng sát / Phong lôi`**:
-  * **Hỏa công**: Gây thiêu đốt, trừ máu theo từng giây.
-  * **Băng sát**: Gây hiệu ứng làm chậm tốc độ chạy hoặc đóng băng bất động.
-  * **Phong lôi**: Gây hiệu ứng choáng váng (Stun), ngắt chiêu của đối phương.
-* **`Bỏ qua kháng đối phương (%)` (Option ID 101)**: Sát thương xuyên thủng giáp kháng nguyên tố của mục tiêu.
-* **`Sát thương chuẩn` (Option ID 113)**: Đòn đánh chuẩn không thể bị giảm trừ bởi giáp hay kháng.
+* **`Hỏa công / Băng sát / Phong lôi` (Option 88, 89, 90)**: Sát thương nguyên tố cộng thẳng vào đòn đánh theo hệ của nhân vật.
+* **`Bỏ qua kháng đối phương (%)` (Option ID 101)**: Kết hợp với Hạ khắc kỹ năng (`sysDown`), giảm trừ trực tiếp % lượng kháng nguyên tố của mục tiêu trong `CombatService`.
+* **`Sát thương chuẩn` (Option ID 113)**: Sát thương thuần (True Damage) cộng sau cùng, đánh xuyên qua mọi loại giáp, kháng và `dameDown`, không bị ảnh hưởng bởi suy yếu (80%) hay đóng băng (50%).
 
 ---
 
 ### 3.2. Nhóm Sinh Lực & Phòng Ngự
 
 * **`maxHP` (Lượng máu tối đa)**:
-  $$\text{maxHP} = \left[(\text{Thể lực} \times 10) \times (1 + \sum \% \text{HP trang bị}) + \sum \text{HP cộng thẳng}\right] \times (1 + \% \text{HP sau mặc đồ})$$
+  $$\text{maxHP} = \left[(\text{Thể lực} \times 10) \times (1 + \sum \% \text{HP trang bị}) + \sum \text{HP cộng thẳng}\right] \times (1 + \% \text{HP sau mặc đồ Opt 128})$$
 * **`maxMP` (Lượng Chakra tối đa)**:
   $$\text{maxMP} = (\text{Chakra} \times \text{Hệ số MP}) \times (1 + \sum \% \text{MP trang bị}) + \sum \text{MP cộng thẳng}$$
   *(Trong đó: Phái Nội công nhân hệ số **5**, Phái Ngoại công nhân hệ số **8**)*.
-* **`resFire` (Kháng Hỏa), `resIce` (Kháng Băng), `resWind` (Kháng Phong)**: Giảm trực tiếp lượng sát thương thuộc tính hệ tương ứng nhận vào.
-* **`Kháng tất cả` (Option ID 20, 36, 81, 118)**: Tăng đồng thời cả 3 chỉ số Kháng Hỏa, Kháng Băng và Kháng Phong.
-* **`dameDown` (Giảm trừ sát thương)**: Trừ thẳng một lượng sát thương cố định nhận vào từ mỗi đòn đánh của địch.
-* **`Miễn giảm sát thương (%)` (Option ID 98, 136)**: Giảm trực tiếp theo tỷ lệ phần trăm toàn bộ sát thương gánh chịu.
+* **`resFire` (Kháng Hỏa), `resIce` (Kháng Băng), `resWind` (Kháng Phong)**: Giảm sát thương nhận vào qua công thức kháng $y = \frac{77 \cdot x}{x + 231} (\%)$ trong `CombatService`.
+* **`Kháng tất cả` (Option ID 20, 36, 81, 98, 118)**: Tăng đồng thời cả 3 chỉ số Kháng Hỏa, Kháng Băng và Kháng Phong (gom vào `StatType.RES_ALL`).
+* **`dameDown` (Giảm trừ sát thương - Option ID 47, 74, 80, 124)**: Trừ thẳng một lượng sát thương cố định nhận vào từ mỗi đòn đánh của địch trước khi cộng Sát thương chuẩn.
+* **`Kháng ST Chí mạng (%)` (Option ID 63, 79, 121)**: Triệt tiêu lượng sát thương bạo kích nổ thêm khi bị đối phương đánh chí mạng (áp trần tối đa 100%). Option 63 đã được quy chuẩn về nhóm này thay vì trừ % thô để chống bất tử.
+* **`Bùa hộ thể` (Option ID 136)**: Kích hoạt tăng trực tiếp điểm kháng tất cả của nhân vật trong 5 giây.
 
 ---
 
 ### 3.3. Nhóm Cơ Động, Khống Chế & Phản Đòn
 
-* **`miss` (Né đòn)**: Khả năng né tránh hoàn toàn đòn tấn công của đối thủ (hiển thị chữ *Hụt*).
-* **`exactly` (Chính xác)**: Tăng khả năng đánh trúng mục tiêu có chỉ số Né đòn cao.
-* **`reactDame` (Phản đòn cận chiến)**: Phản lại một lượng sát thương trực tiếp cho kẻ tấn công khi bị đánh cận chiến.
-* **`speed` (Tốc độ di chuyển)**: Mặc định là `5`. Khi cưỡi thú được cộng thêm `+2` và cộng thêm từ dòng chỉ số trên giày/thú cưỡi.
+* **`miss` (Né đòn)**: Khả năng né tránh hoàn toàn đòn tấn công của đối thủ (hiển thị chữ *Hụt*). Tính từ $\text{Thân pháp} \times 1.5$ cộng dồn toàn bộ Option né đòn (5, 17, 62, 68, 78, 84, 115).
+* **`exactly` (Chính xác)**: Tăng khả năng đánh trúng mục tiêu có chỉ số Né đòn cao. Tính từ $\text{Thân pháp}$ cộng dồn toàn bộ Option chính xác (10, 18, 75, 86, 116) — *đã tách triệt để Option 12 Kháng Băng khỏi Chính xác*.
+* **`reactDame` (Phản đòn cận chiến)**: Phản lại sát thương cho kẻ tấn công khi ở cự ly gần ($\le 60$), sát thương phản đòn đi qua kháng nguyên tố và `dameDown`.
+* **`Phản đòn băng giá 20% HP` (Option ID 135)**: Tỷ lệ phản lại ngay 20% lượng máu hiện tại của người ra đòn ở cự ly gần.
+* **`speed` (Tốc độ di chuyển)**: Mặc định là `5`. Khi cưỡi thú được cộng thêm `+2`, cộng thêm từ giày/thú cưỡi và mỗi 10 điểm Option 16 kỹ năng bị động được `+1` tốc chạy.
 * **`Giảm trừ thời gian Bỏng / Đóng băng / Choáng`**: Giảm thời gian nhân vật bị dính các hiệu ứng khống chế bất lợi.
 
 ---
@@ -136,7 +135,7 @@ Toàn bộ 162 mã thuộc tính trong cơ sở dữ liệu `item_option`:
 | **57** | `+# điểm tiềm năng cho tất cả` | Tăng cả 4 điểm tiềm năng gốc |
 | **58** | `Cộng thêm tiềm năng: +#%` | Tăng % tổng điểm tiềm năng |
 | **59** | `Cho phép tăng thêm điểm kỹ năng 6x: +# điểm` | Tăng cấp tối đa của skill 6x |
-| **63** | `Giảm sát thương bởi người chơi khác: +#%` | Giảm sát thương nhận vào trong PvP |
+| **63** | `Kháng sát thương chí mạng: +#%` | Quy chuẩn về nhóm Kháng STCM (cùng Opt 121, cap 100%) để triệt tiêu bạo kích và chống bất tử |
 
 ---
 
@@ -234,19 +233,19 @@ Toàn bộ 162 mã thuộc tính trong cơ sở dữ liệu `item_option`:
 
 | Option ID | Tên Thuộc Tính | Mô Tả & Hiệu Ứng Ingame |
 | :---: | :--- | :--- |
-| **98** | `Miễn giảm sát thương: #%` | Giảm trực tiếp % tổng sát thương gánh chịu |
+| **98** | `Kháng tất cả các hệ: +#` | Quy chuẩn về StatType.RES_ALL (cộng vào Kháng Hỏa, Băng, Phong) thay vì trừ % thô để chống bất tử |
 | **99** | `Mỗi nửa giây hồi phục # HP và MP` | Hồi máu và mana cực nhanh trong giao tranh |
 | **100** | `Tăng #% kinh nghiệm khi đánh quái` | Tăng tốc độ cày cấp (x EXP) |
-| **101** | `#% Bỏ qua kháng đối phương` | **Xuyên kháng**: Đòn đánh xuyên giáp nguyên tố |
+| **101** | `#% Bỏ qua kháng đối phương` | **Xuyên kháng**: Kết hợp với Hạ khắc kỹ năng (`sysDown`), giảm trừ % lượng kháng nguyên tố của mục tiêu |
 | **102** | `Sát thương lên quái: #` | Tăng sát thương thuần khi đánh quái (PvE) |
 | **103** | `Sát thương lên người: #` | Tăng sát thương thuần khi PK người chơi (PvP) |
 | **104** | `Exp: #` | Điểm kinh nghiệm cố định |
 | **105** | `Sát thương chí mạng: #` | Điểm cộng thẳng vào đòn chí mạng |
-| **113** | `Sát thương chuẩn: +#` | Sát thương xuyên qua mọi loại giáp phòng ngự |
+| **113** | `Sát thương chuẩn: +#` | Sát thương thuần (True Damage) cộng sau cùng, bỏ qua giáp, kháng, dameDown và trạng thái bất lợi |
 | **128** | `HP tối đa: #%` | Tăng % tổng máu nhân vật sau khi mặc trang bị |
 | **134, 155**| **Kỹ năng Mưa Băng** | Gây sát thương **30% HP mục tiêu**, phạm vi sát thương 2m. Tỉ lệ xuất hiện: `#%`. |
-| **135** | **Kỹ năng Vụ Nổ Băng Giá** | **Phản 20% HP mục tiêu** khi bị đánh trúng. Tỉ lệ xuất hiện: `#%`. |
-| **136** | **Miễn giảm sát thương kích hoạt** | Tỉ lệ xuất hiện 10%: Miễn giảm `#%` sát thương trong 5 giây (Thời gian chờ: 40s). |
+| **135** | **Kỹ năng Vụ Nổ Băng Giá** | **Phản 20% HP mục tiêu** khi bị đánh trúng ở cự ly gần. Tỉ lệ xuất hiện: `#%`. |
+| **136** | **Bùa hộ thể kích hoạt** | Tỉ lệ xuất hiện 10%: Tăng `+#` điểm kháng tất cả các hệ trong 5 giây (Thời gian chờ: 40s). |
 | **137** | `Không nhận EXP` | Dành cho set đồ / pet hãm cấp để đi lôi đài, chiến trường |
 | **144 - 147**| `Sức mạnh / Nhanh nhẹn / Sức khoẻ / Sinh Lực: #` | Thuộc tính tiềm năng bổ trợ |
 | **148, 149** | `Hấp thụ sát thương: # / Tỷ lệ xh hấp thu: #%` | Chuyển sát thương nhận vào thành giáp ảo |

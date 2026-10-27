@@ -23,20 +23,27 @@ public class OptionMapper {
             return null;
         }
 
-        switch (optionId) {
-            // Sát thương ngoại công / Tấn công chung (phân bổ theo phái: 0 = Ngoại, 1 = Nội)
+        int targetId = OptionStandardizer.getCanonicalId(optionId);
+
+        switch (targetId) {
+            // Sát thương ngoại công cố định
             case 0:
             case 21:
             case 23:
             case 25:
-            case 38:
-            case 73:
-            case 76:
-            case 87:
-                StatType attackType = (sideClass == 0) ? StatType.PHYSICAL_ATTACK : StatType.MAGIC_ATTACK;
-                return new StatModifier(attackType, ModType.FLAT, param);
+                // Dòng Tấn công chung (73, 76, 87) thích ứng theo phái: Ngoại công hoặc Nội công
+                if (optionId == 73 || optionId == 76 || optionId == 87) {
+                    StatType genericAttack = (sideClass == 0) ? StatType.PHYSICAL_ATTACK : StatType.MAGIC_ATTACK;
+                    return new StatModifier(genericAttack, ModType.FLAT, param);
+                }
+                return new StatModifier(StatType.PHYSICAL_ATTACK, ModType.FLAT, param);
 
-            // Sát thương nội công (Vũ khí / trang sức nội)
+            // Tấn công cơ bản của vũ khí ẩn +12 (thích ứng theo phái)
+            case 38:
+                StatType weaponBaseAtk = (sideClass == 0) ? StatType.PHYSICAL_ATTACK : StatType.MAGIC_ATTACK;
+                return new StatModifier(weaponBaseAtk, ModType.FLAT, param);
+
+            // Sát thương nội công cố định
             case 1:
             case 22:
             case 24:

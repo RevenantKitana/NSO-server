@@ -5,6 +5,7 @@ import com.nsoz.lib.ParseData;
 import com.nsoz.option.ItemOption;
 import com.nsoz.server.Config;
 import com.nsoz.util.NinjaUtils;
+import com.nsoz.model.stat.OptionStandardizer;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
@@ -781,6 +782,7 @@ public class Item {
             long expire = System.currentTimeMillis() + (long) (86400000 * 7);
             this.expire = expire;
         }
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
 
@@ -868,6 +870,7 @@ public class Item {
             if (this.options.isEmpty()) {
                 initOption();
             }
+            this.options = OptionStandardizer.mergeAndStandardize(this.options);
             if (this.template.isTypeAdorn() || this.template.isTypeClothe() || this.template.isTypeWeapon()) {
                 this.gems = new ArrayList<>();
                 if (parse.containsKey("gems")) {

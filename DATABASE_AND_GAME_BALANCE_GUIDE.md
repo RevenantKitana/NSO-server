@@ -281,4 +281,4 @@ Khi tạo Giftcode, chỉnh sửa NPC Shop hoặc chỉnh sửa vật phẩm tro
    Server game Java nạp toàn bộ cấu hình `item`, `monster`, `skill`, `store` vào RAM khi khởi động. Do đó:
    > ⚠️ **Mọi thay đổi trong Database chỉ có hiệu lực sau khi khởi động lại Server (`sudo systemctl restart nso-server.service`)**.
 2. **Sao lưu trước khi chỉnh sửa lớn**:  
-   Luôn chạy file [`VM/backup_db_to_local.bat`](file:///e:/TT/SETUP_LOCAL/SRC_GAME/VM/backup_db_to_local.bat) để tạo 1 bản dump lưu về máy tính trước khi thực hiện các câu lệnh `UPDATE` hàng loạt trên Database.
+   Luôn sử dụng **`manage.bat`** (Mục 6: Tải bản sao lưu Database từ VM về máy cá nhân) hoặc chạy script [`scripts/local/backup_db_to_local.ps1`](file:///e:/TT/SETUP_LOCAL/SRC_GAME/scripts/local/backup_db_to_local.ps1) để tạo 1 bản dump lưu về thư mục `backups/` trước khi thực hiện các câu lệnh `UPDATE` hàng loạt trên Database.

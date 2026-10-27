@@ -1,7 +1,7 @@
 # TÀI LIỆU ĐẶC TẢ KỸ THUẬT (TECHNICAL SPECIFICATION)
 ## TÁI CẤU TRÚC HỆ THỐNG CHỈ SỐ & BỘ MÁY TÍNH SÁT THƯƠNG NSO
-**Dự án:** NSO Ninja School Online Server (Java / MongoDB / MariaDB)  
-**Phiên bản tài liệu:** 1.0 - Sẵn sàng triển khai (Ready for Implementation)  
+**Dự án:** NSO Ninja School Online Server (Java / MariaDB)  
+**Trạng thái tài liệu:** Đã triển khai hoàn tất trong Codebase (`com.nsoz.model.stat`, `com.nsoz.ability.AbilityFromEquip`, `com.nsoz.combat.CombatService`)  
 **Tác giả:** Antigravity Engineering Team  
 
 ---

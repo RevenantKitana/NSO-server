@@ -6,6 +6,7 @@
 package com.nsoz.convert;
 
 import com.nsoz.item.*;
+import com.nsoz.model.stat.OptionStandardizer;
 import com.nsoz.option.ItemOption;
 import com.nsoz.skill.Skill;
 import com.nsoz.store.ItemStore;
@@ -222,6 +223,7 @@ public class Converter {
                 }
                 newItem.options.add(new ItemOption(templateId, param));
             }
+            newItem.options = OptionStandardizer.mergeAndStandardize(newItem.options);
         }
         return newItem;
     }
@@ -248,6 +250,7 @@ public class Converter {
                 int param = maxOption.param;
                 newItem.options.add(new ItemOption(templateId, param));
             }
+            newItem.options = OptionStandardizer.mergeAndStandardize(newItem.options);
             newItem.next(itemStore.getUpgrade());
         }
         return newItem;

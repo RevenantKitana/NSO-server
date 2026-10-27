@@ -1,7 +1,9 @@
-# TÀI LIỆU ĐẶC TẢ KỸ THUẬT TIỀN TRIỂN KHAI (PRE-IMPLEMENTATION SPEC)
+# TÀI LIỆU ĐẶC TẢ KỸ THUẬT (TECHNICAL SPECIFICATION)
 ## CHUẨN HÓA BẢNG MÃ OPTION & ĐỒNG BỘ DỮ LIỆU TRANG BỊ NSO
-**Dự án:** NSO Ninja School Online Server (Java / MariaDB / MongoDB)  
-**Phiên bản tài liệu:** 1.0 - Tiền triển khai (Pre-Implementation Architecture Spec)  
+**Dự án:** NSO Ninja School Online Server (Java / MariaDB)  
+**Trạng thái tài liệu:** 
+- **Giai đoạn 1 (Runtime Adapter):** **ĐÃ TRIỂN KHAI HOÀN TẤT** trong Codebase ([OptionMapper.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/model/stat/OptionMapper.java), [StatContainer.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/model/stat/StatContainer.java), [Item.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/item/Item.java) cho một số item sinh mới).
+- **Giai đoạn 2 (Database Migration & Purge mã cũ):** **BẢN THẢO THIẾT KẾ (DRAFT / FUTURE SPEC)** – Giữ nguyên mã cũ trong Database và [ItemStore.java](file:///e:/TT/SETUP_LOCAL/SRC_GAME/src/main/java/com/nsoz/store/ItemStore.java) để tương thích ngược 100%, chưa purge dữ liệu.  
 **Tác giả:** Antigravity Engineering Team  
 **Kế thừa từ:** [STAT_COMBAT_REFACTOR_SPEC.md](file:///e:/TT/SETUP_LOCAL/SRC_GAME/STAT_COMBAT_REFACTOR_SPEC.md)
 
@@ -25,48 +27,63 @@
 
 ## 2. MA TRẬN CHUẨN HÓA MÃ OPTION (CANONICAL OPTION MAPPING MATRIX)
 
+> ⚠️ **NGUYÊN TẮC BẤT DI BẤT DỊCH VỀ DÒNG TẤN CÔNG:**
+> Server tuyệt đối phân tách độc lập 4 nhóm sát thương, **KHÔNG BAO GIỜ ĐƯỢC GỘP LẪN**:
+> 1. **Tấn công Ngoại công CỐ ĐỊNH (Flat Atk)**: Mã chuẩn **`Option 0`** (`Tấn công ngoại: +#`).
+> 2. **Tấn công Nội công CỐ ĐỊNH (Flat Atk)**: Mã chuẩn **`Option 1`** (`Tấn công nội: +#`).
+> 3. **% Vật công Ngoại (Percent Atk)**: Mã chuẩn **`Option 8`** (`Vật công ngoại: +#%`) – Nhân theo điểm **Sức Khỏe**. **ĐỘC LẬP, KHÔNG GỘP VÀO 0**.
+> 4. **% Vật công Nội (Percent Atk)**: Mã chuẩn **`Option 9`** (`Vật công nội: +#%`) – Nhân theo điểm **Chakra**. **ĐỘC LẬP, KHÔNG GỘP VÀO 1**.
+> 5. **% Tấn công tiềm năng**: Mã chuẩn **`Option 94`** (`Tấn công: +#%`) – Nhân 4 lần tiềm năng. **ĐỘC LẬP TUYỆT ĐỐI**.
+
 Bảng quy chuẩn chuyển đổi toàn bộ mã phân mảnh cũ sang mã Canonical ID duy nhất:
 
-| Bản Chất Thuộc Tính | Các Mã Cũ Bị Phân Mảnh | Mã Chuẩn Duy Nhất (Canonical ID) | Type Chuẩn | Ghi Chú Kỹ Thuật |
+| Bản Chất Thuộc Tính | Các Mã Cũ Bị Phân Mảnh (Gồm cả Type 3..7) | Mã Chuẩn Sau Gộp | Type Chuẩn | Quy Tắc Cộng Dồn & Ghi Chú |
 | :--- | :--- | :---: | :---: | :--- |
-| **Ngoại công / Vật công** | `0, 21, 23, 25, 73, 76, 87` | **`0`** | `0` | Dùng chung cho vũ khí, đồ, thú |
-| **Nội công** | `1, 22, 24, 26` | **`1`** | `0` | Dùng chung cho đồ nội công |
-| **Kháng Hỏa cố định** | `2, 11, 70, 96` | **`2`** | `0` | Gom toàn bộ kháng hỏa thường |
-| **Kháng Băng cố định** | `3, 71, 95` *(bỏ mã 12)* | **`3`** | `0` | Khai tử hoàn toàn mã 12 lỗi |
-| **Kháng Phong cố định** | `4, 13, 72, 97` | **`4`** | `0` | Gom toàn bộ kháng phong thường |
-| **Né đòn cố định** | `5, 17, 68, 78, 84, 115` | **`5`** | `0` | Gom 6 mã né thường về 1 |
-| **HP tối đa cố định** | `6, 77, 82, 125` | **`6`** | `1` | Gom 4 mã flat HP về 1 |
-| **MP tối đa cố định** | `7, 19, 83, 117` | **`7`** | `1` | Gom 4 mã flat MP về 1 |
-| **% Vật công Ngoại** | `8` | **`8`** | `1` | Giữ nguyên |
-| **% Vật công Nội** | `9` | **`9`** | `1` | Giữ nguyên |
-| **Chính xác cố định** | `10, 18, 75, 86, 116` | **`10`** | `1` | Gom 5 mã chính xác về 1 |
-| **Chí mạng cố định** | `14, 69, 92, 114` | **`14`** | `2` | Gom 4 mã tỉ lệ chí mạng về 1 |
-| **Phản đòn cận chiến** | `15, 91, 126` | **`15`** | `2` | Gom 3 mã phản đòn về 1 |
-| **Kháng tất cả các hệ** | `20, 81, 118` | **`20`** | `2` | Gom 3 mã kháng tất cả về 1 |
-| **% Tỉ lệ HP tối đa** | `31, 61` *(dòng ẩn +8)* | **`31`** | `4` | Dòng kích hoạt +8 |
-| **% Tỉ lệ MP tối đa** | `28, 60` *(dòng ẩn +4/+8)* | **`28`** | `4` | Dòng kích hoạt +8 |
-| **Giảm trừ ST (`dameDown`)** | `47, 74, 80, 124` | **`47`** | `0` | Gom mọi dòng dameDown về mã 47 |
+| **Ngoại công cố định (Flat)**| `0, 21, 23, 25, 73, 76, 87` | **`0`** | `0` | Cộng dồn `param` vào dòng Tấn công ngoại |
+| **Nội công cố định (Flat)** | `1, 22, 24, 26` | **`1`** | `0` | Cộng dồn `param` vào dòng Tấn công nội |
+| **% Vật công Ngoại** | `8` | **`8`** | `1` | **GIỮ RIÊNG 100% - KHÔNG GỘP VÀO 0** |
+| **% Vật công Nội** | `9` | **`9`** | `1` | **GIỮ RIÊNG 100% - KHÔNG GỘP VÀO 1** |
+| **% Tấn công tiềm năng** | `94` | **`94`** | `8` | **GIỮ RIÊNG 100%** |
+| **Tấn công cơ bản vũ khí (+12)**| `38` | **`38`** *(hoặc 0/1 theo phái)* | `5` | Tăng công cơ bản của vũ khí (Flat) |
+| **HP tối đa cố định** | `6, 32` *(+12)*, `77, 82, 125` | **`6`** | `1` | Cộng dồn vào dòng `HP tối đa: +#` |
+| **MP tối đa cố định** | `7, 19, 29` *(+12)*, `83, 117` | **`7`** | `1` | Cộng dồn vào dòng `MP tối đa: +#` |
+| **% Tỉ lệ HP tối đa** | `31, 61` *(dòng ẩn +8)* | **`31`** | `4` | Cộng dồn vào dòng `% Tỉ lệ HP` |
+| **% Tỉ lệ MP tối đa** | `28, 60` *(dòng ẩn +4)* | **`28`** | `4` | Cộng dồn vào dòng `% Tỉ lệ MP` |
+| **Né đòn cố định** | `5, 17, 62` *(+12)*, `68, 78, 84, 115` | **`5`** | `0` | Cộng dồn toàn bộ vào dòng `Né đòn: +#` |
+| **Chính xác cố định** | `10, 18, 75, 86, 116` | **`10`** | `1` | Cộng dồn toàn bộ vào dòng `Chính xác: +#` |
+| **Chí mạng cố định** | `14, 37` *(+8)*, `69, 92, 114` | **`14`** | `2` | Cộng dồn toàn bộ vào dòng `Chí mạng: #` |
+| **% Tăng ST Chí Mạng**| `39` *(+14)*, `67` | **`39`** | `6` | Cộng dồn vào dòng `% ST Chí Mạng` |
+| **% Kháng ST Chí Mạng**| `46` *(+16)*, `63, 79, 121` | **`121`** | `1` | Cộng dồn vào Kháng STCM (cap 100%) |
+| **Kháng Hỏa cố định** | `2, 11, 33` *(+14)*, `70, 96` | **`2`** | `0` | Cộng dồn toàn bộ vào dòng Kháng Hỏa |
+| **Kháng Băng cố định** | `3, 12` *(fix lỗi)*, `34` *(+14)*, `71, 95`| **`3`** | `0` | Cộng dồn toàn bộ vào dòng Kháng Băng |
+| **Kháng Phong cố định**| `4, 13, 35` *(+14)*, `72, 97` | **`4`** | `0` | Cộng dồn toàn bộ vào dòng Kháng Phong |
+| **Kháng tất cả các hệ** | `20, 36` *(+14)*, `81, 118` | **`20`** | `2` | Cộng dồn toàn bộ vào dòng Kháng tất cả |
+| **Giảm trừ ST (`dameDown`)**| `47, 74, 80, 124` | **`47`** | `0` | Cộng dồn vào dòng Giảm trừ ST |
+| **Phản đòn cận chiến** | `15, 91, 126` | **`15`** | `2` | Cộng dồn vào dòng Phản đòn |
 | **Điểm tiềm năng (tất cả)**| `57` | **`57`** | `1` | Giữ nguyên |
 | **% Điểm tiềm năng** | `58` | **`58`** | `0` | Giữ nguyên |
-| **% Giảm ST từ người khác**| `63` | **`63`** | `1` | Dòng PvP Mitigation |
-| **% Miễn giảm sát thương** | `98` | **`98`** | `8` | Dòng PvE/All Mitigation |
+| **% Miễn giảm sát thương** | `98` | **`98`** | `8` | Quy chuẩn về `StatType.RES_ALL` |
 | **Sát thương lên người** | `103` | **`103`** | `1` | PvP Flat Damage |
-| **Sát thương chuẩn** | `113` | **`113`** | `0` | True Damage (xuyên giáp/debuff) |
-| **Hạ khắc (% Bỏ qua kháng)** | `101` | **`101`** | `8` | Đồng bộ 1:1 với Hạ khắc kỹ năng (Skill Opt 32) |
-| **% Kháng ST chí mạng** | `79, 121` | **`121`** | `1` | Gom về mã 121 (cap 100%) |
-| **% Kháng Hỏa/Băng/Phong** | `127, 130, 131` | **`127, 130, 131`**| `1` | Giữ nguyên |
+| **Sát thương chuẩn** | `113` | **`113`** | `0` | True Damage (cộng sau cùng) |
+| **Hạ khắc (% Xuyên kháng)** | `101` | **`101`** | `8` | Xuyên kháng % đối thủ |
+| **% Kháng Hỏa/Băng/Phong**| `127, 130, 131` | **`127, 130, 131`**| `1` | Giữ nguyên theo 3 hệ nguyên tố |
 | **% HP sau khi mặc đồ** | `128` | **`128`** | `0` | Dòng VIP nhân trên tổng HP |
-| **% Phản đòn băng giá 20%** | `135` | **`135`** | `0` | Giữ nguyên |
+| **% Phản đòn băng giá 20%**| `135` | **`135`** | `0` | Giữ nguyên |
 
 ---
 
-### 2.1. Nhóm BẮT BUỘC GIỮ NGUYÊN (Dòng ẩn cường hóa Type 3..7)
-Các mã sau gắn liền với cơ chế kiểm tra cấp cường hóa (`upgrade >= 4, 8, 12, 14, 16`) và đổi màu xanh trên Client:
-* **Type 3 (+4):** Option `27` (Hồi MP 5s), Option `30` (Hồi HP 5s).
-* **Type 4 (+8):** Option `28` (% MP), Option `31` (% HP), Option `37` (Chí mạng).
-* **Type 5 (+12):** Option `29` (MP cố định), Option `32` (HP cố định), Option `38` (Công vũ khí), Option `62` (Né đòn).
-* **Type 6 (+14):** Option `33` (Kháng hỏa), Option `34` (Kháng băng), Option `35` (Kháng phong), Option `36` (Kháng tất cả), Option `39` (% STCM).
-* **Type 7 (+16):** Option `40..46` (Giảm/Tăng thời gian bỏng, băng, choáng, giảm STCM), Option `48..56` (Thưởng/Giảm hệ).
+### 2.1. Cơ Chế Thuật Toán Gộp & Cộng Dồn (`Merge & Sum Aggregator`)
+Thuật toán duyệt qua từng option của trang bị:
+1. Xác định mã Canonical ID tương ứng theo ma trận.
+2. Nếu mã Canonical ID **đã tồn tại** trên trang bị $\rightarrow$ **Cộng dồn chỉ số**: `existingOption.param += currentOption.param`.
+3. Nếu mã Canonical ID **chưa tồn tại** $\rightarrow$ Thêm mới với mã Canonical ID và giá trị `param` hiện tại.
+4. Loại bỏ hoàn toàn các mã phân mảnh và mã dòng ẩn đã gộp.
+
+```java
+// Ví dụ xử lý:
+// Đồ có [Opt 6: 1000] (HP gốc) và [Opt 32: 500] ((+12) HP)
+// Sau khi chạy thuật toán -> Chỉ còn 1 dòng duy nhất: [Opt 6: 1500]
+```
 
 ---
 
@@ -79,11 +96,14 @@ Các mã sau gắn liền với cơ chế kiểm tra cấp cường hóa (`upgra
        │      (Thay thế toàn bộ Option ID cũ 82, 83, 84, 81, 69, 73... sang mã Canonical 6, 7, 5, 20, 14, 0...)
        │
        ├─► 2. ItemStore.java: Phương thức setMinOptions()
-       │      (Quy chuẩn điều kiện tính min/max theo danh sách mã chuẩn)
+       │      (Hiện tại vẫn giữ lại mã cũ để tương thích ngược dữ liệu Store từ Database, sẽ tinh gọn sau khi di trú DB)
        │
        └─► 3. OptionMapper.java
-              (Dọn dẹp các case rác không còn sử dụng, giữ code siêu nhẹ)
+              (Hiện tại hoạt động như một Adapter Layer giữ đầy đủ các case cũ 0..150 để không làm vỡ đồ người chơi trong DB)
 ```
+
+> **Lưu ý quan trọng về hiện trạng Codebase:**
+> Codebase hiện tại đã áp dụng **Adapter Pattern (Tầng Runtime)** thông qua `OptionMapper.java` và `StatContainer.java`. Nhờ đó, máy chủ đã tính toán hoàn toàn chuẩn xác theo các mã chuẩn mà **KHÔNG CẦN sửa dữ liệu gốc trong Database**. Việc tinh gọn triệt để `ItemStore.java` và xóa bỏ case cũ trong `OptionMapper.java` sẽ được thực hiện khi chạy công cụ Di trú Database (Giai đoạn 2).
 
 ### 3.1. Chi tiết chỉnh sửa trong `Item.java`
 Thay thế các đoạn hardcode khởi tạo option:

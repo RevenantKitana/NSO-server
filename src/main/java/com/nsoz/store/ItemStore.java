@@ -7,6 +7,7 @@ package com.nsoz.store;
 
 import com.nsoz.item.ItemManager;
 import com.nsoz.item.ItemTemplate;
+import com.nsoz.model.stat.OptionStandardizer;
 import com.nsoz.option.ItemOption;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,8 +45,8 @@ public class ItemStore {
         this.gold = gold;
         this.isLock = isLock;
         this.expire = expire;
-        this.maxOptions = options;
-        if (maxOptions != null) {
+        this.maxOptions = OptionStandardizer.mergeAndStandardize(options);
+        if (this.maxOptions != null) {
             setMinOptions();
         }
         this.template = ItemManager.getInstance().getItemTemplate(itemID);
@@ -57,12 +58,15 @@ public class ItemStore {
             int optionID = o.optionTemplate.id;
             int optionParam = o.param;
             int newParam;
+            // Nhóm 1: Sát thương tấn công cố định (Ngoại 0, Nội 1)
             if (optionID == 0 || optionID == 1 || optionID == 21 || optionID == 22 || optionID == 23
                     || optionID == 24 || optionID == 25 || optionID == 26 || optionID == 73 || optionID == 76 || optionID == 87) {
                 newParam = optionParam - 49;
+            // Nhóm 2: HP, MP (Flat 6, 7) và % Vật công (Ngoại 8, Nội 9)
             } else if (optionID == 6 || optionID == 7 || optionID == 8 || optionID == 9
                     || optionID == 19 || optionID == 77 || optionID == 82 || optionID == 83 || optionID == 117 || optionID == 125) {
                 newParam = optionParam - 9;
+            // Nhóm 3: Kháng 3 hệ (2, 3, 4), Né (5), Chính xác (10), Chí mạng (14), Phản đòn (15), Kháng tất cả (20)
             } else if (optionID == 2 || optionID == 3 || optionID == 4 || optionID == 5
                     || optionID == 10 || optionID == 11 || optionID == 12 || optionID == 13
                     || optionID == 14 || optionID == 15 || optionID == 17 || optionID == 18
@@ -72,10 +76,14 @@ public class ItemStore {
                     || optionID == 92 || optionID == 95 || optionID == 96 || optionID == 97
                     || optionID == 114 || optionID == 115 || optionID == 116 || optionID == 118 || optionID == 126) {
                 newParam = optionParam - 4;
-            } else if (optionID == 16) {
+            // Nhóm 4: Tốc độ di chuyển (16)
+            } else if (optionID == 16 || optionID == 93) {
                 newParam = optionParam - 2;
             } else {
                 newParam = optionParam;
+            }
+            if (newParam < 0) {
+                newParam = 0;
             }
             minOptions.add(new ItemOption(optionID, newParam));
         }
