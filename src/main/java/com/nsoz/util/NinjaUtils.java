@@ -6,6 +6,7 @@ import com.nsoz.map.MapManager;
 import com.nsoz.map.TileMap;
 import com.nsoz.map.zones.Zone;
 import com.nsoz.server.Config;
+import com.nsoz.model.stat.OptionStandardizer;
 import com.nsoz.server.Server;
 import net.time4j.PlainDate;
 import net.time4j.calendar.ChineseCalendar;
@@ -317,20 +318,22 @@ public class NinjaUtils {
     public static int[][] getOptionShop(int[][] option) {
         int[][] result = new int[option.length][2];
         for (int i = 0; i < option.length; i++) {
-            if (option[i][0] == 0 || option[i][0] == 1 || option[i][0] == 21 || option[i][0] == 22 || option[i][0] == 23
-                    || option[i][0] == 24 || option[i][0] == 25 || option[i][0] == 26) {
+            int optId = OptionStandardizer.getCanonicalId(option[i][0]);
+            result[i][0] = optId;
+            if (optId == 0) {
                 result[i][1] = option[i][1] - 49;
-            } else if (option[i][0] == 6 || option[i][0] == 7 || option[i][0] == 8 || option[i][0] == 9
-                    || option[i][0] == 19) {
+            } else if (optId == 6 || optId == 7 || optId == 8) {
                 result[i][1] = option[i][1] - 9;
-            } else if (option[i][0] == 2 || option[i][0] == 3 || option[i][0] == 4 || option[i][0] == 5
-                    || option[i][0] == 10 || option[i][0] == 11 || option[i][0] == 12 || option[i][0] == 13
-                    || option[i][0] == 14 || option[i][0] == 15 || option[i][0] == 17 || option[i][0] == 18) {
+            } else if (optId == 2 || optId == 3 || optId == 4 || optId == 5
+                    || optId == 10 || optId == 14 || optId == 15 || optId == 20) {
                 result[i][1] = option[i][1] - 4;
-            } else if (option[i][0] == 16) {
+            } else if (optId == 16) {
                 result[i][1] = option[i][1] - 2;
             } else {
                 result[i][1] = option[i][1];
+            }
+            if (result[i][1] < 0) {
+                result[i][1] = 0;
             }
         }
         return result;

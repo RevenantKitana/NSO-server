@@ -5132,7 +5132,7 @@ public class Char {
                             }
                             itemct.options.add(new ItemOption(7, 3000 + ((3000 * percent) / 100)));
                             itemct.options.add(new ItemOption(6, 3000 + ((3000 * percent) / 100)));
-                            itemct.options.add(new ItemOption(94, 10 + ((10 * percent) / 100)));
+                            itemct.options.add(new ItemOption(8, 10 + ((10 * percent) / 100)));
                             itemct.options.add(new ItemOption(127, 10 + ((10 * percent) / 100)));
                             itemct.options.add(new ItemOption(130, 10 + ((10 * percent) / 100)));
                             itemct.options.add(new ItemOption(131, 10 + ((10 * percent) / 100)));
@@ -5179,7 +5179,7 @@ public class Char {
                         }
                         itemct.options.add(new ItemOption(7, 3000 + ((3000 * percent) / 100)));
                         itemct.options.add(new ItemOption(6, 3000 + ((3000 * percent) / 100)));
-                        itemct.options.add(new ItemOption(94, 10 + ((10 * percent) / 100)));
+                        itemct.options.add(new ItemOption(8, 10 + ((10 * percent) / 100)));
                         itemct.options.add(new ItemOption(127, 10 + ((10 * percent) / 100)));
                         itemct.options.add(new ItemOption(130, 10 + ((10 * percent) / 100)));
                         itemct.options.add(new ItemOption(131, 10 + ((10 * percent) / 100)));
@@ -6015,7 +6015,7 @@ public class Char {
                     }
 
                     if (!isHasOption94) {
-                        mount.options.add(new ItemOption(94, 20));
+                        mount.options.add(new ItemOption(8, 20));
                     }
                     serverMessage("Khai mở thành công, thú cưỡi được tăng thêm chỉ số");
                     return true;
@@ -6042,7 +6042,7 @@ public class Char {
                     }
 
                     if (!isHasOption94) {
-                        mount.options.add(new ItemOption(94, 20));
+                        mount.options.add(new ItemOption(8, 20));
                     }
                     serverMessage("Khai mở thành công, thú cưỡi được tăng thêm chỉ số");
                     return true;
@@ -6069,7 +6069,7 @@ public class Char {
                     }
 
                     if (!isHasOption94) {
-                        mount.options.add(new ItemOption(94, 20));
+                        mount.options.add(new ItemOption(8, 20));
                     }
                     serverMessage("Khai mở thành công, thú cưỡi được tăng thêm chỉ số");
                     return true;
@@ -10209,40 +10209,40 @@ public class Char {
                             getService().endDlg(true);
                             item.options.add(indexOption, new ItemOption(85, 0));
                             if (item.template.type == 0) {
-                                int[] optionId = {95, 96, 97};
+                                int[] optionId = {3, 2, 4};
                                 item.options.add(indexOption + 1, new ItemOption(optionId[item.sys - 1], 5));
-                                item.options.add(indexOption + 2, new ItemOption(79, 5));
+                                item.options.add(indexOption + 2, new ItemOption(121, 5));
                             } else if (item.template.type == 1) {
-                                item.options.add(indexOption + 1, new ItemOption(87, NinjaUtils.nextInt(250, 400)));
+                                item.options.add(indexOption + 1, new ItemOption(0, NinjaUtils.nextInt(250, 400)));
                                 int[] optionId = {88, 89, 90};
                                 item.options.add(indexOption + 2, new ItemOption(optionId[item.sys - 1], NinjaUtils.nextInt(350, 600)));
                             } else if (item.template.type == 2) {
-                                item.options.add(indexOption + 1, new ItemOption(80, NinjaUtils.nextInt(24, 28)));
-                                item.options.add(indexOption + 2, new ItemOption(91, NinjaUtils.nextInt(10, 14)));
+                                item.options.add(indexOption + 1, new ItemOption(47, NinjaUtils.nextInt(24, 28)));
+                                item.options.add(indexOption + 2, new ItemOption(15, NinjaUtils.nextInt(10, 14)));
                             } else if (item.template.type == 3) {
-                                item.options.add(indexOption + 1, new ItemOption(81, 5));
-                                item.options.add(indexOption + 2, new ItemOption(79, 5));
+                                item.options.add(indexOption + 1, new ItemOption(20, 5));
+                                item.options.add(indexOption + 2, new ItemOption(121, 5));
                             } else if (item.template.type == 4) {
-                                item.options.add(indexOption + 1, new ItemOption(86, NinjaUtils.nextInt(76, 124)));
-                                item.options.add(indexOption + 2, new ItemOption(94, NinjaUtils.nextInt(76, 124)));
+                                item.options.add(indexOption + 1, new ItemOption(10, NinjaUtils.nextInt(76, 124)));
+                                item.options.add(indexOption + 2, new ItemOption(8, NinjaUtils.nextInt(76, 124)));
                             } else if (item.template.type == 5) {
-                                int[] optionId = {95, 96, 97};
+                                int[] optionId = {3, 2, 4};
                                 item.options.add(indexOption + 1, new ItemOption(optionId[item.sys - 1], 5));
-                                item.options.add(indexOption + 2, new ItemOption(92, NinjaUtils.nextInt(9, 11)));
+                                item.options.add(indexOption + 2, new ItemOption(14, NinjaUtils.nextInt(9, 11)));
                             } else if (item.template.type == 6) {
-                                item.options.add(indexOption + 1, new ItemOption(83, NinjaUtils.nextInt(250, 450)));
-                                item.options.add(indexOption + 2, new ItemOption(82, NinjaUtils.nextInt(250, 450)));
+                                item.options.add(indexOption + 1, new ItemOption(7, NinjaUtils.nextInt(250, 450)));
+                                item.options.add(indexOption + 2, new ItemOption(6, NinjaUtils.nextInt(250, 450)));
                             } else if (item.template.type == 7) {
-                                int[] optionId = {95, 96, 97};
+                                int[] optionId = {3, 2, 4};
                                 item.options.add(indexOption + 1, new ItemOption(optionId[item.sys - 1], 5));
                                 optionId = new int[]{88, 89, 90};
                                 item.options.add(indexOption + 2, new ItemOption(optionId[item.sys - 1], NinjaUtils.nextInt(350, 600)));
                             } else if (item.template.type == 8) {
-                                item.options.add(indexOption + 1, new ItemOption(83, NinjaUtils.nextInt(250, 450)));
-                                item.options.add(indexOption + 2, new ItemOption(84, NinjaUtils.nextInt(76, 124)));
+                                item.options.add(indexOption + 1, new ItemOption(7, NinjaUtils.nextInt(250, 450)));
+                                item.options.add(indexOption + 2, new ItemOption(5, NinjaUtils.nextInt(76, 124)));
                             } else if (item.template.type == 9) {
-                                item.options.add(indexOption + 1, new ItemOption(84, NinjaUtils.nextInt(76, 124)));
-                                item.options.add(indexOption + 2, new ItemOption(82, NinjaUtils.nextInt(250, 450)));
+                                item.options.add(indexOption + 1, new ItemOption(5, NinjaUtils.nextInt(76, 124)));
+                                item.options.add(indexOption + 2, new ItemOption(6, NinjaUtils.nextInt(250, 450)));
                             }
                             if (item.isLock) {
                                 getService().itemInfo(item, (byte) 3, (byte) index);
@@ -15729,12 +15729,10 @@ public class Char {
                         item2 = ItemFactory.getInstance().newItem(94);
                         item2.isLock = true;
                         item2.sys = 1;
-                        item2.options.add(new ItemOption(0, 100));
-                        item2.options.add(new ItemOption(1, 100));
+                        item2.options.add(new ItemOption(0, 300));
                         item2.options.add(new ItemOption(8, 10));
                         item2.options.add(new ItemOption(10, 5));
-                        item2.options.add(new ItemOption(21, 100));
-                        item2.options.add(new ItemOption(19, 10));
+                        item2.options.add(new ItemOption(7, 10));
                         item2.options.add(new ItemOption(30, 5));
                         break;
 
@@ -15744,12 +15742,10 @@ public class Char {
                         item2 = ItemFactory.getInstance().newItem(99);
                         item2.isLock = true;
                         item2.sys = 2;
-                        item2.options.add(new ItemOption(0, 100));
-                        item2.options.add(new ItemOption(1, 100));
+                        item2.options.add(new ItemOption(0, 300));
                         item2.options.add(new ItemOption(8, 10));
                         item2.options.add(new ItemOption(10, 5));
-                        item2.options.add(new ItemOption(21, 100));
-                        item2.options.add(new ItemOption(19, 10));
+                        item2.options.add(new ItemOption(7, 10));
                         item2.options.add(new ItemOption(30, 5));
                         break;
 
@@ -15759,12 +15755,10 @@ public class Char {
                         item2 = ItemFactory.getInstance().newItem(104);
                         item2.isLock = true;
                         item2.sys = 3;
-                        item2.options.add(new ItemOption(0, 100));
-                        item2.options.add(new ItemOption(1, 100));
+                        item2.options.add(new ItemOption(0, 300));
                         item2.options.add(new ItemOption(8, 10));
                         item2.options.add(new ItemOption(10, 5));
-                        item2.options.add(new ItemOption(21, 100));
-                        item2.options.add(new ItemOption(19, 10));
+                        item2.options.add(new ItemOption(7, 10));
                         item2.options.add(new ItemOption(30, 5));
                         break;
 
@@ -15774,12 +15768,10 @@ public class Char {
                         item2 = ItemFactory.getInstance().newItem(114);
                         item2.isLock = true;
                         item2.sys = 1;
-                        item2.options.add(new ItemOption(0, 100));
-                        item2.options.add(new ItemOption(1, 100));
-                        item2.options.add(new ItemOption(9, 10));
+                        item2.options.add(new ItemOption(0, 300));
+                        item2.options.add(new ItemOption(8, 10));
                         item2.options.add(new ItemOption(10, 5));
-                        item2.options.add(new ItemOption(22, 100));
-                        item2.options.add(new ItemOption(19, 10));
+                        item2.options.add(new ItemOption(7, 10));
                         item2.options.add(new ItemOption(30, 5));
                         break;
 
@@ -15789,12 +15781,10 @@ public class Char {
                         item2 = ItemFactory.getInstance().newItem(109);
                         item2.isLock = true;
                         item2.sys = 2;
-                        item2.options.add(new ItemOption(0, 100));
-                        item2.options.add(new ItemOption(1, 100));
-                        item2.options.add(new ItemOption(9, 10));
+                        item2.options.add(new ItemOption(0, 300));
+                        item2.options.add(new ItemOption(8, 10));
                         item2.options.add(new ItemOption(10, 5));
-                        item2.options.add(new ItemOption(22, 100));
-                        item2.options.add(new ItemOption(19, 10));
+                        item2.options.add(new ItemOption(7, 10));
                         item2.options.add(new ItemOption(30, 5));
                         break;
 
@@ -15804,12 +15794,10 @@ public class Char {
                         item2 = ItemFactory.getInstance().newItem(119);
                         item2.isLock = true;
                         item2.sys = 3;
-                        item2.options.add(new ItemOption(0, 100));
-                        item2.options.add(new ItemOption(1, 100));
-                        item2.options.add(new ItemOption(9, 10));
+                        item2.options.add(new ItemOption(0, 300));
+                        item2.options.add(new ItemOption(8, 10));
                         item2.options.add(new ItemOption(10, 5));
-                        item2.options.add(new ItemOption(22, 100));
-                        item2.options.add(new ItemOption(19, 10));
+                        item2.options.add(new ItemOption(7, 10));
                         item2.options.add(new ItemOption(30, 5));
                         break;
                 }
@@ -18618,7 +18606,7 @@ public class Char {
         // chỉ số riêng mn pet
         Item item3 = ItemFactory.getInstance().newItem(ItemName.MAT_NA_KUMA);
         item3.options.clear();
-        item3.options.add(new ItemOption(87, NinjaUtils.nextInt(1000, 5000))); // tấn công
+        item3.options.add(new ItemOption(0, NinjaUtils.nextInt(1000, 5000))); // tấn công
         item3.options.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công ngoại
         item3.options.add(new ItemOption(6, NinjaUtils.nextInt(1000, 2000))); // hp tối đa
         item3.options.add(new ItemOption(57, NinjaUtils.nextInt(80, 120))); // cộng tiềm năng cho tất cả
@@ -18630,7 +18618,7 @@ public class Char {
 
         Item item21 = ItemFactory.getInstance().newItem(ItemName.LONG_DEN_HOA_SEN_THOI_TRANG);
         item21.options.clear();
-        item21.options.add(new ItemOption(87, 5000)); // tấn công
+        item21.options.add(new ItemOption(0, 5000)); // tấn công
         item21.options.add(new ItemOption(8, 200)); // vật công ngoại
         item21.options.add(new ItemOption(57, 120)); // cộng tiềm năng cho tất cả
         item21.options.add(new ItemOption(58, 30)); // cộng % tiềm năng
@@ -19782,7 +19770,7 @@ public class Char {
             kiemgo.options.clear();
             kiemgo.yen = 0;
             kiemgo.options.add(new ItemOption(0, 10));
-            kiemgo.options.add(new ItemOption(9, 10));
+            kiemgo.options.add(new ItemOption(8, 10));
             addItemToBag(kiemgo);
         }));
 
@@ -19933,22 +19921,22 @@ public class Char {
 //                    int random = NinjaUtils.nextInt(1, 5);
 //                    ArrayList<ItemOption> options = new ArrayList<>();
 //                    options.add(new ItemOption(100, NinjaUtils.nextInt(10, 20)));
-//                    options.add(new ItemOption(82, NinjaUtils.nextInt(500, 1500)));
-//                    options.add(new ItemOption(83, NinjaUtils.nextInt(500, 1500)));
-//                    options.add(new ItemOption(84, NinjaUtils.nextInt(10, 20)));
-//                    options.add(new ItemOption(86, NinjaUtils.nextInt(10, 20)));
-//                    options.add(new ItemOption(87, NinjaUtils.nextInt(100, 800)));
+//                    options.add(new ItemOption(6, NinjaUtils.nextInt(500, 1500)));
+//                    options.add(new ItemOption(7, NinjaUtils.nextInt(500, 1500)));
+//                    options.add(new ItemOption(5, NinjaUtils.nextInt(10, 20)));
+//                    options.add(new ItemOption(10, NinjaUtils.nextInt(10, 20)));
+//                    options.add(new ItemOption(0, NinjaUtils.nextInt(100, 800)));
 //                    options.add(new ItemOption(88, NinjaUtils.nextInt(100, 1000)));
 //                    options.add(new ItemOption(89, NinjaUtils.nextInt(100, 1000)));
 //                    options.add(new ItemOption(90, NinjaUtils.nextInt(100, 1000)));
-//                    options.add(new ItemOption(91, NinjaUtils.nextInt(10, 20)));
+//                    options.add(new ItemOption(15, NinjaUtils.nextInt(10, 20)));
 //                    if (NinjaUtils.nextBoolean()) {
-//                        options.add(new ItemOption(92, NinjaUtils.nextInt(10, 20)));
+//                        options.add(new ItemOption(14, NinjaUtils.nextInt(10, 20)));
 //                    }
-//                    options.add(new ItemOption(95, NinjaUtils.nextInt(10, 20)));
-//                    options.add(new ItemOption(96, NinjaUtils.nextInt(10, 20)));
-//                    options.add(new ItemOption(97, NinjaUtils.nextInt(10, 20)));
-//                    options.add(new ItemOption(98, NinjaUtils.nextInt(5, 10)));
+//                    options.add(new ItemOption(3, NinjaUtils.nextInt(10, 20)));
+//                    options.add(new ItemOption(2, NinjaUtils.nextInt(10, 20)));
+//                    options.add(new ItemOption(4, NinjaUtils.nextInt(10, 20)));
+//                    options.add(new ItemOption(20, NinjaUtils.nextInt(5, 10)));
 //                    if (NinjaUtils.nextBoolean()) {
 //                        options.add(new ItemOption(99, NinjaUtils.nextInt(20, 80)));
 //                    }
@@ -20072,7 +20060,7 @@ public class Char {
                     options.add(new ItemOption(83, NinjaUtils.nextInt(500, 1500)));
                     options.add(new ItemOption(84, NinjaUtils.nextInt(10, 20)));
                     options.add(new ItemOption(86, NinjaUtils.nextInt(10, 20)));
-                    options.add(new ItemOption(87, NinjaUtils.nextInt(100, 800)));
+                    options.add(new ItemOption(0, NinjaUtils.nextInt(100, 800)));
                     options.add(new ItemOption(88, NinjaUtils.nextInt(100, 1000)));
                     options.add(new ItemOption(89, NinjaUtils.nextInt(100, 1000)));
                     options.add(new ItemOption(90, NinjaUtils.nextInt(100, 1000)));

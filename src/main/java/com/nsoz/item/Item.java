@@ -190,12 +190,12 @@ public class Item {
         this.options.clear();
         if (this.template.isTypeWeapon()) {
             if (this.id == 799 || this.id == 800) {
-                this.options.add(new ItemOption(94, 15));
+                this.options.add(new ItemOption(8, 15));
                 this.options.add(new ItemOption(14, 100));
                 this.options.add(new ItemOption(10, 200));
             }
             if (this.id == 1156 || this.id == 1157) {
-                this.options.add(new ItemOption(94, 15));
+                this.options.add(new ItemOption(8, 15));
                 this.options.add(new ItemOption(14, 100));
                 this.options.add(new ItemOption(10, 200));
             }
@@ -244,7 +244,7 @@ public class Item {
             this.expire = expire;
             this.options.add(new ItemOption(85, 9));
             if (this.template.type == 35) {
-                this.options.add(new ItemOption(94, 112));
+                this.options.add(new ItemOption(8, 112));
             } else if (this.template.type == 36) {
                 this.options.add(new ItemOption(14, 78));
             } else if (this.template.type == 37) {
@@ -416,7 +416,7 @@ public class Item {
             if (this.template.id == 849) {
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 3000));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
             if (this.id == 805) {
                 long expire = System.currentTimeMillis() + (long) (86400000 * 3);
@@ -433,7 +433,7 @@ public class Item {
 
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 3000));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
                 this.options.add(new ItemOption(136, NinjaUtils.nextInt(0, 80)));
                 this.options.add(new ItemOption(127, 10));
                 this.options.add(new ItemOption(130, 10));
@@ -450,7 +450,7 @@ public class Item {
 
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 3000));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
                 this.options.add(new ItemOption(136, NinjaUtils.nextInt(0, 80)));
                 this.options.add(new ItemOption(127, 10));
                 this.options.add(new ItemOption(130, 10));
@@ -515,8 +515,7 @@ public class Item {
             }
         } else if (this.template.type == ItemTemplate.TYPE_THUNUOI) {
             if (this.id == 419) {
-                this.options.add(new ItemOption(0, 1000));
-                this.options.add(new ItemOption(1, 1000));
+                this.options.add(new ItemOption(0, 2000));
             } else if (this.id == 568) {
                 long expire = System.currentTimeMillis() + (long) 604800000;
                 this.expire = expire;
@@ -540,7 +539,7 @@ public class Item {
             } else if (this.id == ItemName.PET_YEU_TINH) {
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 2000));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             } else if (this.id == ItemName.THAN_CHET) {
                 long expire = System.currentTimeMillis() + (long) 604800000;
                 this.expire = expire;
@@ -551,7 +550,7 @@ public class Item {
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(7, 3000));
                 this.options.add(new ItemOption(14, 100));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
                 this.options.add(new ItemOption(119, 200));
                 this.options.add(new ItemOption(120, 200));
             } else if (this.id == ItemName.PET_BORU) {
@@ -579,7 +578,7 @@ public class Item {
                 this.options.add(new ItemOption(6, 2000));
                 this.options.add(new ItemOption(7, 3000));
                 this.options.add(new ItemOption(14, 100));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
                 this.options.add(new ItemOption(119, 200));
                 this.options.add(new ItemOption(120, 200));
 
@@ -589,7 +588,6 @@ public class Item {
                 int random = NinjaUtils.nextInt(1, 4);
                 ArrayList<ItemOption> randomOptions = new ArrayList<>();
                 randomOptions.add(new ItemOption(8, NinjaUtils.nextInt(100, 200)));
-                randomOptions.add(new ItemOption(9, NinjaUtils.nextInt(100, 200)));
                 randomOptions.add(new ItemOption(0, NinjaUtils.nextInt(1500, 3000)));
                 randomOptions.add(new ItemOption(121, 5));
 
@@ -603,38 +601,38 @@ public class Item {
             // chỉ số danh hiệu
 //            if (this.id == ItemName.THUONG_LUU) {
 //                this.options.add(new ItemOption(82, 7000));
-//                this.options.add(new ItemOption(87, 7000));
+//                this.options.add(new ItemOption(0, 7000));
 //                this.options.add(new ItemOption(92, 100));
-//                this.options.add(new ItemOption(94, 60));
+//                this.options.add(new ItemOption(8, 60));
 //            }
 //
 //            if (this.id == ItemName.HANG_KIM_CUONG
 //                    || this.id == ItemName.HA_LUU || this.id == ItemName.DE_NHAT_NINJA) {
 //                this.options.add(new ItemOption(82, 5000));
-//                this.options.add(new ItemOption(87, 5000));
+//                this.options.add(new ItemOption(0, 5000));
 //                this.options.add(new ItemOption(92, 50));
-//                this.options.add(new ItemOption(94, 40));
+//                this.options.add(new ItemOption(8, 40));
 //            }
 //            if (this.id == ItemName.V_VIP || this.id == ItemName.HANG_VANG || this.id == ItemName.GIA_TOC_MINH_MAN
 //                    || this.id == ItemName.DAI_GIA || this.id == ItemName.DE_NHI) {
 //                this.options.add(new ItemOption(82, 4000));
-//                this.options.add(new ItemOption(87, 4000));
+//                this.options.add(new ItemOption(0, 4000));
 //                this.options.add(new ItemOption(92, 40));
-//                this.options.add(new ItemOption(94, 20));
+//                this.options.add(new ItemOption(8, 20));
 //            }
 //            if (this.id == ItemName.HANG_BAC
 //                    || this.id == ItemName.GIA_TOC_SIENG_NANG || this.id == ItemName.TRUM_VXMM || this.id == ItemName.DE_TAM) {
 //                this.options.add(new ItemOption(82, 2000));
-//                this.options.add(new ItemOption(87, 2000));
+//                this.options.add(new ItemOption(0, 2000));
 //                this.options.add(new ItemOption(92, 30));
-//                this.options.add(new ItemOption(94, 10));
+//                this.options.add(new ItemOption(8, 10));
 //            }
 
             if (this.id == ItemName.DE_NHAT_NINJA) {
                 this.options.add(new ItemOption(6, 5000));
                 this.options.add(new ItemOption(0, 5000));
                 this.options.add(new ItemOption(14, 100));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
 
             if (this.id == ItemName.DE_NHI) {
@@ -659,34 +657,34 @@ public class Item {
                 this.options.add(new ItemOption(6, 5000));
                 this.options.add(new ItemOption(0, 5000));
                 this.options.add(new ItemOption(14, 100));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
 
             if (this.id == ItemName.TOP2) {
                 this.options.add(new ItemOption(6, 4000));
                 this.options.add(new ItemOption(0, 4000));
                 this.options.add(new ItemOption(14, 80));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
 
             if (this.id == ItemName.TOP3) {
                 this.options.add(new ItemOption(6, 3000));
                 this.options.add(new ItemOption(0, 3000));
                 this.options.add(new ItemOption(14, 70));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
 
             if (this.id == ItemName.TOP4) {
                 this.options.add(new ItemOption(6, 2000));
                 this.options.add(new ItemOption(0, 2000));
                 this.options.add(new ItemOption(14, 60));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
             if (this.id == ItemName.TOP5) {
                 this.options.add(new ItemOption(6, 1000));
                 this.options.add(new ItemOption(0, 1000));
                 this.options.add(new ItemOption(14, 50));
-                this.options.add(new ItemOption(94, 10));
+                this.options.add(new ItemOption(8, 10));
             }
 
 
@@ -744,8 +742,8 @@ public class Item {
             this.options.add(new ItemOption(123, 800000));
             this.upgrade = 1;
         }
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
-
     // hạn item từ sự kiện
     public void initExpire() {
         // pet
@@ -1193,39 +1191,36 @@ public class Item {
         int random = NinjaUtils.nextInt(1, 4);
         ArrayList<ItemOption> randomOptions = new ArrayList<>();
         randomOptions.add(new ItemOption(0, NinjaUtils.nextInt(200, 500))); // tấn công ngoai
-        randomOptions.add(new ItemOption(1, NinjaUtils.nextInt(200, 500))); // tấn công nội
         randomOptions.add(new ItemOption(2, NinjaUtils.nextInt(100, 150))); // kháng
         randomOptions.add(new ItemOption(3, NinjaUtils.nextInt(100, 150))); // kháng
         randomOptions.add(new ItemOption(4, NinjaUtils.nextInt(100, 150))); // kháng
         randomOptions.add(new ItemOption(5, NinjaUtils.nextInt(50, 100))); // né đòn
         randomOptions.add(new ItemOption(6, NinjaUtils.nextInt(1000, 2000))); // hp tối đa
         randomOptions.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công ngoại
-        randomOptions.add(new ItemOption(9, NinjaUtils.nextInt(50, 200))); // vật công nội
         randomOptions.add(new ItemOption(57, NinjaUtils.nextInt(80, 120))); // cộng tiềm năng cho tất cả
         randomOptions.add(new ItemOption(58, NinjaUtils.nextInt(20, 30))); // cộng % tiềm năng
-        randomOptions.add(new ItemOption(87, NinjaUtils.nextInt(1000, 5000))); // tấn công
+        randomOptions.add(new ItemOption(0, NinjaUtils.nextInt(1000, 5000))); // tấn công
 
         for (int i = 0; i < random; i++) {
             int indexRandom = NinjaUtils.nextInt(randomOptions.size());
             this.options.add(randomOptions.get(indexRandom));
             randomOptions.remove(indexRandom);
         }
+            this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     // random chỉ số lồng đèn trang bị 2
     public void randomOptionLongDen() {
         int random = NinjaUtils.nextInt(1, 4);
-        ArrayList<ItemOption> randomOptions = new ArrayList<>();        randomOptions.add(new ItemOption(1, NinjaUtils.nextInt(200, 500))); // tấn công nội
-        randomOptions.add(new ItemOption(2, NinjaUtils.nextInt(100, 150))); // kháng
+        ArrayList<ItemOption> randomOptions = new ArrayList<>();        randomOptions.add(new ItemOption(2, NinjaUtils.nextInt(100, 150))); // kháng
         randomOptions.add(new ItemOption(3, NinjaUtils.nextInt(100, 150))); // kháng
         randomOptions.add(new ItemOption(4, NinjaUtils.nextInt(100, 150))); // kháng
         randomOptions.add(new ItemOption(5, NinjaUtils.nextInt(50, 100))); // né đòn
         randomOptions.add(new ItemOption(6, NinjaUtils.nextInt(1000, 2000))); // hp tối đa
         randomOptions.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công ngoại
-        randomOptions.add(new ItemOption(9, NinjaUtils.nextInt(50, 200))); // vật công nội
         randomOptions.add(new ItemOption(57, NinjaUtils.nextInt(80, 120))); // cộng tiềm năng cho tất cả
         randomOptions.add(new ItemOption(58, NinjaUtils.nextInt(20, 30))); // cộng % tiềm năng
-        randomOptions.add(new ItemOption(87, NinjaUtils.nextInt(1000, 5000))); // tấn công
+        randomOptions.add(new ItemOption(0, NinjaUtils.nextInt(1000, 5000))); // tấn công
         randomOptions.add(new ItemOption(0, NinjaUtils.nextInt(200, 500))); // tấn công ngoai
 
 
@@ -1234,13 +1229,14 @@ public class Item {
             this.options.add(randomOptions.get(indexRandom));
             randomOptions.remove(indexRandom);
         }
+            this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     public void randomOptionTigerMask() {
 
-        this.options.add(new ItemOption(125, 3000));
-        this.options.add(new ItemOption(117, 3000));
-        this.options.add(new ItemOption(94, 10));
+        this.options.add(new ItemOption(6, 3000));
+        this.options.add(new ItemOption(7, 3000));
+        this.options.add(new ItemOption(8, 10));
         // random thêm tỉ lệ chỉ số
         if (NinjaUtils.nextInt(0, 5) == 0) {
             this.options.add(new ItemOption(136, NinjaUtils.nextInt(0, 80)));
@@ -1251,44 +1247,48 @@ public class Item {
             this.options.add(new ItemOption(131, 10));
         }
 
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     public void randomOptionTigerMask1() {
-        this.options.add(new ItemOption(125, 3000));
-        this.options.add(new ItemOption(117, 3000));
-        this.options.add(new ItemOption(94, 10));
+        this.options.add(new ItemOption(6, 3000));
+        this.options.add(new ItemOption(7, 3000));
+        this.options.add(new ItemOption(8, 10));
         this.options.add(new ItemOption(136, 100));
         this.options.add(new ItemOption(127, 10));
         this.options.add(new ItemOption(130, 10));
         this.options.add(new ItemOption(131, 10));
 
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     public void randomOptionTigerMask2() {  // ct kage
-        this.options.add(new ItemOption(125, 3000));
-        this.options.add(new ItemOption(117, 3000));
-        this.options.add(new ItemOption(94, 10));
+        this.options.add(new ItemOption(6, 3000));
+        this.options.add(new ItemOption(7, 3000));
+        this.options.add(new ItemOption(8, 10));
         this.options.add(new ItemOption(136, 100));
         this.options.add(new ItemOption(127, 10));
         this.options.add(new ItemOption(130, 10));
         this.options.add(new ItemOption(131, 10));
 
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
 
     // pet ứng long có hạn random chỉ số
     public void randomOptionUngLong() {
-        this.options.add(new ItemOption(69, 10));
+        this.options.add(new ItemOption(14, 10));
         if (NinjaUtils.nextInt(0, 3) == 0 || hasExpire()) {
-            this.options.add(new ItemOption(114, NinjaUtils.nextInt(0, 100)));
+            this.options.add(new ItemOption(14, NinjaUtils.nextInt(0, 100)));
         }
         if (NinjaUtils.nextInt(0, 3) == 0 || hasExpire()) {
-            this.options.add(new ItemOption(94, 10));
+            this.options.add(new ItemOption(8, 10));
         }
         if (NinjaUtils.nextInt(0, 2) == 0 || hasExpire()) {
             this.options.add(new ItemOption(119, 200));
             this.options.add(new ItemOption(120, 200));
         }
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     public void randomOptionMount() {
@@ -1300,14 +1300,14 @@ public class Item {
         opt.add(new int[]{6, 50});
         opt.add(new int[]{7, 50});
         opt.add(new int[]{10, 10});
-        opt.add(new int[]{67, 5});
-        opt.add(new int[]{69, 10});
-        opt.add(new int[]{68, 10});
-        opt.add(new int[]{70, 5});
-        opt.add(new int[]{71, 5});
-        opt.add(new int[]{72, 5});
-        opt.add(new int[]{73, 100});
-        opt.add(new int[]{74, 50});
+        opt.add(new int[]{39, 5});
+        opt.add(new int[]{14, 10});
+        opt.add(new int[]{5, 10});
+        opt.add(new int[]{2, 5});
+        opt.add(new int[]{3, 5});
+        opt.add(new int[]{4, 5});
+        opt.add(new int[]{0, 100});
+        opt.add(new int[]{47, 50});
 
         if (this.id == 776 || this.id == 777) {
             // item.options.add(new ItemOption(128, 5));
@@ -1316,26 +1316,26 @@ public class Item {
         if (isSpecial) {
             opt.remove(4);
             opt.remove(3);
-            this.options.add(new ItemOption(67, 5));
-            this.options.add(new ItemOption(69, 10));
+            this.options.add(new ItemOption(39, 5));
+            this.options.add(new ItemOption(14, 10));
         }
         int randomHe = NinjaUtils.nextInt(1, 3);
         int length = isSpecial ? 2 : 4;
         if (this.id == ItemName.HOA_KY_LAN) {
             if (randomHe == 1) {
-                this.options.add(new ItemOption(94, 12));
-                this.options.add(new ItemOption(69, 120));
+                this.options.add(new ItemOption(8, 12));
+                this.options.add(new ItemOption(14, 120));
                 this.options.add(new ItemOption(10, 120));
-                this.options.add(new ItemOption(67, 60));
+                this.options.add(new ItemOption(39, 60));
             } else if (randomHe == 2) {
-                this.options.add(new ItemOption(74, 600));
-                this.options.add(new ItemOption(124, 600));
+                this.options.add(new ItemOption(47, 600));
+                this.options.add(new ItemOption(47, 600));
                 this.options.add(new ItemOption(6, 600));
-                this.options.add(new ItemOption(118, 24));
+                this.options.add(new ItemOption(20, 24));
             } else {
                 this.options.add(new ItemOption(119, 600));
                 this.options.add(new ItemOption(120, 600));
-                this.options.add(new ItemOption(68, 120));
+                this.options.add(new ItemOption(5, 120));
                 this.options.add(new ItemOption(58, 25));
             }
         } else {
@@ -1380,13 +1380,13 @@ public class Item {
         if (this.id == ItemName.BACH_HO || this.id == ItemName.SIEU_XE_HALLOWEEN) {
             if (isForever()) {
                 this.options.add(new ItemOption(58, 20));// Cộng thêm tiềm năng: +#%
-                this.options.add(new ItemOption(94, 15)); //Tấn công: +#%
+                this.options.add(new ItemOption(8, 15)); //Tấn công: +#%
             } else {
                 if ((int) NinjaUtils.nextInt(0, 4) == 0) {
                     this.options.add(new ItemOption(58, 20));// Cộng thêm tiềm năng: +#%
                 }
                 if ((int) NinjaUtils.nextInt(0, 5) == 0) {
-                    this.options.add(new ItemOption(94, 15)); //Tấn công: +#%
+                    this.options.add(new ItemOption(8, 15)); //Tấn công: +#%
                 }
             }
 
@@ -1396,13 +1396,13 @@ public class Item {
         if ( this.id == ItemName.BACH_NGAN_LANG || this.id == ItemName.BACH_SU_VUONG ) {   // thêm pet mới
             if (isForever()) {
                 this.options.add(new ItemOption(58, 20));// Cộng thêm tiềm năng: +#%
-                this.options.add(new ItemOption(94, 15)); //Tấn công: +#%
+                this.options.add(new ItemOption(8, 15)); //Tấn công: +#%
             } else {
                 if ((int) NinjaUtils.nextInt(0, 4) == 0) {
                     this.options.add(new ItemOption(58, 20));// Cộng thêm tiềm năng: +#%
                 }
                 if ((int) NinjaUtils.nextInt(0, 5) == 0) {
-                    this.options.add(new ItemOption(94, 15)); //Tấn công: +#%
+                    this.options.add(new ItemOption(8, 15)); //Tấn công: +#%
                 }
             }
 
@@ -1480,6 +1480,7 @@ public class Item {
         }
 
 
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
 

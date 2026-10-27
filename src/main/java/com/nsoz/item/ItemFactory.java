@@ -71,7 +71,7 @@ public class ItemFactory {
                 item.options.add(new ItemOption(118, -1));
             } else if (item.id == 653) {
                 item.options.add(new ItemOption(106, 0));
-                item.options.add(new ItemOption(73, 100));
+                item.options.add(new ItemOption(0, 100));
                 item.options.add(new ItemOption(114, -1));
                 item.options.add(new ItemOption(107, 0));
                 item.options.add(new ItemOption(124, 10));

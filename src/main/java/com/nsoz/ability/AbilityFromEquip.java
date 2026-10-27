@@ -12,6 +12,7 @@ import com.nsoz.item.ItemManager;
 import com.nsoz.item.Mount;
 import com.nsoz.model.Char;
 import com.nsoz.model.stat.OptionMapper;
+import com.nsoz.model.stat.OptionStandardizer;
 import com.nsoz.model.stat.StatContainer;
 import com.nsoz.model.stat.StatType;
 import com.nsoz.option.ItemOption;
@@ -143,14 +144,15 @@ public class AbilityFromEquip implements AbilityStrategy {
     }
 
     /**
-     * Nạp đồng thời vào mảng legacy options và StatContainer.
+     * Nạp đồng thời vào mảng legacy options và StatContainer theo chuẩn hóa Canonical.
      */
     private void addOption(Char owner, StatContainer stats, int optionId, int param) {
-        if (optionId >= 0 && optionId < owner.options.length) {
-            owner.options[optionId] += param;
-            owner.haveOptions[optionId] = true;
+        int canonicalId = OptionStandardizer.getCanonicalId(optionId);
+        if (canonicalId >= 0 && canonicalId < owner.options.length) {
+            owner.options[canonicalId] += param;
+            owner.haveOptions[canonicalId] = true;
         }
-        OptionMapper.apply(stats, optionId, param, owner.getSideClass());
+        OptionMapper.apply(stats, canonicalId, param, owner.getSideClass());
     }
 
     /**
@@ -195,8 +197,8 @@ public class AbilityFromEquip implements AbilityStrategy {
         int potentialDame = (owner.potential[potentialIndex] + potentialBonus)
                 + (owner.potential[potentialIndex] * potentialPercent / 100);
 
-        // 2. Tổng điểm tấn công cố định (TC - Flat Attack)
-        int totalTC = isPhysical ? stats.getFlat(StatType.PHYSICAL_ATTACK) : stats.getFlat(StatType.MAGIC_ATTACK);
+        // 2. Tổng điểm tấn công cố định (TC - Flat Attack duy nhất: Opt 0)
+        int totalTC = stats.getFlat(StatType.ATTACK);
 
         // Tấn công chiêu thức đang chọn (skillOptions 2..10)
         for (int i = 2; i <= 10; i++) {
@@ -221,11 +223,8 @@ public class AbilityFromEquip implements AbilityStrategy {
                 break;
         }
 
-        // Tấn công theo tiềm năng (Opt 94)
-        totalTC += ((potentialDame * 4) * stats.getPercent(StatType.POTENTIAL_ATTACK) / 100);
-
-        // 3. Tổng phần trăm vận công (% Scaling - VC)
-        int totalVC = isPhysical ? stats.getPercent(StatType.PHYSICAL_ATTACK) : stats.getPercent(StatType.MAGIC_ATTACK);
+        // 3. Tổng phần trăm vận công (% Scaling - VC duy nhất: Opt 8)
+        int totalVC = stats.getPercent(StatType.ATTACK);
         totalVC += isPhysical ? owner.optionsSupportSkill[0] : owner.optionsSupportSkill[1];
         totalVC += skillOptions[11]; // Tấn công cơ bản từ chiêu thức: +#%
 

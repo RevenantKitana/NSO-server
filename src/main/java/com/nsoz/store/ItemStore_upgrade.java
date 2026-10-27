@@ -7,6 +7,7 @@ package com.nsoz.store;
 // shop 16
 import com.nsoz.item.ItemManager;
 import com.nsoz.item.ItemTemplate;
+import com.nsoz.model.stat.OptionStandardizer;
 import com.nsoz.option.ItemOption;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +34,7 @@ public class ItemStore_upgrade {
     private ItemTemplate template;
     private int upgrade;
     @Builder
-    public ItemStore_upgrade(int id, int itemID, byte sys, int coin, int yen, int gold, boolean isLock, long expire,int upgrade,
+    public ItemStore_upgrade(int id, int itemID, byte sys, int coin, int yen, int gold, boolean isLock, long expire, int upgrade,
                              List<ItemOption> options) {
         this.id = id;
         this.itemID = itemID;
@@ -43,10 +44,12 @@ public class ItemStore_upgrade {
         this.gold = gold;
         this.isLock = isLock;
         this.expire = expire;
-       this.options = options;
-       this.upgrade = upgrade;
+        this.options = OptionStandardizer.mergeAndStandardize(options);
+        this.upgrade = upgrade;
         this.template = ItemManager.getInstance().getItemTemplate(itemID);
     }
 
-
+    public void setOptions(List<ItemOption> options) {
+        this.options = OptionStandardizer.mergeAndStandardize(options);
+    }
 }

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 public class ItemManager {
 
-    public static final int[] MOUNT_OPTION_ID = new int[]{6, 7, 10, 67, 68, 69, 70, 71, 72, 73, 74, 119, 120,118};  // fix nâng 5 sao
+    public static final int[] MOUNT_OPTION_ID = new int[]{6, 7, 10, 39, 5, 14, 2, 3, 4, 0, 47, 119, 120, 20};  // fix nâng 5 sao
     public static final int[] MOUNT_OPTION_PARAM = new int[]{100, 100,5, 5, 5, 5, 5, 5, 5, 100, 20, 0,0,5};  // fix nâng 5 sao
     private static final ItemManager instance = new ItemManager();
     private final ArrayList<ItemTemplate> listItemGloryTask = new ArrayList<>();

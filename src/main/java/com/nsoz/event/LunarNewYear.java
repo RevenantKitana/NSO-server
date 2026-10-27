@@ -778,9 +778,9 @@ public class LunarNewYear extends Event {
             mount.options.add(new ItemOption(130, 10));
             mount.options.add(new ItemOption(131, 10));
 
-            aoDai.options.add(new ItemOption(125, 3000));
-            aoDai.options.add(new ItemOption(117, 3000));
-            aoDai.options.add(new ItemOption(94, 10));
+            aoDai.options.add(new ItemOption(6, 3000));
+            aoDai.options.add(new ItemOption(7, 3000));
+            aoDai.options.add(new ItemOption(8, 10));
             aoDai.options.add(new ItemOption(136, 30));
             aoDai.options.add(new ItemOption(127, 10));
             aoDai.options.add(new ItemOption(130, 10));

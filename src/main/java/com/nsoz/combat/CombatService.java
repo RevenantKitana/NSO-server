@@ -43,11 +43,10 @@ public class CombatService {
             dameFatal += dameBasic;
             dameFatal += (dameBasic * (attacker.percentFatalDame + attacker.optionsSupportSkill[65])) / 100;
             dameFatal += attacker.fatalDame;
-            dameFatal -= dameHit * (target.options[46] + target.options[79]) / 100;
         }
 
-        // Trừ % Kháng Sát thương Chí mạng (Option 63 & 121) - Áp trần tối đa 100%
-        int kstcm = Math.min(100, Math.max(0, target.options[121] + target.options[63]));
+        // Trừ % Kháng Sát thương Chí mạng (Canonical Option 121) - Áp trần tối đa 100%
+        int kstcm = Math.min(100, Math.max(0, target.options[121]));
         dameFatal -= dameFatal * kstcm / 100;
         if (dameFatal < 0) {
             dameFatal = 0;

@@ -23,24 +23,24 @@ public class OptionStandardizer {
 
     static {
         // ==========================================
-        // 1. SÁT THƯƠNG TẤN CÔNG CỐ ĐỊNH (FLAT)
+        // 1. TẤN CÔNG DUY NHẤT CỐ ĐỊNH (FLAT ATTACK -> OPTION 0)
         // ==========================================
-        // Ngoại công cố định (Flat Attack) -> Option 0
+        CANONICAL_MAP.put(1, 0);  // Tấn công nội (flat) -> Gộp vào Tấn công duy nhất (Opt 0)
         CANONICAL_MAP.put(21, 0); // Hỏa công ngoại (flat)
+        CANONICAL_MAP.put(22, 0); // Hỏa công nội (flat)
         CANONICAL_MAP.put(23, 0); // Băng sát ngoại (flat)
+        CANONICAL_MAP.put(24, 0); // Băng sát nội (flat)
         CANONICAL_MAP.put(25, 0); // Phong lôi ngoại (flat)
+        CANONICAL_MAP.put(26, 0); // Phong lôi nội (flat)
         CANONICAL_MAP.put(73, 0); // Tấn công thú/pet (flat)
         CANONICAL_MAP.put(76, 0); // Tăng tấn công cho chủ (flat)
-        CANONICAL_MAP.put(87, 0); // Tấn công trang bị thú (flat)
+        CANONICAL_MAP.put(87, 0); // Tấn công trang bị thú / mặt nạ (flat)
 
-        // Nội công cố định (Flat Attack) -> Option 1
-        CANONICAL_MAP.put(22, 1); // Hỏa công nội (flat)
-        CANONICAL_MAP.put(24, 1); // Băng sát nội (flat)
-        CANONICAL_MAP.put(26, 1); // Phong lôi nội (flat)
-
-        // LƯU Ý BẤT BIẾN:
-        // Option 8 (% Vật công Ngoại), Option 9 (% Vật công Nội), Option 94 (% Tấn công tiềm năng)
-        // KHÔNG ĐƯỢC ÁNH XẠ VÀO 0 HAY 1, GIỮ NGUYÊN RIÊNG BIỆT 100%!
+        // ==========================================
+        // 1b. VẬT CÔNG DUY NHẤT (% ATTACK -> OPTION 8)
+        // ==========================================
+        CANONICAL_MAP.put(9, 8);  // Vật công nội % -> Gộp vào Vật công duy nhất (Opt 8)
+        CANONICAL_MAP.put(94, 8); // Tấn công % màu xanh (Mặt nạ/Pet) -> Gộp vào Vật công duy nhất (Opt 8)
 
         // ==========================================
         // 2. MÁU (HP) & MANA (MP)
@@ -121,6 +121,7 @@ public class OptionStandardizer {
         // Kháng tất cả các hệ -> Option 20
         CANONICAL_MAP.put(36, 20);  // (+14) Kháng tất cả
         CANONICAL_MAP.put(81, 20);  // Kháng tất cả (thú)
+        CANONICAL_MAP.put(98, 20);  // Quy chuẩn miễn giảm ST -> Kháng tất cả
         CANONICAL_MAP.put(118, 20); // Kháng tất cả
 
         // ==========================================

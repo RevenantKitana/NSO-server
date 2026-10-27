@@ -569,8 +569,7 @@ public class Halloween extends Event {
                     Item mount = ItemFactory.getInstance().newItem(idItem);
 
                     ArrayList<ItemOption> options = new ArrayList<>();
-                    options.add(new ItemOption(0, NinjaUtils.nextInt(200, 500))); // tấn công ngoai
-                    options.add(new ItemOption(1, NinjaUtils.nextInt(200, 500))); // tấn công nội
+                    options.add(new ItemOption(0, NinjaUtils.nextInt(500, 1000))); // tấn công duy nhất
                     options.add(new ItemOption(2, NinjaUtils.nextInt(100, 150))); // kháng
                     options.add(new ItemOption(3, NinjaUtils.nextInt(100, 150))); // kháng
                     options.add(new ItemOption(4, NinjaUtils.nextInt(100, 150))); // kháng
@@ -578,12 +577,11 @@ public class Halloween extends Event {
                     options.add(new ItemOption(5, NinjaUtils.nextInt(50, 100))); // né đòn
                     options.add(new ItemOption(6, NinjaUtils.nextInt(1000, 2000))); // hp tối đa
 
-                    options.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công ngoại
-                    options.add(new ItemOption(9, NinjaUtils.nextInt(50, 200))); // vật công nội
+                    options.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công duy nhất
 
                     options.add(new ItemOption(57, NinjaUtils.nextInt(80, 120))); // cộng tiềm năng cho tất cả
                     options.add(new ItemOption(58, NinjaUtils.nextInt(20, 30))); // cộng % tiềm năng
-                    options.add(new ItemOption(87, NinjaUtils.nextInt(1000, 5000))); // tấn công
+                    options.add(new ItemOption(0, NinjaUtils.nextInt(1000, 5000))); // tấn công
                     mount.expire = System.currentTimeMillis() + ConstTime.DAY * 15;
                     mount.isLock = false;
 
@@ -614,8 +612,7 @@ public class Halloween extends Event {
                     Item mount = ItemFactory.getInstance().newItem(idItem);
 
                     ArrayList<ItemOption> options = new ArrayList<>();
-                    options.add(new ItemOption(0, NinjaUtils.nextInt(200, 500))); // tấn công ngoai
-                    options.add(new ItemOption(1, NinjaUtils.nextInt(200, 500))); // tấn công nội
+                    options.add(new ItemOption(0, NinjaUtils.nextInt(500, 1000))); // tấn công duy nhất
                     options.add(new ItemOption(2, NinjaUtils.nextInt(100, 150))); // kháng
                     options.add(new ItemOption(3, NinjaUtils.nextInt(100, 150))); // kháng
                     options.add(new ItemOption(4, NinjaUtils.nextInt(100, 150))); // kháng
@@ -623,12 +620,11 @@ public class Halloween extends Event {
                     options.add(new ItemOption(5, NinjaUtils.nextInt(50, 100))); // né đòn
                     options.add(new ItemOption(6, NinjaUtils.nextInt(1000, 2000))); // hp tối đa
 
-                    options.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công ngoại
-                    options.add(new ItemOption(9, NinjaUtils.nextInt(50, 200))); // vật công nội
+                    options.add(new ItemOption(8, NinjaUtils.nextInt(50, 200))); // vật công duy nhất
 
                     options.add(new ItemOption(57, NinjaUtils.nextInt(80, 120))); // cộng tiềm năng cho tất cả
                     options.add(new ItemOption(58, NinjaUtils.nextInt(20, 30))); // cộng % tiềm năng
-                    options.add(new ItemOption(87, NinjaUtils.nextInt(1000, 5000))); // tấn công
+                    options.add(new ItemOption(0, NinjaUtils.nextInt(1000, 5000))); // tấn công
                     mount.isLock = false;
 
                     for (int i = 1; i <= 7; i++) {

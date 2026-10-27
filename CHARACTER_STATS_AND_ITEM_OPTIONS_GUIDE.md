@@ -14,12 +14,7 @@
    - [3.1. Nhóm Tấn Công & Sát Thương](#31-nhóm-tấn-công--sát-thương)
    - [3.2. Nhóm Sinh Lực & Phòng Ngự](#32-nhóm-sinh-lực--phòng-ngự)
    - [3.3. Nhóm Cơ Động, Khống Chế & Phản Đòn](#33-nhóm-cơ-động-khống-chế--phản-đòn)
-4. [Bảng Tra Cứu Toàn Bộ Thuộc Tính Trang Bị (ItemOption ID 0 - 161)](#4-bảng-tra-cứu-toàn-bộ-thuộc-tính-trang-bị-itemoption-id-0---161)
-   - [4.1. Thuộc Tính Cơ Bản (Công, Thủ, HP, MP, Kháng, Né, Chính Xác)](#41-thuộc-tính-cơ-bản)
-   - [4.2. Thuộc Tính Kích Hoạt Cường Hóa (+4, +8, +12, +14, +16)](#42-thuộc-tính-kích-hoạt-cường-hóa)
-   - [4.3. Thuộc Tính Thú Cưỡi & Pet (Mount System)](#43-thuộc-tính-thú-cưỡi--pet)
-   - [4.4. Thuộc Tính Khảm Ngọc (Gem System)](#44-thuộc-tính-khảm-ngọc)
-   - [4.5. Thuộc Tính Cao Cấp & Kỹ Năng Ẩn Đặc Biệt](#45-thuộc-tính-cao-cấp--kỹ-năng-ẩn-đặc-biệt)
+4. [Bảng Tra Cứu Chi Tiết Toàn Bộ Thuộc Tính Trang Bị (ItemOption ID 0 - 161)](#4-bảng-tra-cứu-chi-tiết-toàn-bộ-thuộc-tính-trang-bị-itemoption-id-0---161)
 5. [Hướng Dẫn Chỉnh Sửa & Câu Lệnh SQL Mẫu](#5-hướng-dẫn-chỉnh-sửa--câu-lệnh-sql-mẫu)
 
 ---
@@ -102,158 +97,175 @@ Dưới đây là các công thức giải mã trực tiếp từ mã nguồn [`
 
 ---
 
-## 4. BẢNG TRA CỨU TOÀN BỘ THUỘC TÍNH TRANG BỊ (`ItemOption ID`)
+## 4. BẢNG TRA CỨU CHI TIẾT TOÀN BỘ THUỘC TÍNH TRANG BỊ (ItemOption ID 0 - 161)
 
-Toàn bộ 162 mã thuộc tính trong cơ sở dữ liệu `item_option`:
+> **Quy ước Client Type**: `0`: Cơ bản/Trắng | `1`: Xanh dương | `2`: Thuộc tính môn phái | `3..7`: Dòng kích hoạt cường hóa (+4, +8, +12, +14, +16) | `8`: Thú cưỡi/Ngọc | `9`: Đặc biệt  
+> **Mã Chuẩn (Canonical)**: Mã đại diện duy nhất sau chuẩn hóa Runtime Big Update (`OptionStandardizer`). Dấu `—` nghĩa là giữ nguyên mã độc lập.
 
-### 4.1. Thuộc Tính Cơ Bản
-
-| Option ID | Tên Thuộc Tính | Ý Nghĩa / Cách Tính |
-| :---: | :--- | :--- |
-| **0** | `Tấn công ngoại: +#` | Tăng điểm tấn công vật lý |
-| **1** | `Tấn công nội: +#` | Tăng điểm tấn công phép |
-| **2, 11** | `Kháng hỏa: +#` | Điểm kháng hệ Lửa |
-| **3, 12** | `Kháng băng: +#` | Điểm kháng hệ Nước/Băng |
-| **4, 13** | `Kháng phong: +#` | Điểm kháng hệ Gió/Sét |
-| **5, 17** | `Né đòn: +#` | Tăng chỉ số né tránh |
-| **6** | `HP tối đa: +#` | Cộng thẳng lượng máu tối đa |
-| **7, 19** | `MP tối đa: +#` | Cộng thẳng lượng mana |
-| **8** | `Vật công ngoại: +#%` | Tăng % công lực ngoại |
-| **9** | `Vật công nội: +#%` | Tăng % công lực nội |
-| **10, 18** | `Chính xác: +#` | Tăng khả năng đánh trúng |
-| **14** | `Chí mạng: +#` | Tăng tỉ lệ đòn chí mạng |
-| **15** | `Phản đòn cận chiến: +#` | Phản sát thương khi bị đánh gần |
-| **16** | `Tốc độ di chuyển: +#%` | Tăng tốc độ chạy |
-| **20** | `Kháng tất cả: +#` | Tăng đồng thời Kháng Hỏa, Băng, Phong |
-| **21** | `Hỏa công ngoại: +#` | Sát thương hệ Lửa (Ngoại) |
-| **22** | `Hỏa công nội: +#` | Sát thương hệ Lửa (Nội) |
-| **23** | `Băng sát ngoại: +#` | Sát thương hệ Băng (Ngoại) |
-| **24** | `Băng sát nội: +#` | Sát thương hệ Băng (Nội) |
-| **25** | `Phong lôi ngoại: +#` | Sát thương hệ Phong/Sét (Ngoại) |
-| **26** | `Phong lôi nội: +#` | Sát thương hệ Phong/Sét (Nội) |
-| **47** | `Giảm trừ sát thương: +#` | Trừ sát thương cố định nhận vào |
-| **57** | `+# điểm tiềm năng cho tất cả` | Tăng cả 4 điểm tiềm năng gốc |
-| **58** | `Cộng thêm tiềm năng: +#%` | Tăng % tổng điểm tiềm năng |
-| **59** | `Cho phép tăng thêm điểm kỹ năng 6x: +# điểm` | Tăng cấp tối đa của skill 6x |
-| **63** | `Kháng sát thương chí mạng: +#%` | Quy chuẩn về nhóm Kháng STCM (cùng Opt 121, cap 100%) để triệt tiêu bạo kích và chống bất tử |
-
----
-
-### 4.2. Thuộc Tính Kích Hoạt Cường Hóa
-
-*Các dòng chỉ số này chỉ có tác dụng khi trang bị đạt cấp cường hóa (+4, +8, +12, +14, +16):*
-
-| Option ID | Tên Dòng Thuộc Tính Kích Hoạt | Cấp Cường Hóa Kích Hoạt |
-| :---: | :--- | :---: |
-| **27** | `(+4) Mỗi 5 giây phục hồi MP: #` | **+4** |
-| **30** | `(+4) Mỗi 5 giây phục hồi HP: #` | **+4** |
-| **60** | `(+4) Tỉ lệ MP tối đa: +#%` | **+4** |
-| **28** | `(+8) Tỉ lệ MP tối đa: +#%` | **+8** |
-| **31, 61** | `(+8) Tỉ lệ HP tối đa: +#%` | **+8** |
-| **37** | `(+8) Chí mạng: +#` | **+8** |
-| **29** | `(+12) MP tối đa: +#` | **+12** |
-| **32** | `(+12) HP tối đa: +#` | **+12** |
-| **38** | `(+12) Tấn công cơ bản của vũ khí: +#` | **+12** |
-| **62** | `(+12) Né đòn: +#` | **+12** |
-| **33** | `(+14) Kháng hỏa: +#` | **+14** |
-| **34** | `(+14) Kháng băng: +#` | **+14** |
-| **35** | `(+14) Kháng phong: +#` | **+14** |
-| **36** | `(+14) Kháng tất cả: +#` | **+14** |
-| **39** | `(+14) Tấn công khi đánh chí mạng: +#%` | **+14** |
-| **40** | `(+16) Giảm trừ thời gian bị bỏng: -#` | **+16** |
-| **41** | `(+16) Giảm trừ thời gian bị đóng băng: -#` | **+16** |
-| **42** | `(+16) Giảm trừ thời gian bị choáng: -#` | **+16** |
-| **43** | `(+16) Thời gian bị bỏng: +#` | **+16** |
-| **44** | `(+16) Thời gian bị đóng băng: +#` | **+16** |
-| **45** | `(+16) Thời gian bị choáng: +#` | **+16** |
-| **46** | `(+16) Chịu sát thương khi bị chí mạng: -#%` | **+16** |
-| **48** | `(+16) Giảm trừ sát thương bởi hỏa hệ: +#` | **+16** |
-| **49** | `(+16) Giảm trừ sát thương bởi băng hệ: +#` | **+16** |
-| **50** | `(+16) Giảm trừ sát thương bởi phong hệ: +#` | **+16** |
-| **51** | `(+16) Tăng sát thương bởi hỏa hệ: +#` | **+16** |
-| **52** | `(+16) Tăng sát thương bởi băng hệ: +#` | **+16** |
-| **53** | `(+16) Tăng sát thương bởi phong hệ: +#` | **+16** |
-| **54** | `(+16) Sát thương đánh hệ hỏa: +#%` | **+16** |
-| **55** | `(+16) Sát thương đánh hệ băng: +#%` | **+16** |
-| **56** | `(+16) Sát thương đánh hệ phong: +#%` | **+16** |
-
----
-
-### 4.3. Thuộc Tính Thú Cưỡi & Pet
-
-| Option ID | Tên Thuộc Tính | Ý Nghĩa |
-| :---: | :--- | :--- |
-| **65** | `Kinh nghiệm: #/1000` | Điểm EXP nâng cấp thú cưỡi |
-| **66** | `Sinh lực: #/1000` | Thể lực của thú cưỡi |
-| **67** | `Tấn công khi đánh chí mạng: #%` | Tăng % sát thương chí mạng |
-| **68** | `Né đòn: +#` | Thú cưỡi hỗ trợ né tránh |
-| **69** | `Chí mạng: +#` | Thú cưỡi hỗ trợ tỉ lệ chí mạng |
-| **70, 71, 72**| `Kháng hỏa / Kháng băng / Kháng phong: +#` | Thú cưỡi hỗ trợ kháng nguyên tố |
-| **73** | `Tấn công: #` | Thú cưỡi cộng thẳng sát thương |
-| **74** | `Chịu sát thương cho chủ: +#` | Chuyển một phần sát thương của chủ sang thú |
-| **75** | `Tăng chính xác cho chủ: +#` | Thú cưỡi hỗ trợ chính xác |
-| **76** | `Tăng tấn công cho chủ: +#` | Thú cưỡi hỗ trợ lực chiến |
-| **77** | `Tăng max HP cho chủ: +#` | Thú cưỡi hỗ trợ lượng máu |
-| **78** | `Tăng né tránh cho chủ: +#` | Thú cưỡi hỗ trợ né đòn |
-| **79, 121** | `Kháng sát thương chí mạng: #%` | Giảm % sát thương khi bị đối phương nổ chí mạng |
-| **80, 124** | `Giảm trừ sát thương: #` | Trừ sát thương cố định |
-| **81, 118** | `Kháng tất cả: +#` | Kháng cả 3 hệ Hỏa, Băng, Phong |
-| **82, 125** | `HP tối đa: #` | Tăng máu tối đa |
-| **83, 117** | `MP tối đa: +#` | Tăng mana tối đa |
-| **84, 115** | `Né đòn: +#` | Tăng né tránh |
-| **85** | `Độ tinh luyện: #` | Cấp độ tinh luyện trang bị thú |
-| **86, 116** | `Chính xác: +#` | Tăng chính xác |
-| **87** | `Tấn công: +#` | Tăng tấn công |
-| **88, 89, 90**| `Hỏa công / Băng công / Phong lôi: +#` | Sát thương nguyên tố thú cưỡi |
-| **91, 126** | `Phản đòn: #` | Phản sát thương |
-| **92, 114** | `Chí mạng: +#` | Tăng tỉ lệ chí mạng |
-| **93** | `Tốc độ di chuyển: +#` | Tăng tốc độ chạy |
-| **94** | `Tấn công: +#%` | Tăng % công lực |
-| **95, 96, 97**| `Kháng băng / Kháng hỏa / Kháng phong: +#` | Kháng từng hệ |
-
----
-
-### 4.4. Thuộc Tính Khảm Ngọc
-
-| Option ID | Tên Thuộc Tính | Loại Ngọc & Tác Dụng |
-| :---: | :--- | :--- |
-| **109** | `Huyền Tinh Ngọc` | Loại ngọc tăng **Tấn công / Sát thương** |
-| **110** | `Huyết Ngọc` | Loại ngọc tăng **HP Máu / Hồi phục sinh lực** |
-| **111** | `Lam Tinh Ngọc` | Loại ngọc tăng **MP Chakra / Kháng nguyên tố** |
-| **112** | `Lục Ngọc` | Loại ngọc tăng **Chí mạng / Né đòn / Chính xác** |
-| **119** | `Mỗi 5 giây phục hồi MP: #` | Dòng kích hoạt của ngọc |
-| **120** | `Mỗi 5 giây phục hồi HP: #` | Dòng kích hoạt của ngọc |
-| **122** | `Yên tháo ngọc: #` | Lượng yên cần để bóc ngọc ra khỏi trang bị |
-| **123** | `Giá khảm: #` | Lượng xu cần để khảm ngọc vào trang bị |
-| **127, 130, 131** | `Kháng st hệ Hỏa / Băng / Phong: #%` | Giảm % sát thương hệ nhận vào |
-
----
-
-### 4.5. Thuộc Tính Cao Cấp & Kỹ Năng Ẩn Đặc Biệt
-
-| Option ID | Tên Thuộc Tính | Mô Tả & Hiệu Ứng Ingame |
-| :---: | :--- | :--- |
-| **98** | `Kháng tất cả các hệ: +#` | Quy chuẩn về StatType.RES_ALL (cộng vào Kháng Hỏa, Băng, Phong) thay vì trừ % thô để chống bất tử |
-| **99** | `Mỗi nửa giây hồi phục # HP và MP` | Hồi máu và mana cực nhanh trong giao tranh |
-| **100** | `Tăng #% kinh nghiệm khi đánh quái` | Tăng tốc độ cày cấp (x EXP) |
-| **101** | `#% Bỏ qua kháng đối phương` | **Xuyên kháng**: Kết hợp với Hạ khắc kỹ năng (`sysDown`), giảm trừ % lượng kháng nguyên tố của mục tiêu |
-| **102** | `Sát thương lên quái: #` | Tăng sát thương thuần khi đánh quái (PvE) |
-| **103** | `Sát thương lên người: #` | Tăng sát thương thuần khi PK người chơi (PvP) |
-| **104** | `Exp: #` | Điểm kinh nghiệm cố định |
-| **105** | `Sát thương chí mạng: #` | Điểm cộng thẳng vào đòn chí mạng |
-| **113** | `Sát thương chuẩn: +#` | Sát thương thuần (True Damage) cộng sau cùng, bỏ qua giáp, kháng, dameDown và trạng thái bất lợi |
-| **128** | `HP tối đa: #%` | Tăng % tổng máu nhân vật sau khi mặc trang bị |
-| **134, 155**| **Kỹ năng Mưa Băng** | Gây sát thương **30% HP mục tiêu**, phạm vi sát thương 2m. Tỉ lệ xuất hiện: `#%`. |
-| **135** | **Kỹ năng Vụ Nổ Băng Giá** | **Phản 20% HP mục tiêu** khi bị đánh trúng ở cự ly gần. Tỉ lệ xuất hiện: `#%`. |
-| **136** | **Bùa hộ thể kích hoạt** | Tỉ lệ xuất hiện 10%: Tăng `+#` điểm kháng tất cả các hệ trong 5 giây (Thời gian chờ: 40s). |
-| **137** | `Không nhận EXP` | Dành cho set đồ / pet hãm cấp để đi lôi đài, chiến trường |
-| **144 - 147**| `Sức mạnh / Nhanh nhẹn / Sức khoẻ / Sinh Lực: #` | Thuộc tính tiềm năng bổ trợ |
-| **148, 149** | `Hấp thụ sát thương: # / Tỷ lệ xh hấp thu: #%` | Chuyển sát thương nhận vào thành giáp ảo |
-| **154** | `Mỗi 10 giây phục hồi HP: #` | Tự động hồi phục sinh mệnh |
-| **158** | **Kỹ năng Hỏa Kích** | Gây sát thương **50% HP mục tiêu**, thiêu đốt 3s (mỗi giây trừ 10% HP). Tỉ lệ xuất hiện: `#%`. |
-| **159** | **Kỹ năng Cường Thân** | Khi HP dưới 30%: **Giảm 95% sát thương nhận vào** trong 3s (Thời gian chờ: 30s). Tỉ lệ xuất hiện: `#%`. |
-| **160** | **Kỹ năng Hộ Thể** | Khi HP dưới 50%: **Chuyển hóa 30% sát thương nhận vào thành HP** trong 3s (Thời gian chờ: 30s). Tỉ lệ xuất hiện: `#%`. |
-| **161** | `Ảo hóa: #%` | Dành cho thời trang và hiệu ứng danh hiệu |
+| ID | Tên Chuỗi Client (Template) | Type | Mã Chuẩn | Chi Tiết Kỹ Thuật (Details) |
+| :---: | :--- | :---: | :---: | :--- |
+| **0** | `Tấn công: +#` | `0` | — | Tấn công cố định duy nhất (Flat Attack cho mọi phái) |
+| **1** | `[ĐÃ GỘP] Tấn công nội: +#` | `0` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Tấn công duy nhất) |
+| **2** | `Kháng hỏa:  +#` | `0` | — | Điểm kháng hệ Hỏa cố định |
+| **3** | `Kháng băng: +#` | `0` | — | Điểm kháng hệ Băng cố định |
+| **4** | `Kháng phong:  +#` | `0` | — | Điểm kháng hệ Phong cố định |
+| **5** | `Né đòn: +#` | `0` | — | Điểm né đòn cố định (Evasion) |
+| **6** | `HP tối đa: +#` | `1` | — | Điểm máu tối đa cố định (Flat HP) |
+| **7** | `MP tối đa: +#` | `1` | — | Điểm mana tối đa cố định (Flat MP) |
+| **8** | `Vật công: +#%` | `1` | — | Tăng % Vật công duy nhất (Hệ số VC cho mọi phái) |
+| **9** | `[ĐÃ GỘP] Vật công nội: +#%` | `1` | **Opt 8** | Đã khai tử & di trú sang Opt 8 (Vật công duy nhất %) |
+| **10** | `Chính xác: +#` | `1` | — | Điểm chính xác cố định (Accuracy) |
+| **11** | `[ĐÃ GỘP] Kháng hỏa: +#` | `2` | **Opt 2** | Đã khai tử & di trú sang Opt 2 (Kháng hỏa cố định) |
+| **12** | `[ĐÃ GỘP] Kháng băng: +#` | `2` | **Opt 3** | Đã khai tử & di trú sang Opt 3 (Kháng băng cố định) |
+| **13** | `[ĐÃ GỘP] Kháng phong: +#` | `2` | **Opt 4** | Đã khai tử & di trú sang Opt 4 (Kháng phong cố định) |
+| **14** | `Chí mạng: #` | `2` | — | Điểm tỉ lệ chí mạng cố định (Fatal/Crit Rate) |
+| **15** | `Phản đòn cận chiến: +#` | `2` | — | Phản đòn sát thương khi đối thủ đánh cận chiến (cự ly <= 60) |
+| **16** | `Tốc độ di chuyển: +#%` | `2` | — | Tốc độ di chuyển nhân vật (+1 speed mỗi 10 điểm) |
+| **17** | `[ĐÃ GỘP] Né đòn: #` | `2` | **Opt 5** | Đã khai tử & di trú sang Opt 5 (Né đòn cố định) |
+| **18** | `[ĐÃ GỘP] Chính xác: #` | `2` | **Opt 10** | Đã khai tử & di trú sang Opt 10 (Chính xác cố định) |
+| **19** | `[ĐÃ GỘP] MP tối đa: #` | `2` | **Opt 7** | Đã khai tử & di trú sang Opt 7 (MP tối đa cố định) |
+| **20** | `Kháng tất cả: #` | `2` | — | Kháng tất cả (Tăng đồng thời Kháng Hỏa, Băng, Phong) |
+| **21** | `[ĐÃ GỘP] Hỏa công ngoại: +#` | `2` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Ngoại công cố định) |
+| **22** | `[ĐÃ GỘP] Hỏa công nội: +#` | `2` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Tấn công cố định) |
+| **23** | `[ĐÃ GỘP] Băng sát ngoại: +#` | `2` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Ngoại công cố định) |
+| **24** | `[ĐÃ GỘP] Băng sát nội: +#` | `2` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Tấn công cố định) |
+| **25** | `[ĐÃ GỘP] Phong lôi ngoại: +#` | `2` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Ngoại công cố định) |
+| **26** | `[ĐÃ GỘP] Phong lôi nội: +#` | `2` | **Opt 0** | Đã khai tử & di trú sang Opt 0 (Tấn công cố định) |
+| **27** | `(+4) Mỗi 5 giây phục hồi MP: #` | `3` | — | Kích hoạt +4: Tự động hồi MP mỗi 5 giây |
+| **28** | `(+8) Tỉ lệ MP tối đa: +#%` | `4` | — | Kích hoạt +8: Tăng % tỉ lệ MP tối đa |
+| **29** | `(+12) MP tối đa: +#` | `5` | **Opt 7** | Kích hoạt +12: MP tối đa cố định (Gộp Opt 7) |
+| **30** | `(+4) Mỗi 5 giây phục hồi HP: #` | `3` | — | Kích hoạt +4: Tự động hồi HP mỗi 5 giây |
+| **31** | `(+8) Tỉ lệ HP tối đa: +#%` | `4` | — | Kích hoạt +8: Tăng % tỉ lệ HP tối đa |
+| **32** | `(+12) HP tối đa: +#` | `5` | **Opt 6** | Kích hoạt +12: HP tối đa cố định (Gộp Opt 6) |
+| **33** | `(+14) Kháng hỏa: +#` | `6` | **Opt 2** | Kích hoạt +14: Kháng hỏa cố định (Gộp Opt 2) |
+| **34** | `(+14) Kháng băng: +#` | `6` | **Opt 3** | Kích hoạt +14: Kháng băng cố định (Gộp Opt 3) |
+| **35** | `(+14) Kháng phong: +#` | `6` | **Opt 4** | Kích hoạt +14: Kháng phong cố định (Gộp Opt 4) |
+| **36** | `(+14) Kháng tất cả: +#` | `6` | **Opt 20** | Kích hoạt +14: Kháng tất cả các hệ (Gộp Opt 20) |
+| **37** | `(+8) Chí mạng: +#` | `4` | **Opt 14** | Kích hoạt +8: Điểm chí mạng (Gộp Opt 14) |
+| **38** | `(+12) Tấn công cơ bản của vũ khí: +#` | `5` | — | Kích hoạt +12: Tấn công cơ bản vũ khí (Thích ứng Flat theo phái) |
+| **39** | `(+14) Tấn công khi đánh chí mạng: +#%` | `6` | — | Kích hoạt +14: Tăng % sát thương khi nổ chí mạng (% Crit Damage) |
+| **40** | `(+16) Giảm trừ thời gian bị bỏng: -#` | `7` | — | Kích hoạt +16: Giảm thời gian dính hiệu ứng Bỏng (ms) |
+| **41** | `(+16) Giảm trừ thời gian bị đóng băng: -#` | `7` | — | Kích hoạt +16: Giảm thời gian dính hiệu ứng Đóng Băng (ms) |
+| **42** | `(+16) Giảm trừ thời gian bị choáng: -#` | `7` | — | Kích hoạt +16: Giảm thời gian dính hiệu ứng Choáng (ms) |
+| **43** | `(+16) Thời gian bị bỏng: +#` | `7` | — | Kích hoạt +16: Tăng thời gian gây Bỏng lên đối thủ (ms) |
+| **44** | `(+16) Thời gian bị đóng băng: +#` | `7` | — | Kích hoạt +16: Tăng thời gian gây Đóng Băng lên đối thủ (ms) |
+| **45** | `(+16) Thời gian bị choáng: +#` | `7` | — | Kích hoạt +16: Tăng thời gian gây Choáng lên đối thủ (ms) |
+| **46** | `[ĐÃ GỘP] (+16) Chịu sát thương khi bị chí mạng: -#%` | `7` | **Opt 121** | Đã khai tử & di trú sang Opt 121 (Kháng STCM %) |
+| **47** | `Giảm trừ sát thương: +#` | `0` | — | Giảm trừ sát thương cố định (dameDown chuẩn trừ trước STC) |
+| **48** | `(+16) Giảm trừ sát thương bởi hỏa hệ: +#` | `7` | — | Kích hoạt +16: Giảm trừ sát thương nhận vào từ hệ Hỏa |
+| **49** | `(+16) Giảm trừ sát thương bởi băng hệ: +#` | `7` | — | Kích hoạt +16: Giảm trừ sát thương nhận vào từ hệ Băng |
+| **50** | `(+16) Giảm trừ sát thương bởi phong hệ: +#` | `7` | — | Kích hoạt +16: Giảm trừ sát thương nhận vào từ hệ Phong |
+| **51** | `(+16) Tăng sát thương bởi hỏa hệ: +#` | `7` | — | Kích hoạt +16: Tăng sát thương cố định khi đánh mục tiêu hệ Hỏa |
+| **52** | `(+16) Tăng sát thương bởi băng hệ: +#` | `7` | — | Kích hoạt +16: Tăng sát thương cố định khi đánh mục tiêu hệ Băng |
+| **53** | `(+16) Tăng sát thương bởi phong hệ: +#` | `7` | — | Kích hoạt +16: Tăng sát thương cố định khi đánh mục tiêu hệ Phong |
+| **54** | `(+16) Sát thương đánh hệ hỏa: +#%` | `7` | — | Kích hoạt +16: Tăng % sát thương khi đánh quái/mục tiêu hệ Hỏa |
+| **55** | `(+16) Sát thương đánh hệ băng: +#%` | `7` | — | Kích hoạt +16: Tăng % sát thương khi đánh quái/mục tiêu hệ Băng |
+| **56** | `(+16) Sát thương đánh hệ phong: +#%` | `7` | — | Kích hoạt +16: Tăng % sát thương khi đánh quái/mục tiêu hệ Phong |
+| **57** | `+# điểm tiềm năng cho tất cả` | `1` | — | Cộng thẳng điểm tiềm năng cho cả 4 nhánh (Sức khỏe, Thân pháp, Thể lực, Chakra) |
+| **58** | `Cộng thêm tiềm năng: +#%` | `0` | — | Cộng thêm % trên tổng điểm tiềm năng nhân vật |
+| **59** | `Cho phép tăng thêm điểm kỹ năng 6x: +# điểm` | `0` | — | Mở rộng cấp tối đa kỹ năng 6x |
+| **60** | `(+4) Tỉ lệ MP tối đa: +#%` | `3` | **Opt 28** | Kích hoạt +4: Tỉ lệ MP tối đa % (Gộp Opt 28) |
+| **61** | `(+8) Tỉ lệ HP tối đa: +#%` | `4` | **Opt 31** | Kích hoạt +8: Tỉ lệ HP tối đa % (Gộp Opt 31) |
+| **62** | `(+12) Né đòn: +#` | `5` | **Opt 5** | Kích hoạt +12: Né đòn cố định (Gộp Opt 5) |
+| **63** | `[ĐÃ GỘP] Giảm sát thương bởi người chơi khác: +#%` | `1` | **Opt 121** | Đã khai tử & di trú sang Opt 121 (Kháng STCM %) |
+| **64** | `Chưa xác định` | `0` | — | Dòng dự trữ hệ thống (Chưa gán thuộc tính) |
+| **65** | `Kinh nghiệm: #/1000` | `0` | — | Điểm kinh nghiệm thú cưỡi (#/1000) |
+| **66** | `Sinh lực: #/1000` | `0` | — | Thể lực / Sinh lực thú cưỡi (#/1000) |
+| **67** | `Tấn công khi đánh chí mạng: #%` | `1` | **Opt 39** | Tăng % sát thương khi nổ chí mạng (Gộp Opt 39) |
+| **68** | `[ĐÃ GỘP] Né đòn: +#` | `1` | **Opt 5** | Đã khai tử & di trú sang Opt 5 (Né đòn cố định) |
+| **69** | `[ĐÃ GỘP] Chí mạng: +#` | `1` | **Opt 14** | Đã khai tử & di trú sang Opt 14 (Chí mạng cố định) |
+| **70** | `[ĐÃ GỘP] Kháng hỏa:  +#` | `1` | **Opt 2** | Đã khai tử & di trú sang Opt 2 (Kháng hỏa cố định) |
+| **71** | `[ĐÃ GỘP] Kháng băng:  +#` | `1` | **Opt 3** | Đã khai tử & di trú sang Opt 3 (Kháng băng cố định) |
+| **72** | `[ĐÃ GỘP] Kháng phong:  +#` | `1` | **Opt 4** | Đã khai tử & di trú sang Opt 4 (Kháng phong cố định) |
+| **73** | `[ĐÃ GỘP] Tấn công: #` | `1` | **Opt 0** | Đã khai tử & di trú sang Opt 0/1 (Tấn công cố định theo phái) |
+| **74** | `[ĐÃ GỘP] Chịu sát thương cho chủ: +#` | `1` | **Opt 47** | Đã khai tử & di trú sang Opt 47 (Giảm trừ ST) |
+| **75** | `[ĐÃ GỘP] Tăng chính xác cho chủ: +#` | `8` | **Opt 10** | Đã khai tử & di trú sang Opt 10 (Chính xác cố định) |
+| **76** | `[ĐÃ GỘP] Tăng tấn công cho chủ: +#` | `8` | **Opt 0** | Đã khai tử & di trú sang Opt 0/1 (Tấn công cố định theo phái) |
+| **77** | `[ĐÃ GỘP] Tăng max HP cho chủ: +#` | `8` | **Opt 6** | Đã khai tử & di trú sang Opt 6 (HP tối đa cố định) |
+| **78** | `[ĐÃ GỘP] Tăng né tránh cho chủ: +#` | `8` | **Opt 5** | Đã khai tử & di trú sang Opt 5 (Né đòn cố định) |
+| **79** | `[ĐÃ GỘP] Kháng sát thương chí mạng: #%` | `8` | **Opt 121** | Đã khai tử & di trú sang Opt 121 (Kháng STCM %) |
+| **80** | `[ĐÃ GỘP] Giảm trừ sát thương: #` | `8` | **Opt 47** | Đã khai tử & di trú sang Opt 47 (Giảm trừ ST) |
+| **81** | `[ĐÃ GỘP] Kháng tất cả: +#` | `8` | **Opt 20** | Đã khai tử & di trú sang Opt 20 (Kháng tất cả) |
+| **82** | `[ĐÃ GỘP] HP tối đa: #` | `8` | **Opt 6** | Đã khai tử & di trú sang Opt 6 (HP tối đa cố định) |
+| **83** | `[ĐÃ GỘP] MP tối đa: +#` | `8` | **Opt 7** | Đã khai tử & di trú sang Opt 7 (MP tối đa cố định) |
+| **84** | `[ĐÃ GỘP] Né đòn: +#` | `8` | **Opt 5** | Đã khai tử & di trú sang Opt 5 (Né đòn cố định) |
+| **85** | `Độ tinh luyện: #` | `8` | — | Cấp độ tinh luyện trang bị thú cưỡi |
+| **86** | `[ĐÃ GỘP] Chính xác: +#` | `8` | **Opt 10** | Đã khai tử & di trú sang Opt 10 (Chính xác cố định) |
+| **87** | `[ĐÃ GỘP] Tấn công: +#` | `8` | **Opt 0** | Đã khai tử & di trú sang Opt 0/1 (Tấn công cố định theo phái) |
+| **88** | `Hỏa công: +#` | `8` | — | Sát thương nguyên tố hệ Hỏa cộng thêm (Hỏa công) |
+| **89** | `Băng công: +#` | `8` | — | Sát thương nguyên tố hệ Băng cộng thêm (Băng công) |
+| **90** | `Phong lôi: +#` | `8` | — | Sát thương nguyên tố hệ Phong cộng thêm (Phong lôi) |
+| **91** | `[ĐÃ GỘP] Phản đòn: #` | `8` | **Opt 15** | Đã khai tử & di trú sang Opt 15 (Phản đòn cận chiến) |
+| **92** | `[ĐÃ GỘP] Chí mạng: +#` | `8` | **Opt 14** | Đã khai tử & di trú sang Opt 14 (Chí mạng cố định) |
+| **93** | `[ĐÃ GỘP] Tốc độ di chuyển: +#` | `8` | **Opt 16** | Đã khai tử & di trú sang Opt 16 (Tốc độ di chuyển) |
+| **94** | `[ĐÃ GỘP] Tấn công: +#%` | `8` | **Opt 8** | Đã khai tử & di trú sang Opt 8 (Vật công duy nhất %) |
+| **95** | `[ĐÃ GỘP] Kháng băng:  +#` | `8` | **Opt 3** | Đã khai tử & di trú sang Opt 3 (Kháng băng cố định) |
+| **96** | `[ĐÃ GỘP] Kháng hỏa:  +#` | `8` | **Opt 2** | Đã khai tử & di trú sang Opt 2 (Kháng hỏa cố định) |
+| **97** | `[ĐÃ GỘP] Kháng phong:  +#` | `8` | **Opt 4** | Đã khai tử & di trú sang Opt 4 (Kháng phong cố định) |
+| **98** | `[ĐÃ GỘP] Miễn giảm sát thương: #%` | `8` | — | Đã khai tử & di trú sang Opt 20 (Kháng tất cả) |
+| **99** | `Mỗi nửa giây hồi phục # Hp và Mp` | `8` | — | Tự động hồi phục đồng thời cả HP và MP mỗi 0.5 giây trong chiến đấu |
+| **100** | `Tăng #% kinh nghiệm khi đánh quái` | `8` | — | Tăng % kinh nghiệm nhận được khi tiêu diệt quái vật (x EXP) |
+| **101** | `#% Bỏ qua kháng đối phương` | `8` | — | Hạ khắc (% Bỏ qua kháng): Trừ trực tiếp % kháng nguyên tố đối phương |
+| **102** | `St lên quái: #` | `1` | — | Cộng sát thương thuần khi đánh quái vật / Boss (PvE Flat Damage) |
+| **103** | `St lên người: #` | `1` | — | Cộng sát thương thuần khi PK người chơi (PvP Flat Damage) |
+| **104** | `Exp: #` | `0` | — | Điểm kinh nghiệm nhận thêm cố định |
+| **105** | `Sát thương chí mạng: #` | `1` | — | Điểm sát thương cộng thẳng khi nổ chí mạng (Flat Crit Damage) |
+| **106** | `Vũ khí` | `0` | — | Nhãn phân loại: Vũ khí (Item category header) |
+| **107** | `Trang bị` | `0` | — | Nhãn phân loại: Trang bị phòng cụ (Item category header) |
+| **108** | `Trang sức` | `0` | — | Nhãn phân loại: Trang sức (Item category header) |
+| **109** | `Huyền Tinh Ngọc` | `0` | — | Loại ngọc khảm: Huyền Tinh Ngọc (Tăng công / sát thương) |
+| **110** | `Huyết Ngọc` | `0` | — | Loại ngọc khảm: Huyết Ngọc (Tăng HP / hồi phục máu) |
+| **111** | `Lam Tinh Ngọc` | `0` | — | Loại ngọc khảm: Lam Tinh Ngọc (Tăng MP / kháng nguyên tố) |
+| **112** | `Lục Ngọc` | `0` | — | Loại ngọc khảm: Lục Ngọc (Tăng Chí mạng / Né đòn / Chính xác) |
+| **113** | `Sát thương chuẩn: +#` | `0` | — | Sát thương chuẩn (True Damage): Cộng sau cùng, bỏ qua giáp, kháng và dameDown |
+| **114** | `[ĐÃ GỘP] Chí mạng: #` | `1` | **Opt 14** | Đã khai tử & di trú sang Opt 14 (Chí mạng cố định) |
+| **115** | `[ĐÃ GỘP] Né đòn: #` | `1` | **Opt 5** | Đã khai tử & di trú sang Opt 5 (Né đòn cố định) |
+| **116** | `[ĐÃ GỘP] Chính xác: #` | `1` | **Opt 10** | Đã khai tử & di trú sang Opt 10 (Chính xác cố định) |
+| **117** | `[ĐÃ GỘP] MP tối đa: #` | `1` | **Opt 7** | Đã khai tử & di trú sang Opt 7 (MP tối đa cố định) |
+| **118** | `[ĐÃ GỘP] Kháng tất cả: #` | `1` | **Opt 20** | Đã khai tử & di trú sang Opt 20 (Kháng tất cả) |
+| **119** | `Mỗi 5 giây phục hồi MP: #` | `1` | — | Kích hoạt ngọc: Tự động hồi phục MP mỗi 5 giây |
+| **120** | `Mỗi 5 giây phục hồi HP: #` | `1` | — | Kích hoạt ngọc: Tự động hồi phục HP mỗi 5 giây |
+| **121** | `Kháng sát thương chí mạng: #%` | `1` | — | Kháng sát thương chí mạng % chuẩn (Áp trần tối đa 100%) |
+| **122** | `Yên tháo ngọc: #` | `8` | — | Lượng yên yêu cầu để tháo ngọc ra khỏi trang bị |
+| **123** | `Giá khảm: #` | `8` | — | Lượng xu yêu cầu để khảm ngọc vào trang bị |
+| **124** | `[ĐÃ GỘP] Giảm trừ sát thương: #` | `1` | **Opt 47** | Đã khai tử & di trú sang Opt 47 (Giảm trừ ST) |
+| **125** | `[ĐÃ GỘP] HP tối đa: #` | `1` | **Opt 6** | Đã khai tử & di trú sang Opt 6 (HP tối đa cố định) |
+| **126** | `[ĐÃ GỘP] Phản đòn: #` | `1` | **Opt 15** | Đã khai tử & di trú sang Opt 15 (Phản đòn cận chiến) |
+| **127** | `Kháng st hệ hoả: #%` | `1` | — | Giảm % sát thương nhận vào từ chiêu thức hệ Hỏa (% Kháng Hỏa) |
+| **128** | `HP tối đa: #%` | `0` | — | Dòng VIP: Nhân thêm % trên tổng HP sau khi đã trang bị đầy đủ đồ |
+| **129** | `Có thể giao dịch` | `0` | — | Cờ thuộc tính: Vật phẩm có thể giao dịch tự do qua trade / gian hàng |
+| **130** | `Kháng st hệ băng: #%` | `1` | — | Giảm % sát thương nhận vào từ chiêu thức hệ Băng (% Kháng Băng) |
+| **131** | `Kháng st hệ phong: #%` | `1` | — | Giảm % sát thương nhận vào từ chiêu thức hệ Phong (% Kháng Phong) |
+| **132** | `Số lượng: #` | `0` | — | Thuộc tính số lượng vật phẩm xếp chồng (Stack Count) |
+| **133** | `Giá mua lại: # xu` | `8` | — | Giá xu NPC thu mua lại vật phẩm |
+| **134** | `Kỹ năng Mưa Băng:- Gây sát thương 30%hp của mục tiêu- Phạm vi sát thương 2m-Tỷ lệ xh: #%` | `0` | — | Kỹ năng Mưa Băng: Gây sát thương 30% HP mục tiêu diện rộng 2m (Tỉ lệ #%) |
+| **135** | `Kỹ năng Vụ Nổ Băng Giá:- Phản sát thương 20%hp mục tiêu đánh vào-Tỷ lệ xh: #%` | `0` | — | Kỹ năng Vụ Nổ Băng Giá: Phản 20% HP mục tiêu khi bị đánh gần (Tỉ lệ #%) |
+| **136** | `Miễn giảm sát thương: #%- Tỷ lệ xuất hiện: 10%- Tồn tại: 5s- Thời gian chờ: 40s` | `0` | — | Bùa Hộ Thể: Tỉ lệ 10% kích hoạt tăng điểm kháng tất cả trong 5s (CD: 40s) |
+| **137** | `Không nhận exp` | `0` | — | Thuộc tính hãm cấp: Nhân vật mang đồ không nhận thêm EXP |
+| **138** | `Gia hạn thêm: # phút` | `0` | — | Gia hạn thời hạn sử dụng vật phẩm theo số phút |
+| **139** | `Gian hạn: # lần` | `0` | — | Số lần cho phép gia hạn vật phẩm có thời hạn |
+| **140** | `Sơ cấp` | `2` | — | Cấp độ bí kíp / kỹ năng: Sơ cấp |
+| **141** | `Trung cấp` | `2` | — | Cấp độ bí kíp / kỹ năng: Trung cấp |
+| **142** | `Cao cấp` | `2` | — | Cấp độ bí kíp / kỹ năng: Cao cấp |
+| **143** | `Siêu cấp` | `2` | — | Cấp độ bí kíp / kỹ năng: Siêu cấp |
+| **144** | `Sức mạnh: #` | `5` | — | Điểm tiềm năng Sức Mạnh bổ trợ |
+| **145** | `Nhanh nhẹn: #` | `5` | — | Điểm tiềm năng Nhanh Nhẹn bổ trợ |
+| **146** | `Sức khoẻ: #` | `5` | — | Điểm tiềm năng Sức Khỏe bổ trợ |
+| **147** | `Sinh Lực: #` | `5` | — | Điểm tiềm năng Sinh Lực bổ trợ |
+| **148** | `Hấp thụ sát thương: #` | `5` | — | Điểm hấp thụ sát thương cố định (Khiên giáp ảo) |
+| **149** | `Tỷ lệ xh hấp thu: #%` | `9` | — | Tỉ lệ % xuất hiện hiệu ứng khiên hấp thụ sát thương |
+| **150** | `Sinh lực: #` | `0` | — | Sinh lực bổ sung cố định |
+| **151** | `Kinh nghiệm: #%` | `9` | — | Tăng % điểm kinh nghiệm nâng cấp |
+| **152** | `Có thể nâng cấp` | `0` | — | Cờ thuộc tính: Trang bị có thể đem đi nâng cấp / tiến hóa |
+| **153** | `Chống đồ sát` | `0` | — | Cờ thuộc tính đặc biệt: Miễn nhiễm trạng thái PK đồ sát |
+| **154** | `Mỗi 10 giây phục hồi HP: #` | `1` | — | Tự động hồi phục HP mỗi 10 giây |
+| **155** | `Kỹ năng Mưa Băng:- Gây sát thương 30%hp của mục tiêu- Phạm vi sát thương 2m-Tỷ lệ xh: #%-Tác dụng lên người và quái` | `0` | — | Kỹ năng Mưa Băng (Bản mở rộng): Gây 30% HP lên cả Người chơi và Quái vật |
+| **156** | `Ngưỡng khai hóa: #` | `0` | — | Ngưỡng điểm yêu cầu để khai hóa trang bị |
+| **157** | `Cấp khai hóa: #` | `0` | — | Cấp độ khai hóa hiện tại của trang bị |
+| **158** | `Kỹ năng Hỏa Kích:  - Gây sát thương 50% HP của mục tiêu - Thiêu đốt mục tiêu trong 3 giây, trừ 10% HP mỗi giây  - Phạm vi sát thương 2m - Tỉ lệ xuất hiện #%` | `0` | — | Kỹ năng Hỏa Kích: Đòn đánh gây 50% HP mục tiêu, thiêu đốt 3s (mỗi s -10% HP) |
+| **159** | `Kỹ năng Cường Thân:  - Giảm 95% sát thương nhận vào. - Xuất hiện khi hp dưới 30%. - Tồn tại trong 3 giây. - Thời gian chờ 30 giây. - Tỉ lệ xuất hiện #%.` | `0` | — | Kỹ năng Cường Thân: Khi HP < 30%, kích hoạt giảm 95% sát thương nhận vào trong 3s (CD: 30s) |
+| **160** | `Kỹ năng Hộ Thể:  - Chuyển hoá 30% sát thương nhận vào thành HP. - Xuất hiện khi HP dưới 50%. - Tồn tại trong 3 giây. - Thời gian chờ 30 giây. - Tỉ lệ xuất hiện #%.` | `0` | — | Kỹ năng Hộ Thể: Khi HP < 50%, kích hoạt chuyển 30% sát thương nhận vào thành hồi HP trong 3s (CD: 30s) |
+| **161** | `Ảo hoá: #%` | `0` | — | Tỉ lệ % ảo hóa trang bị / thời trang danh hiệu |
 
 ---
 

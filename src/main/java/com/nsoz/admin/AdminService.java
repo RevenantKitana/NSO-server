@@ -202,53 +202,53 @@ public class AdminService {
                     item.options.add(option);
                     switch (item.template.type) {
                         case 0: {
-                            int[] optionId = {95, 96, 97};
+                            int[] optionId = {3, 2, 4};
                             item.options.add(new ItemOption(optionId[item.sys - 1], 5));
-                            item.options.add(new ItemOption(79, 5));
+                            item.options.add(new ItemOption(121, 5));
                             break;
                         }
                         case 1: {
-                            item.options.add(new ItemOption(87, NinjaUtils.nextInt(250, 400)));
+                            item.options.add(new ItemOption(0, NinjaUtils.nextInt(250, 400)));
                             int[] optionId = {88, 89, 90};
                             item.options.add(new ItemOption(optionId[item.sys - 1], NinjaUtils.nextInt(350, 600)));
                             break;
                         }
                         case 2:
-                            item.options.add(new ItemOption(80, NinjaUtils.nextInt(24, 28)));
-                            item.options.add(new ItemOption(91, NinjaUtils.nextInt(10, 14)));
+                            item.options.add(new ItemOption(47, NinjaUtils.nextInt(24, 28)));
+                            item.options.add(new ItemOption(15, NinjaUtils.nextInt(10, 14)));
                             break;
                         case 3:
-                            item.options.add(new ItemOption(81, 5));
-                            item.options.add(new ItemOption(79, 5));
+                            item.options.add(new ItemOption(20, 5));
+                            item.options.add(new ItemOption(121, 5));
                             break;
                         case 4:
-                            item.options.add(new ItemOption(86, NinjaUtils.nextInt(76, 124)));
-                            item.options.add(new ItemOption(94, NinjaUtils.nextInt(76, 124)));
+                            item.options.add(new ItemOption(10, NinjaUtils.nextInt(76, 124)));
+                            item.options.add(new ItemOption(8, NinjaUtils.nextInt(76, 124)));
                             break;
                         case 5: {
-                            int[] optionId = {95, 96, 97};
+                            int[] optionId = {3, 2, 4};
                             item.options.add(new ItemOption(optionId[item.sys - 1], 5));
-                            item.options.add(new ItemOption(92, NinjaUtils.nextInt(9, 11)));
+                            item.options.add(new ItemOption(14, NinjaUtils.nextInt(9, 11)));
                             break;
                         }
                         case 6:
-                            item.options.add(new ItemOption(83, NinjaUtils.nextInt(250, 450)));
-                            item.options.add(new ItemOption(82, NinjaUtils.nextInt(250, 450)));
+                            item.options.add(new ItemOption(7, NinjaUtils.nextInt(250, 450)));
+                            item.options.add(new ItemOption(6, NinjaUtils.nextInt(250, 450)));
                             break;
                         case 7: {
-                            int[] optionId = {95, 96, 97};
+                            int[] optionId = {3, 2, 4};
                             item.options.add(new ItemOption(optionId[item.sys - 1], 5));
                             optionId = new int[]{88, 89, 90};
                             item.options.add(new ItemOption(optionId[item.sys - 1], NinjaUtils.nextInt(350, 600)));
                             break;
                         }
                         case 8:
-                            item.options.add(new ItemOption(83, NinjaUtils.nextInt(250, 450)));
-                            item.options.add(new ItemOption(84, NinjaUtils.nextInt(76, 124)));
+                            item.options.add(new ItemOption(7, NinjaUtils.nextInt(250, 450)));
+                            item.options.add(new ItemOption(5, NinjaUtils.nextInt(76, 124)));
                             break;
                         case 9:
-                            item.options.add(new ItemOption(84, NinjaUtils.nextInt(76, 124)));
-                            item.options.add(new ItemOption(82, NinjaUtils.nextInt(250, 450)));
+                            item.options.add(new ItemOption(5, NinjaUtils.nextInt(76, 124)));
+                            item.options.add(new ItemOption(6, NinjaUtils.nextInt(250, 450)));
                             break;
                         default:
                             break;
@@ -640,53 +640,53 @@ public class AdminService {
                     itm.options.add(option);
                     switch (itm.template.type) {
                         case 0: {
-                            int[] optionId = {95, 96, 97};
+                            int[] optionId = {3, 2, 4};
                             itm.options.add(new ItemOption(optionId[itm.sys - 1], 5));
-                            itm.options.add(new ItemOption(79, 5));
+                            itm.options.add(new ItemOption(121, 5));
                             break;
                         }
                         case 1: {
-                            itm.options.add(new ItemOption(87, NinjaUtils.nextInt(250, 400)));
+                            itm.options.add(new ItemOption(0, NinjaUtils.nextInt(250, 400)));
                             int[] optionId = {88, 89, 90};
                             itm.options.add(new ItemOption(optionId[itm.sys - 1], NinjaUtils.nextInt(350, 600)));
                             break;
                         }
                         case 2:
-                            itm.options.add(new ItemOption(80, NinjaUtils.nextInt(24, 28)));
-                            itm.options.add(new ItemOption(91, NinjaUtils.nextInt(10, 14)));
+                            itm.options.add(new ItemOption(47, NinjaUtils.nextInt(24, 28)));
+                            itm.options.add(new ItemOption(15, NinjaUtils.nextInt(10, 14)));
                             break;
                         case 3:
-                            itm.options.add(new ItemOption(81, 5));
-                            itm.options.add(new ItemOption(79, 5));
+                            itm.options.add(new ItemOption(20, 5));
+                            itm.options.add(new ItemOption(121, 5));
                             break;
                         case 4:
-                            itm.options.add(new ItemOption(86, NinjaUtils.nextInt(76, 124)));
-                            itm.options.add(new ItemOption(94, NinjaUtils.nextInt(76, 124)));
+                            itm.options.add(new ItemOption(10, NinjaUtils.nextInt(76, 124)));
+                            itm.options.add(new ItemOption(8, NinjaUtils.nextInt(76, 124)));
                             break;
                         case 5: {
-                            int[] optionId = {95, 96, 97};
+                            int[] optionId = {3, 2, 4};
                             itm.options.add(new ItemOption(optionId[itm.sys - 1], 5));
-                            itm.options.add(new ItemOption(92, NinjaUtils.nextInt(9, 11)));
+                            itm.options.add(new ItemOption(14, NinjaUtils.nextInt(9, 11)));
                             break;
                         }
                         case 6:
-                            itm.options.add(new ItemOption(83, NinjaUtils.nextInt(250, 450)));
-                            itm.options.add(new ItemOption(82, NinjaUtils.nextInt(250, 450)));
+                            itm.options.add(new ItemOption(7, NinjaUtils.nextInt(250, 450)));
+                            itm.options.add(new ItemOption(6, NinjaUtils.nextInt(250, 450)));
                             break;
                         case 7: {
-                            int[] optionId = {95, 96, 97};
+                            int[] optionId = {3, 2, 4};
                             itm.options.add(new ItemOption(optionId[itm.sys - 1], 5));
                             optionId = new int[]{88, 89, 90};
                             itm.options.add(new ItemOption(optionId[itm.sys - 1], NinjaUtils.nextInt(350, 600)));
                             break;
                         }
                         case 8:
-                            itm.options.add(new ItemOption(83, NinjaUtils.nextInt(250, 450)));
-                            itm.options.add(new ItemOption(84, NinjaUtils.nextInt(76, 124)));
+                            itm.options.add(new ItemOption(7, NinjaUtils.nextInt(250, 450)));
+                            itm.options.add(new ItemOption(5, NinjaUtils.nextInt(76, 124)));
                             break;
                         case 9:
-                            itm.options.add(new ItemOption(84, NinjaUtils.nextInt(76, 124)));
-                            itm.options.add(new ItemOption(82, NinjaUtils.nextInt(250, 450)));
+                            itm.options.add(new ItemOption(5, NinjaUtils.nextInt(76, 124)));
+                            itm.options.add(new ItemOption(6, NinjaUtils.nextInt(250, 450)));
                             break;
                         default:
                             break;

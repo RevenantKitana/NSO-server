@@ -6,8 +6,9 @@ package com.nsoz.model.stat;
  */
 public enum StatType {
     // Sát thương
-    PHYSICAL_ATTACK,     // Ngoại công (Opt 0, 21, 23, 25, 8...)
-    MAGIC_ATTACK,        // Nội công (Opt 1, 22, 24, 26, 9...)
+    ATTACK,              // Tấn công / Vật công duy nhất (Opt 0 flat, Opt 8 percent)
+    PHYSICAL_ATTACK,     // Ngoại công (Legacy/Phụ trợ)
+    MAGIC_ATTACK,        // Nội công (Legacy/Phụ trợ)
     POTENTIAL_ATTACK,    // Tấn công theo tiềm năng (Opt 94)
     ELEMENT_FIRE_ATTACK, // Tấn công hệ Hỏa (Opt 88)
     ELEMENT_ICE_ATTACK,  // Tấn công hệ Băng (Opt 89)
