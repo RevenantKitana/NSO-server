@@ -35,6 +35,7 @@ public class OptionStandardizer {
         CANONICAL_MAP.put(73, 0); // Tấn công thú/pet (flat)
         CANONICAL_MAP.put(76, 0); // Tăng tấn công cho chủ (flat)
         CANONICAL_MAP.put(87, 0); // Tấn công trang bị thú / mặt nạ (flat)
+        CANONICAL_MAP.put(38, 0); // (+12) Tấn công cơ bản của vũ khí -> Tấn công duy nhất (Opt 0)
 
         // ==========================================
         // 1b. VẬT CÔNG DUY NHẤT (% ATTACK -> OPTION 8)

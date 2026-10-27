@@ -1600,187 +1600,41 @@ public class Item {
             this.sys = randomSys;
 
             // vũ khí 9x
-        } else if (id == 632) {
-            int[][] option_max = new int[11][2];
+        } else if (id >= 632 && id <= 637) {
+            int[][] option_max = new int[8][2];
             option_max[0][0] = 0;
-            option_max[0][1] = 500;
-            option_max[1][0] = 1;
-            option_max[1][1] = 500;
-            option_max[2][0] = 8;
-            option_max[2][1] = 150;
-            option_max[3][0] = 10;
-            option_max[3][1] = 60;
-            option_max[4][0] = 21;
-            option_max[4][1] = 1800;
-            option_max[5][0] = 19;
-            option_max[5][1] = 150;
-            option_max[6][0] = 27;
-            option_max[6][1] = 16;
-            option_max[7][0] = 37;
-            option_max[7][1] = 90;
-            option_max[8][0] = 38;
-            option_max[8][1] = 900;
-            option_max[9][0] = 39;
-            option_max[9][1] = 140;
-            option_max[10][0] = 55;
-            option_max[10][1] = 40;
+            option_max[0][1] = 3700; // Tấn công duy nhất (500 + 500 + 1800 + 900)
+            option_max[1][0] = 8;
+            option_max[1][1] = 150;  // Vật công duy nhất (%)
+            option_max[2][0] = 10;
+            option_max[2][1] = 60;   // Chính xác
+            option_max[3][0] = 7;
+            option_max[3][1] = 150;  // MP tối đa
+            option_max[4][0] = 27;
+            option_max[4][1] = 16;   // Chí mạng
+            option_max[5][0] = 37;
+            option_max[5][1] = 90;
+            option_max[6][0] = 39;
+            option_max[6][1] = 140;  // Bỏ qua né tránh
+            int sysOption = 54;
+            byte s = 3;
+            if (id == 632 || id == 633) {
+                sysOption = 55;
+                s = 1;
+            } else if (id == 634 || id == 635) {
+                sysOption = 56;
+                s = 2;
+            }
+            option_max[7][0] = sysOption;
+            option_max[7][1] = 40;
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
                 int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
-            this.sys = 1;
-        } else if (id == 633) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 500;
-            option_max[1][0] = 1;
-            option_max[1][1] = 500;
-            option_max[2][0] = 9;
-            option_max[2][1] = 150;
-            option_max[3][0] = 10;
-            option_max[3][1] = 60;
-            option_max[4][0] = 22;
-            option_max[4][1] = 1800;
-            option_max[5][0] = 19;
-            option_max[5][1] = 150;
-            option_max[6][0] = 27;
-            option_max[6][1] = 16;
-            option_max[7][0] = 37;
-            option_max[7][1] = 90;
-            option_max[8][0] = 38;
-            option_max[8][1] = 900;
-            option_max[9][0] = 39;
-            option_max[9][1] = 140;
-            option_max[10][0] = 55;
-            option_max[10][1] = 40;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 1;
-        } else if (id == 634) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 500;
-            option_max[1][0] = 1;
-            option_max[1][1] = 500;
-            option_max[2][0] = 8;
-            option_max[2][1] = 150;
-            option_max[3][0] = 10;
-            option_max[3][1] = 60;
-            option_max[4][0] = 23;
-            option_max[4][1] = 1800;
-            option_max[5][0] = 19;
-            option_max[5][1] = 150;
-            option_max[6][0] = 27;
-            option_max[6][1] = 16;
-            option_max[7][0] = 37;
-            option_max[7][1] = 90;
-            option_max[8][0] = 38;
-            option_max[8][1] = 900;
-            option_max[9][0] = 39;
-            option_max[9][1] = 140;
-            option_max[10][0] = 56;
-            option_max[10][1] = 40;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 2;
-        } else if (id == 635) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 500;
-            option_max[1][0] = 1;
-            option_max[1][1] = 500;
-            option_max[2][0] = 9;
-            option_max[2][1] = 150;
-            option_max[3][0] = 10;
-            option_max[3][1] = 60;
-            option_max[4][0] = 24;
-            option_max[4][1] = 1800;
-            option_max[5][0] = 19;
-            option_max[5][1] = 150;
-            option_max[6][0] = 27;
-            option_max[6][1] = 16;
-            option_max[7][0] = 37;
-            option_max[7][1] = 90;
-            option_max[8][0] = 38;
-            option_max[8][1] = 900;
-            option_max[9][0] = 39;
-            option_max[9][1] = 140;
-            option_max[10][0] = 56;
-            option_max[10][1] = 40;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 2;
-        } else if (id == 636) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 500;
-            option_max[1][0] = 1;
-            option_max[1][1] = 500;
-            option_max[2][0] = 8;
-            option_max[2][1] = 150;
-            option_max[3][0] = 10;
-            option_max[3][1] = 60;
-            option_max[4][0] = 25;
-            option_max[4][1] = 1800;
-            option_max[5][0] = 19;
-            option_max[5][1] = 150;
-            option_max[6][0] = 27;
-            option_max[6][1] = 16;
-            option_max[7][0] = 37;
-            option_max[7][1] = 90;
-            option_max[8][0] = 38;
-            option_max[8][1] = 900;
-            option_max[9][0] = 39;
-            option_max[9][1] = 140;
-            option_max[10][0] = 54;
-            option_max[10][1] = 40;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 3;
-        } else if (id == 637) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 500;
-            option_max[1][0] = 1;
-            option_max[1][1] = 500;
-            option_max[2][0] = 9;
-            option_max[2][1] = 150;
-            option_max[3][0] = 10;
-            option_max[3][1] = 60;
-            option_max[4][0] = 26;
-            option_max[4][1] = 1800;
-            option_max[5][0] = 19;
-            option_max[5][1] = 150;
-            option_max[6][0] = 27;
-            option_max[6][1] = 16;
-            option_max[7][0] = 37;
-            option_max[7][1] = 90;
-            option_max[8][0] = 38;
-            option_max[8][1] = 900;
-            option_max[9][0] = 39;
-            option_max[9][1] = 140;
-            option_max[10][0] = 54;
-            option_max[10][1] = 40;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 3;
+            this.sys = s;
         }
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     public void randomOptionItem10x(boolean isMaxOption) {
@@ -1878,187 +1732,41 @@ public class Item {
             this.sys = randomSys;
 
             // chỉ số vũ khí 100
-        } else if (id == ItemName.VU_KHI_KIEM_100) {
-            int[][] option_max = new int[11][2];
+        } else if (id >= ItemName.VU_KHI_KIEM_100 && id <= ItemName.VU_KHI_QUAT_100) {
+            int[][] option_max = new int[8][2];
             option_max[0][0] = 0;
-            option_max[0][1] = 600;
-            option_max[1][0] = 1;
-            option_max[1][1] = 600;
-            option_max[2][0] = 8;
-            option_max[2][1] = 170;
-            option_max[3][0] = 10;
-            option_max[3][1] = 70;
-            option_max[4][0] = 21;
-            option_max[4][1] = 2000;
-            option_max[5][0] = 19;
-            option_max[5][1] = 170;
-            option_max[6][0] = 27;
-            option_max[6][1] = 18;
-            option_max[7][0] = 37;
-            option_max[7][1] = 100;
-            option_max[8][0] = 38;
-            option_max[8][1] = 1000;
-            option_max[9][0] = 39;
-            option_max[9][1] = 150;
-            option_max[10][0] = 54;
-            option_max[10][1] = 60;
+            option_max[0][1] = 4200; // Tấn công duy nhất (600 + 600 + 2000 + 1000)
+            option_max[1][0] = 8;
+            option_max[1][1] = 170;  // Vật công duy nhất (%)
+            option_max[2][0] = 10;
+            option_max[2][1] = 70;   // Chính xác
+            option_max[3][0] = 7;
+            option_max[3][1] = 170;  // MP tối đa
+            option_max[4][0] = 27;
+            option_max[4][1] = 18;   // Chí mạng
+            option_max[5][0] = 37;
+            option_max[5][1] = 100;
+            option_max[6][0] = 39;
+            option_max[6][1] = 150;  // Bỏ qua né tránh
+            int sysOption = 56;
+            byte s = 3;
+            if (id == ItemName.VU_KHI_KIEM_100 || id == ItemName.VU_KHI_TIEU_100) {
+                sysOption = 54;
+                s = 1;
+            } else if (id == ItemName.VU_KHI_KUNAI_100 || id == ItemName.VU_KHI_CUNG_100) {
+                sysOption = 55;
+                s = 2;
+            }
+            option_max[7][0] = sysOption;
+            option_max[7][1] = 60;
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
                 int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
-            this.sys = 1;
-        } else if (id == ItemName.VU_KHI_TIEU_100) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 600;
-            option_max[1][0] = 1;
-            option_max[1][1] = 600;
-            option_max[2][0] = 9;
-            option_max[2][1] = 170;
-            option_max[3][0] = 10;
-            option_max[3][1] = 70;
-            option_max[4][0] = 22;
-            option_max[4][1] = 2000;
-            option_max[5][0] = 19;
-            option_max[5][1] = 170;
-            option_max[6][0] = 27;
-            option_max[6][1] = 18;
-            option_max[7][0] = 37;
-            option_max[7][1] = 100;
-            option_max[8][0] = 38;
-            option_max[8][1] = 1000;
-            option_max[9][0] = 39;
-            option_max[9][1] = 150;
-            option_max[10][0] = 54;
-            option_max[10][1] = 60;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 1;
-        } else if (id == ItemName.VU_KHI_KUNAI_100) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 600;
-            option_max[1][0] = 1;
-            option_max[1][1] = 600;
-            option_max[2][0] = 8;
-            option_max[2][1] = 170;
-            option_max[3][0] = 10;
-            option_max[3][1] = 70;
-            option_max[4][0] = 23;
-            option_max[4][1] = 2000;
-            option_max[5][0] = 19;
-            option_max[5][1] = 170;
-            option_max[6][0] = 27;
-            option_max[6][1] = 18;
-            option_max[7][0] = 37;
-            option_max[7][1] = 100;
-            option_max[8][0] = 38;
-            option_max[8][1] = 1000;
-            option_max[9][0] = 39;
-            option_max[9][1] = 150;
-            option_max[10][0] = 55;
-            option_max[10][1] = 60;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 2;
-        } else if (id == ItemName.VU_KHI_CUNG_100) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 600;
-            option_max[1][0] = 1;
-            option_max[1][1] = 600;
-            option_max[2][0] = 9;
-            option_max[2][1] = 170;
-            option_max[3][0] = 10;
-            option_max[3][1] = 70;
-            option_max[4][0] = 24;
-            option_max[4][1] = 2000;
-            option_max[5][0] = 19;
-            option_max[5][1] = 170;
-            option_max[6][0] = 27;
-            option_max[6][1] = 18;
-            option_max[7][0] = 37;
-            option_max[7][1] = 100;
-            option_max[8][0] = 38;
-            option_max[8][1] = 1000;
-            option_max[9][0] = 39;
-            option_max[9][1] = 150;
-            option_max[10][0] = 55;
-            option_max[10][1] = 60;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 2;
-        } else if (id == ItemName.VU_KHI_DAO_100) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 600;
-            option_max[1][0] = 1;
-            option_max[1][1] = 600;
-            option_max[2][0] = 8;
-            option_max[2][1] = 170;
-            option_max[3][0] = 10;
-            option_max[3][1] = 70;
-            option_max[4][0] = 25;
-            option_max[4][1] = 2000;
-            option_max[5][0] = 19;
-            option_max[5][1] = 170;
-            option_max[6][0] = 27;
-            option_max[6][1] = 18;
-            option_max[7][0] = 37;
-            option_max[7][1] = 100;
-            option_max[8][0] = 38;
-            option_max[8][1] = 1000;
-            option_max[9][0] = 39;
-            option_max[9][1] = 150;
-            option_max[10][0] = 56;
-            option_max[10][1] = 60;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 3;
-        } else if (id == ItemName.VU_KHI_QUAT_100) {
-            int[][] option_max = new int[11][2];
-            option_max[0][0] = 0;
-            option_max[0][1] = 600;
-            option_max[1][0] = 1;
-            option_max[1][1] = 600;
-            option_max[2][0] = 9;
-            option_max[2][1] = 170;
-            option_max[3][0] = 10;
-            option_max[3][1] = 70;
-            option_max[4][0] = 26;
-            option_max[4][1] = 2000;
-            option_max[5][0] = 19;
-            option_max[5][1] = 170;
-            option_max[6][0] = 27;
-            option_max[6][1] = 18;
-            option_max[7][0] = 37;
-            option_max[7][1] = 100;
-            option_max[8][0] = 38;
-            option_max[8][1] = 1000;
-            option_max[9][0] = 39;
-            option_max[9][1] = 150;
-            option_max[10][0] = 56;
-            option_max[10][1] = 60;
-            int[][] option_min = NinjaUtils.getOptionShop(option_max);
-            for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
-                this.options.add(new ItemOption(option_max[i][0], param));
-            }
-            this.sys = 3;
+            this.sys = s;
         }
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
     }
 
     public boolean isSaveHistory() {

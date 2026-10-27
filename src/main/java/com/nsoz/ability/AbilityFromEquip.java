@@ -132,14 +132,7 @@ public class AbilityFromEquip implements AbilityStrategy {
      * Kiểm tra điều kiện mở dòng ẩn theo cấp cường hóa trang bị.
      */
     private boolean isOptionActive(Equip equip, ItemOption o) {
-        int type = o.optionTemplate.type;
-        if (type >= 3 && type <= 7) {
-            return (type == 3 && equip.upgrade >= 4)
-                    || (type == 4 && equip.upgrade >= 8)
-                    || (type == 5 && equip.upgrade >= 12)
-                    || (type == 6 && equip.upgrade >= 14)
-                    || (type == 7 && equip.upgrade >= 16);
-        }
+        // Mở khóa toàn bộ chỉ số kích ẩn và kích cấp độ (mọi dòng luôn có hiệu lực 100%)
         return true;
     }
 
