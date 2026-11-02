@@ -112,11 +112,11 @@ class MockClient {
                 this.sendSelectChar();
             }
         } else if (cmd === -30) {
-            // SUB_COMMAND: ME_LOAD_ALL (-107)
+            // SUB_COMMAND: ME_LOAD_ALL (-127 / -107)
             const subCmd = payload.readInt8(0);
-            if (subCmd === -107) {
+            if (subCmd === -127 || subCmd === -107) {
                 this.receivedLoadAll = true;
-                console.log(`[${this.clientName}] Received ME_LOAD_ALL (-107)! Character state fully synchronized.`);
+                console.log(`[${this.clientName}] Received ME_LOAD_ALL (${subCmd})! Character state fully synchronized.`);
                 if (this.receivedMapInfo && onReady) onReady();
             }
         } else if (cmd === -18) {

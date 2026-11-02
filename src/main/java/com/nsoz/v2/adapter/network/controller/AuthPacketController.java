@@ -28,7 +28,10 @@ public class AuthPacketController {
     public static final byte CMD_NOT_MAP = -28;
     public static final byte CMD_NOT_LOGIN = -29;
     public static final byte CMD_SUB_COMMAND = -30;
-    public static final byte CMD_ME_LOAD_ALL = -107;
+    public static final byte CMD_ME_LOAD_ALL = -127;
+    public static final byte CMD_ME_LOAD_ACTIVE = -106;
+    public static final byte CMD_OPEN_UI_BOX = 31;
+    public static final byte CMD_BAG_SORT = -107;
     public static final byte CMD_LOGIN = -127;
     public static final byte CMD_SELECT_PLAYER = -126;
     public static final byte CMD_CLIENT_INFO = -125;
@@ -184,8 +187,10 @@ public class AuthPacketController {
         session.setActiveCharacter(character);
         session.setInGame(true);
 
-        // Send Player Profile & Inventory (CMD -30, subCommand -107 ME_LOAD_ALL)
+        // Handshake packet sequence matching J2ME client & legacy server:
+        sendDataBox(session);
         sendLoadAll(session);
+        sendMeLoadActive(session);
 
         // Place Player in Map Zone via WorldManager
         com.nsoz.v2.domain.world.WorldManager.getInstance().joinZone(
@@ -194,6 +199,37 @@ public class AuthPacketController {
         logger.info("Session [{}] successfully entered world as [{}] (Level {}, Map {}, Zone {})",
                 session.getSessionId(), character.getName(), character.getState().getLevel(),
                 character.getSpatial().getMapId(), character.getSpatial().getZoneId());
+    }
+
+    public void sendDataBox(V2Session session) {
+        try {
+            V2Message ms = new V2Message(CMD_OPEN_UI_BOX);
+            DataOutputStream ds = ms.writer();
+            ds.writeInt(0); // coin in box
+            ds.writeByte(30); // numberCellBox
+            for (int i = 0; i < 30; i++) {
+                ds.writeShort(-1);
+            }
+            ds.flush();
+            session.send(ms);
+            logger.info("Sent OPEN_UI_BOX (31) to session [{}]", session.getSessionId());
+        } catch (IOException e) {
+            logger.error("Error sending OPEN_UI_BOX to session [{}]", session.getSessionId(), e);
+        }
+    }
+
+    public void sendMeLoadActive(V2Session session) {
+        try {
+            V2Message ms = new V2Message(CMD_NOT_MAP);
+            DataOutputStream ds = ms.writer();
+            ds.writeByte(CMD_ME_LOAD_ACTIVE);
+            ds.writeByte(0); // typeProtect = 0
+            ds.flush();
+            session.send(ms);
+            logger.info("Sent ME_LOAD_ACTIVE (-28, -106) to session [{}]", session.getSessionId());
+        } catch (IOException e) {
+            logger.error("Error sending ME_LOAD_ACTIVE to session [{}]", session.getSessionId(), e);
+        }
     }
 
     public void sendLoadAll(V2Session session) {
@@ -251,8 +287,7 @@ public class AuthPacketController {
                 }
             }
 
-            // Equipment (16 slots)
-            ds.writeByte(16);
+            // Equipment (16 slots - wire format is 16 sequential slots without count byte)
             for (int i = 0; i < 16; i++) {
                 com.nsoz.v2.domain.item.ItemInstance eq = c.getInventory().getEquipment(i);
                 if (eq != null) {
@@ -264,22 +299,28 @@ public class AuthPacketController {
                 }
             }
 
-            // Box
-            int boxSize = c.getInventory().getBoxCapacity();
-            ds.writeByte(boxSize);
-            for (int i = 0; i < boxSize; i++) {
+            // Client trailer expected by cf.class (lines 2643-2733):
+            ds.writeBoolean(true); // isHuman
+            ds.writeBoolean(false); // isNhanBan
+            ds.writeShort(c.getHead());
+            short weaponId = (short) (c.getInventory().getEquippedWeapon() != null ? c.getInventory().getEquippedWeapon().getTemplateId() : -1);
+            ds.writeShort(weaponId);
+            ds.writeShort(-1); // body
+            ds.writeShort(-1); // leg
+
+            // thoiTrang (10 slots)
+            for (int i = 0; i < 10; i++) {
                 ds.writeShort(-1);
             }
 
-            // Mount (5 slots)
-            ds.writeByte(5);
-            for (int i = 0; i < 5; i++) {
+            // fashion (16 slots)
+            for (int i = 0; i < 16; i++) {
                 ds.writeShort(-1);
             }
 
             ds.flush();
             session.send(ms);
-            logger.info("Sent ME_LOAD_ALL (-107) to session [{}]", session.getSessionId());
+            logger.info("Sent ME_LOAD_ALL (-127) to session [{}]", session.getSessionId());
         } catch (IOException e) {
             logger.error("Error sending ME_LOAD_ALL to session [{}]", session.getSessionId(), e);
         }

@@ -88,9 +88,9 @@ function processPacket(cmd, payload) {
             sendSelectChar("admin_v2");
         }
     } else if (cmd === -30) {
-        // Sub-command: ME_LOAD_ALL (-107) or PLAYER_LOAD_VUKHI (-117)
+        // Sub-command: ME_LOAD_ALL (-127 / -107) or PLAYER_LOAD_VUKHI (-117)
         const subCmd = payload.readInt8(0);
-        if (subCmd === -107) {
+        if (subCmd === -127 || subCmd === -107) {
             console.log('[TestClient] Received ME_LOAD_ALL! Parsing character & inventory...');
             parseLoadAll(payload.subarray(1));
         } else if (subCmd === -117) {
