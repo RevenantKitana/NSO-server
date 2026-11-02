@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,7 @@ public class AuthPacketController {
     public static final byte CMD_ME_LOAD_ACTIVE = -106;
     public static final byte CMD_OPEN_UI_BOX = 31;
     public static final byte CMD_BAG_SORT = -107;
+    public static final byte CMD_REQUEST_MAPTEMPLATE = -109;
     public static final byte CMD_LOGIN = -127;
     public static final byte CMD_SELECT_PLAYER = -126;
     public static final byte CMD_CLIENT_INFO = -125;
@@ -106,13 +109,49 @@ public class AuthPacketController {
                 case CMD_SELECT_PLAYER:
                     handleSelectPlayer(session, reader);
                     break;
+                case CMD_REQUEST_MAPTEMPLATE:
+                    handleRequestMapTemplate(session, reader);
+                    break;
                 default:
-                    logger.debug("Unhandled subCommand [{}] under CMD_NOT_MAP for session [{}]", subCommand, session.getSessionId());
+                    logger.info("Received unhandled subCommand [{}] under CMD_NOT_MAP for session [{}]", subCommand, session.getSessionId());
                     break;
             }
         } catch (IOException e) {
             logger.error("Error processing CMD_NOT_MAP for session [{}]", session.getSessionId(), e);
         }
+    }
+
+    private void handleRequestMapTemplate(V2Session session, DataInputStream reader) throws IOException {
+        int mapId = reader.readUnsignedByte();
+        logger.info("Session [{}] requested map template for mapId [{}]", session.getSessionId(), mapId);
+
+        byte[] mapData = loadMapData(mapId);
+        if (mapData != null) {
+            V2Message ms = new V2Message(CMD_NOT_MAP);
+            DataOutputStream ds = ms.writer();
+            ds.writeByte(CMD_REQUEST_MAPTEMPLATE);
+            ds.write(mapData);
+            ds.flush();
+            session.send(ms);
+            logger.info("Sent map template [{}] ({} bytes) to session [{}]", mapId, mapData.length, session.getSessionId());
+        } else {
+            logger.error("Map data file not found for mapId [{}]", mapId);
+        }
+    }
+
+    private byte[] loadMapData(int mapId) {
+        try {
+            File file = new File("Data/Map/" + mapId);
+            if (!file.exists()) {
+                file = new File("/home/ubuntu/nso-server/Data/Map/" + mapId);
+            }
+            if (file.exists()) {
+                return Files.readAllBytes(file.toPath());
+            }
+        } catch (Exception e) {
+            logger.error("Error reading map file for mapId [{}]", mapId, e);
+        }
+        return null;
     }
 
     private void handleClientInfo(V2Session session, DataInputStream reader) throws IOException {

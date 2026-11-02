@@ -104,12 +104,16 @@ class MockClient {
 
     processPacket(cmd, payload, onReady) {
         if (cmd === -28) {
-            // NOT_MAP response (e.g. Char list)
+            // NOT_MAP response (e.g. Char list, Map template)
             const subCmd = payload.readInt8(0);
             if (subCmd === -126) {
                 const count = payload.readUInt8(1);
                 console.log(`[${this.clientName}] Received character list (count=${count}). Selecting "${this.charName}"...`);
                 this.sendSelectChar();
+            } else if (subCmd === -109) {
+                const tmw = payload.readUInt8(1);
+                const tmh = payload.readUInt8(2);
+                console.log(`[${this.clientName}] >>> RECEIVED MAP TEMPLATE (-109)! tmw=${tmw}, tmh=${tmh}, totalBytes=${payload.length} <<<`);
             }
         } else if (cmd === -30) {
             // SUB_COMMAND: ME_LOAD_ALL (-127 / -107)
@@ -125,6 +129,14 @@ class MockClient {
             const zoneId = payload.readUInt8(5);
             this.receivedMapInfo = true;
             console.log(`[${this.clientName}] Received MAP_INFO (-18)! Entered Map ${mapId}, Zone ${zoneId}`);
+
+            // Simulate J2ME client requesting map template if uncached
+            const reqMap = Buffer.alloc(2);
+            reqMap.writeInt8(-109, 0); // CMD_REQUEST_MAPTEMPLATE
+            reqMap.writeUInt8(mapId, 1);
+            this.sendEncryptedPacket(-28, reqMap);
+            console.log(`[${this.clientName}] Sent REQUEST_MAPTEMPLATE (-109) for Map ${mapId}`);
+
             if (this.receivedLoadAll && onReady) onReady();
         } else if (cmd === 3) {
             // PLAYER_ADD
