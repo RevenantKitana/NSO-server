@@ -33,3 +33,4 @@ public final class ItemStatCalculator {
         return (int) Math.round(baseValue * mult);
     }
 }
+

@@ -52,3 +52,4 @@ public class ItemInstance {
         return ItemStatCalculator.applyUpgradeBonus(tierAttack, upgradeLevel);
     }
 }
+
