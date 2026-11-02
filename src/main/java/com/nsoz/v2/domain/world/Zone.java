@@ -24,12 +24,20 @@ public class Zone {
     public static final byte CMD_PLAYER_REMOVE = 2;
     public static final byte CMD_PLAYER_ADD = 3;
     public static final byte CMD_MAP_INFO = -18;
+    public static final byte CMD_NPC_HP = -1;
+    public static final byte CMD_NPC_DIE = -4;
+    public static final byte CMD_NPC_MISS = 51;
+    public static final byte CMD_PLAYER_ATTACK_NPC = 60;
+    public static final byte CMD_NPC_IS_FIRE = 89;
+    public static final byte CMD_NPC_IS_ICE = 90;
+    public static final byte CMD_NPC_IS_WIND = 91;
 
     @Getter
     private final int id;
     @Getter
     private final GameMap map;
     private final Map<Long, V2Session> players = new ConcurrentHashMap<>();
+    private final Map<Integer, com.nsoz.v2.domain.mob.Mob> monsters = new ConcurrentHashMap<>();
 
     @Getter
     private volatile boolean hibernated = true;
@@ -38,6 +46,15 @@ public class Zone {
         this.id = id;
         this.map = map;
         this.hibernated = true; // Starts in sleep mode
+        initMonsters();
+    }
+
+    private void initMonsters() {
+        if (map.getId() == 22) { // Làng Tone: 3 starter snails
+            monsters.put(0, new com.nsoz.v2.domain.mob.Mob(0, 0, "Ốc sên", 1, 40, (short) 1908, (short) 264));
+            monsters.put(1, new com.nsoz.v2.domain.mob.Mob(1, 0, "Ốc sên", 1, 40, (short) 1956, (short) 240));
+            monsters.put(2, new com.nsoz.v2.domain.mob.Mob(2, 0, "Ốc sên", 1, 40, (short) 1980, (short) 240));
+        }
     }
 
     public synchronized void join(V2Session session) {
@@ -147,8 +164,25 @@ public class Zone {
                 ds.writeShort(w.getMaxY());
             }
 
-            // Monsters count (0 for initial pure slice)
-            ds.writeByte(0);
+            // Monsters count and metadata
+            ds.writeByte(monsters.size());
+            for (com.nsoz.v2.domain.mob.Mob mob : monsters.values()) {
+                ds.writeBoolean(mob.getStatusEffects().isStunned()); // isDisable
+                ds.writeBoolean(mob.getStatusEffects().isFrozen());  // isDontMove
+                ds.writeBoolean(mob.getStatusEffects().isBurned());  // isFire
+                ds.writeBoolean(mob.getStatusEffects().isFrozen());  // isIce
+                ds.writeBoolean(mob.getStatusEffects().isStunned()); // isWind
+                ds.writeByte(mob.getTemplateId());
+                ds.writeByte(0); // sys
+                ds.writeInt(mob.getHp());
+                ds.writeByte(mob.getLevel());
+                ds.writeInt(mob.getMaxHp());
+                ds.writeShort(mob.getX());
+                ds.writeShort(mob.getY());
+                ds.writeByte(0); // status
+                ds.writeByte(0); // levelBoss
+                ds.writeBoolean(false); // isBoss
+            }
 
             // Bu Nhin count
             ds.writeByte(0);
@@ -236,6 +270,147 @@ public class Zone {
             logger.error("Error building PLAYER_REMOVE for charId [{}]", charId, e);
         }
         return ms;
+    }
+
+    public com.nsoz.v2.domain.mob.Mob getMob(int mobId) {
+        return monsters.get(mobId);
+    }
+
+    public synchronized void handlePlayerAttackMob(V2Session session, int targetMobId, byte skillId) {
+        PlayerCharacter character = session.getActiveCharacter();
+        com.nsoz.v2.domain.mob.Mob mob = monsters.get(targetMobId);
+        if (character == null || mob == null || mob.isDead()) {
+            return;
+        }
+
+        // 1. Broadcast attack animation (CMD 60) to all players in the zone
+        V2Message animMsg = new V2Message(CMD_PLAYER_ATTACK_NPC);
+        try {
+            DataOutputStream ds = animMsg.writer();
+            ds.writeInt(character.getId());
+            ds.writeByte(skillId);
+            ds.writeByte(mob.getId());
+            ds.flush();
+            broadcast(animMsg, -1);
+        } catch (IOException ignored) {}
+
+        // 2. Prepare combat snapshots
+        com.nsoz.v2.domain.combat.engine.CharacterStatsSnapshot attackerStats =
+                com.nsoz.v2.domain.combat.engine.CharacterStatsSnapshot.createFromCharacter(character);
+
+        int mobDef = 5;
+        int mobEva = 10;
+        int mobCritRes = 0;
+
+        // Tri-State Effect Check: If mob is Frozen, halve its Evasion & CritRes
+        if (mob.getStatusEffects().isFrozen()) {
+            mobEva = mobEva / 2;
+            mobCritRes = mobCritRes / 2;
+        }
+
+        // 3. Resolve combat with Single-Roll Resolution (Hyperbolic Curve)
+        double effectProcChance = 0.35; // 35% chance to proc elemental status effect
+        com.nsoz.v2.domain.combat.engine.SingleRollCombatResolver.CombatOutcome outcome =
+                com.nsoz.v2.domain.combat.engine.SingleRollCombatResolver.resolve(
+                        attackerStats.accuracy(), mobEva, attackerStats.criticalRate(), mobCritRes, effectProcChance);
+
+        // 4. Handle MISS
+        if (outcome.isMiss()) {
+            V2Message missMsg = new V2Message(CMD_NPC_MISS);
+            try {
+                DataOutputStream ds = missMsg.writer();
+                ds.writeByte(mob.getId());
+                ds.writeInt(mob.getHp());
+                ds.flush();
+                broadcast(missMsg, -1);
+            } catch (IOException ignored) {}
+            return;
+        }
+
+        // 5. Handle HIT: Calculate damage with Multiplicative DR and Burn Amplification
+        boolean isBurned = mob.getStatusEffects().isBurned();
+        int damage = com.nsoz.v2.domain.combat.engine.DamageCalculator.calculateHitDamage(
+                attackerStats, mobDef, 0, 1.0, 0, isBurned, outcome);
+
+        // Apply elemental effect if triggered
+        if (outcome.hasStatusEffect()) {
+            applyElementalEffectToMob(mob, character.getCombat().getClazz());
+        }
+
+        mob.takeDamage(damage);
+
+        // 6. Check Mob Death or HP Update
+        if (mob.isDead()) {
+            V2Message dieMsg = new V2Message(CMD_NPC_DIE);
+            try {
+                DataOutputStream ds = dieMsg.writer();
+                ds.writeByte(mob.getId());
+                ds.writeInt(damage);
+                ds.writeBoolean(outcome.isCrit());
+                ds.flush();
+                broadcast(dieMsg, -1);
+            } catch (IOException ignored) {}
+
+            // Reward EXP to player
+            character.getState().addExp(50);
+            logger.info("Player [{}] killed Mob [{}] (Dealt {} dmg, Crit={}). EXP rewarded +50",
+                    character.getName(), mob.getName(), damage, outcome.isCrit());
+
+            // Schedule respawn after 3 seconds
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                    mob.respawn();
+                } catch (InterruptedException ignored) {}
+            }).start();
+        } else {
+            V2Message hpMsg = new V2Message(CMD_NPC_HP);
+            try {
+                DataOutputStream ds = hpMsg.writer();
+                ds.writeByte(mob.getId());
+                ds.writeInt(mob.getHp());
+                ds.writeInt(damage);
+                ds.writeBoolean(outcome.isCrit());
+                ds.writeByte(0); // levelBoss
+                ds.flush();
+                broadcast(hpMsg, -1);
+            } catch (IOException ignored) {}
+
+            logger.info("Player [{}] hit Mob [{}] for {} dmg (Crit={}, HP remaining: {}/{})",
+                    character.getName(), mob.getName(), damage, outcome.isCrit(), mob.getHp(), mob.getMaxHp());
+        }
+    }
+
+    private void applyElementalEffectToMob(com.nsoz.v2.domain.mob.Mob mob, byte clazz) {
+        com.nsoz.v2.domain.combat.effect.StatusEffectType type;
+        if (clazz == 6) {
+            type = com.nsoz.v2.domain.combat.effect.StatusEffectType.FREEZE;
+        } else if (clazz == 3 || clazz == 4 || clazz == 5) {
+            type = com.nsoz.v2.domain.combat.effect.StatusEffectType.STUN;
+        } else {
+            type = com.nsoz.v2.domain.combat.effect.StatusEffectType.BURN;
+        }
+
+        mob.getStatusEffects().applyEffect(type, 3000); // 3 seconds duration
+
+        byte cmd;
+        if (type == com.nsoz.v2.domain.combat.effect.StatusEffectType.BURN) {
+            cmd = CMD_NPC_IS_FIRE;
+        } else if (type == com.nsoz.v2.domain.combat.effect.StatusEffectType.FREEZE) {
+            cmd = CMD_NPC_IS_ICE;
+        } else {
+            cmd = CMD_NPC_IS_WIND;
+        }
+
+        V2Message effMsg = new V2Message(cmd);
+        try {
+            DataOutputStream ds = effMsg.writer();
+            ds.writeByte(mob.getId());
+            ds.writeBoolean(true);
+            ds.flush();
+            broadcast(effMsg, -1);
+            logger.info("Applied Elemental Effect [{}] to Mob [{}]", type, mob.getId());
+        } catch (IOException ignored) {}
     }
 }
 

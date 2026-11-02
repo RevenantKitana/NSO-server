@@ -175,6 +175,12 @@ public class AuthPacketController {
         }
 
         PlayerCharacter character = selected.get();
+
+        // Load Inventory Items from DB
+        List<com.nsoz.v2.domain.item.ItemInstance> items =
+                com.nsoz.v2.repository.ItemRepository.getInstance().findByCharacterId(character.getId());
+        character.getInventory().loadItems(items);
+
         session.setActiveCharacter(character);
         session.setInGame(true);
 
@@ -231,13 +237,31 @@ public class AuthPacketController {
             int bagSize = c.getInventory().getBagCapacity();
             ds.writeByte(bagSize);
             for (int i = 0; i < bagSize; i++) {
-                ds.writeShort(-1); // Empty slot
+                com.nsoz.v2.domain.item.ItemInstance it = c.getInventory().getBagItem(i);
+                if (it != null) {
+                    ds.writeShort(it.getTemplateId());
+                    ds.writeBoolean(it.isBound());
+                    if (it.isWeapon()) {
+                        ds.writeByte(it.getUpgradeLevel());
+                    }
+                    ds.writeBoolean(it.getExpiresAt() > 0);
+                    ds.writeShort(it.getQuantity());
+                } else {
+                    ds.writeShort(-1); // Empty slot
+                }
             }
 
             // Equipment (16 slots)
             ds.writeByte(16);
             for (int i = 0; i < 16; i++) {
-                ds.writeShort(-1);
+                com.nsoz.v2.domain.item.ItemInstance eq = c.getInventory().getEquipment(i);
+                if (eq != null) {
+                    ds.writeShort(eq.getTemplateId());
+                    ds.writeByte(eq.getUpgradeLevel());
+                    ds.writeByte(eq.getSys());
+                } else {
+                    ds.writeShort(-1);
+                }
             }
 
             // Box

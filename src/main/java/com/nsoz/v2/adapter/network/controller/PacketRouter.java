@@ -46,10 +46,21 @@ public class PacketRouter {
                 movementController.handlePacket(session, msg);
                 break;
 
+            case CombatPacketController.CMD_PLAYER_ATTACK_NPC:
+            case CombatPacketController.CMD_PLAYER_ATTACK_PLAYER:
+                combatController.handlePacket(session, msg);
+                break;
+
+            case InventoryPacketController.CMD_ITEM_USE:
+            case InventoryPacketController.CMD_ITEM_BODY_TO_BAG:
+            case InventoryPacketController.CMD_UPGRADE:
+            case InventoryPacketController.CMD_REQUEST_ITEM_INFO:
+                inventoryController.handlePacket(session, msg);
+                break;
+
             default:
                 logger.debug("Received unhandled opcode [{}] from session [{}]", cmd, session.getSessionId());
                 break;
         }
     }
 }
-
