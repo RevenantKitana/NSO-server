@@ -97,6 +97,24 @@ set "ARG1=%~1"
 if /i "%ARG1%"=="restore" goto :DO_RESTORE
 if /i "%ARG1%"=="bak" goto :DO_RESTORE
 
+if /i "%ARG1%"=="rework" (
+    set "TARGET_IP=%VM_IP%"
+    set "TARGET_PORT=14445"
+    goto :DO_PATCH
+)
+
+if /i "%ARG1%"=="v2" (
+    set "TARGET_IP=%VM_IP%"
+    set "TARGET_PORT=14445"
+    goto :DO_PATCH
+)
+
+if /i "%ARG1%"=="legacy" (
+    set "TARGET_IP=%VM_IP%"
+    set "TARGET_PORT=14444"
+    goto :DO_PATCH
+)
+
 if /i "%ARG1%"=="vm" (
     set "TARGET_IP=%VM_IP%"
     set "TARGET_PORT=%VM_PORT%"
@@ -105,7 +123,7 @@ if /i "%ARG1%"=="vm" (
 
 if /i "%ARG1%"=="local" (
     set "TARGET_IP=127.0.0.1"
-    set "TARGET_PORT=%VM_PORT%"
+    set "TARGET_PORT=14445"
     goto :DO_PATCH
 )
 
@@ -120,26 +138,32 @@ echo ============================================================
 echo         CAU HINH IP / PORT CHO CLIENT JAR (NSO)
 echo ============================================================
 echo.
-echo   [1] Ket noi Cloud VM     (%VM_IP% : %VM_PORT%)
-echo   [2] Ket noi Localhost    (127.0.0.1       : %VM_PORT%)
-echo   [3] Nhap IP va Port tuy chinh (Custom IP/Port)
-echo   [4] Khoi phuc Client goc tu file Backup (.bak)
+echo   [1] Ket noi Cloud VM - Rework V2 (%VM_IP% : 14445)
+echo   [2] Ket noi Cloud VM - Legacy    (%VM_IP% : 14444)
+echo   [3] Ket noi Localhost Rework     (127.0.0.1       : 14445)
+echo   [4] Nhap IP va Port tuy chinh (Custom IP/Port)
+echo   [5] Khoi phuc Client goc tu Backup doc lap (.original_legacy_14444.bak)
 echo   [0] Thoat
 echo.
 echo ============================================================
-set /p "CHOICE=>> Nhap lua chon cua ban [1-4, 0]: "
+set /p "CHOICE=>> Nhap lua chon cua ban [1-5, 0]: "
 
 if "%CHOICE%"=="1" (
     set "TARGET_IP=%VM_IP%"
-    set "TARGET_PORT=%VM_PORT%"
+    set "TARGET_PORT=14445"
     goto :DO_PATCH
 )
 if "%CHOICE%"=="2" (
-    set "TARGET_IP=127.0.0.1"
-    set "TARGET_PORT=%VM_PORT%"
+    set "TARGET_IP=%VM_IP%"
+    set "TARGET_PORT=14444"
     goto :DO_PATCH
 )
 if "%CHOICE%"=="3" (
+    set "TARGET_IP=127.0.0.1"
+    set "TARGET_PORT=14445"
+    goto :DO_PATCH
+)
+if "%CHOICE%"=="4" (
     echo.
     set /p "TARGET_IP=>> Nhap IP hoac Domain Server: "
     if "!TARGET_IP!"=="" (
@@ -147,11 +171,11 @@ if "%CHOICE%"=="3" (
         timeout /t 2 >nul
         goto :MENU
     )
-    set /p "TARGET_PORT=>> Nhap Port Server (Mac dinh %VM_PORT%): "
-    if "!TARGET_PORT!"=="" set "TARGET_PORT=%VM_PORT%"
+    set /p "TARGET_PORT=>> Nhap Port Server (Mac dinh 14445): "
+    if "!TARGET_PORT!"=="" set "TARGET_PORT=14445"
     goto :DO_PATCH
 )
-if "%CHOICE%"=="4" (
+if "%CHOICE%"=="5" (
     goto :DO_RESTORE
 )
 if "%CHOICE%"=="0" (
@@ -192,12 +216,20 @@ exit /b %PATCH_EXIT%
 
 :DO_RESTORE
 echo.
-echo [*] Dang khoi phuc file Client goc tu backup (NSO.jar.bak)...
+echo [*] Dang khoi phuc file Client goc tu backup doc lap...
 set "RESTORED=0"
 
-if exist "%CLIENT_DIR%\NSO.jar.bak" (
+if exist "%CLIENT_DIR%\NSO.jar.original_legacy_14444.bak" (
+    copy /y "%CLIENT_DIR%\NSO.jar.original_legacy_14444.bak" "%CLIENT_DIR%\NSO.jar" >nul
+    echo    [+] Da khoi phuc tu NSO.jar.original_legacy_14444.bak: NSO.jar (Legacy 14444)
+    if exist "%ROOT_DIR%\web\public" (
+        copy /y "%CLIENT_DIR%\NSO.jar" "%ROOT_DIR%\web\public\NSO.jar" >nul
+        echo    [+] Da dong bo sang Web: web\public\NSO.jar
+    )
+    set /a "RESTORED+=1"
+) else if exist "%CLIENT_DIR%\NSO.jar.bak" (
     copy /y "%CLIENT_DIR%\NSO.jar.bak" "%CLIENT_DIR%\NSO.jar" >nul
-    echo    [+] Da khoi phuc: NSO.jar
+    echo    [+] Da khoi phuc tu NSO.jar.bak: NSO.jar
     if exist "%ROOT_DIR%\web\public" (
         copy /y "%CLIENT_DIR%\NSO.jar" "%ROOT_DIR%\web\public\NSO.jar" >nul
         echo    [+] Da dong bo sang Web: web\public\NSO.jar
