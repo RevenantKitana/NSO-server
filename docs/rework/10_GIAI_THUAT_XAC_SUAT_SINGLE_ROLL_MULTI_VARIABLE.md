@@ -69,6 +69,8 @@ Dựa trên hàm tiệm cận bão hòa (Soft-Cap Curve) để không bao giờ 
 
 $$\text{NetCrit} = \max(0,\; \text{AttackerFatal} - \text{DefenderCritRes})$$
 
+*(Trong đó $\text{AttackerFatal}$ là ID 5: Chí Mạng; $\text{DefenderCritRes}$ là ID 31: Kháng Chí Mạng [MỚI]).*
+
 $$P_{\text{crit}} = \text{BaseCrit} + (\text{MaxCrit} - \text{BaseCrit}) \times \frac{\text{NetCrit}}{\text{NetCrit} + C}$$
 
 *(Với $\text{BaseCrit} = 0.05$, $\text{MaxCrit} = 0.70$, $C = 1200.0$).*
@@ -76,6 +78,14 @@ $$P_{\text{crit}} = \text{BaseCrit} + (\text{MaxCrit} - \text{BaseCrit}) \times 
 $$T_{\text{crit}} = T_{\text{miss}} + P_{\text{crit}}$$
 
 > **Bảo toàn Toán học:** Vì $T_{\text{miss}} \le 0.95$ và $P_{\text{crit}}$ được neo trần tự nhiên, không gian đòn đánh luôn tuân thủ tiên đề xác suất Kolmogorov: $P(\text{Miss}) + P(\text{Crit}) + P(\text{Normal}) = 1.0$.
+
+#### 3. Cân Bằng Sát Thương Sau Khi Xác Định Kết Quả:
+1. **Nếu là CRITICAL HIT:** Sát thương bạo kích được tính có trừ đi chỉ số phòng ngự:
+   $$\text{FinalCritMult} = 2.0 + \max\left(0.0,\; \frac{\text{AttackerCritDmgPercent} - \text{DefenderCritDmgReductionPercent}}{100.0}\right)$$
+   *(Trong đó $\text{DefenderCritDmgReductionPercent}$ là ID 32: Giảm Sát Thương Chí Mạng % [MỚI]).*
+2. **Áp dụng Miễn Thương Nhân Tích (Multiplicative Damage Reduction):**
+   $$\text{FinalDamage} = (\text{Damage} - \text{DamageDown}) \times \prod_{i=1}^{n} (1 - r_i)$$
+   *(Trong đó $r_i$ là các nguồn miễn thương bao gồm ID 33: Miễn Thương % [MỚI]. Tuyệt đối tính theo phép nhân, không cộng dồn).*
 
 ---
 
