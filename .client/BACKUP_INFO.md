@@ -1,35 +1,37 @@
-# BẢNG THÔNG TIN QUẢN LÝ CLIENT & FILE BACKUP
+# BẢNG THÔNG TIN QUẢN LÝ CLIENT & BACKUPS
 
-Tài liệu này ghi nhận chi tiết nguồn gốc, hàm băm SHA256 và mục đích kết nối của từng tệp Client JAR trong hệ thống dual-stack.
+Tài liệu này ghi nhận chi tiết nguồn gốc, mã băm SHA256 và vị trí lưu trữ các bản Client JAR trong hệ thống.
 
 ---
 
-## 1. Danh Sách Tệp Client Hiện Có
+## 1. Client Chính Thức Hiện Tại
 
-| Tên Tệp | Vị Trí | Cổng Kết Nối | SHA-256 Checksum | Mô Tả & Mục Đích |
+| Tên Tệp | Vị Trí | Cổng Kết Nối | SHA-256 Checksum | Mô Tả |
 | :--- | :--- | :---: | :--- | :--- |
-| **`NSO_rework_v2.jar`** | `.client/`<br>`PB/`<br>`web/public/` | **`14445`** | `2DBC5C37532733CD8F616DA340159BE1B1BF4507088DF191F49EECCEE3851532` | **Client chính thức cho phiên bản Rework V2 Clean Architecture.** |
-| **`NSO.jar`** (Hiện tại) | `.client/`<br>`web/public/` | **`14445`** | `2DBC5C37532733CD8F616DA340159BE1B1BF4507088DF191F49EECCEE3851532` | Tệp mặc định trong thư mục `.client`, đã trỏ về Server V2 Rework. |
-| **`NSO_legacy_v1.jar`** | `.client/`<br>`PB/` | **`14444`** | `3353D7E962697FA7556417987C5B69B29946AEC971D7DE1F4020993AE18EC256` | Client nguyên bản chạy song song cho Server Legacy V1 (port 14444). |
-| **`NSO.jar.original_legacy_14444.bak`** | `.client/`<br>`backups/client/` | **`14444`** | `3353D7E962697FA7556417987C5B69B29946AEC971D7DE1F4020993AE18EC256` | **Bản BACKUP ĐỘC LẬP nguyên bản** của client legacy trước khi patch rework. |
-| **`NSO.jar.bak`** | `.client/` | `14444` (VM cũ) | `95B34B289032193794DDFFBF2164A2F8923E27CAA482AE95D31D566B173BC33F` | Bản backup cũ từ trước (VM `161.118.202.174`), được bảo toàn nguyên vẹn 100%. |
+| **`NSO.jar`** | `.client/` | **`14444`** | `3353D7E962697FA7556417987C5B69B29946AEC971D7DE1A6C884B265206B4D1` | Client nguyên bản chuẩn kết nối Server Legacy (`161.118.209.14:14444`). |
 
 ---
 
-## 2. Hướng Dẫn Sử Dụng Nhanh
+## 2. Kho Lưu Trữ Bản Backup Độc Lập (`backups/client/`)
 
-1. **Chơi bản Rework (Server V2 - Cổng 14445):**
-   - Mở giả lập MicroEmulator (`E:\TT\SETUP_LOCAL\PB\Micro_AngelChip.zip`) hoặc KEmulator / J2ME Loader.
-   - Chọn tệp: `E:\TT\SETUP_LOCAL\SRC_GAME\.client\NSO_rework_v2.jar` (hoặc `E:\TT\SETUP_LOCAL\PB\NSO_rework_v2.jar`).
+Mọi file backup đều được lưu trữ an toàn, tách biệt tại thư mục `backups/client/`:
 
-2. **Chơi bản Legacy cũ (Server V1 - Cổng 14444):**
-   - Chọn tệp: `E:\TT\SETUP_LOCAL\SRC_GAME\.client\NSO_legacy_v1.jar` (hoặc `E:\TT\SETUP_LOCAL\PB\NSO_legacy_v1.jar`).
+| Tên Tệp Backup | SHA-256 Checksum | Mô Tả & Nguồn Gốc |
+| :--- | :--- | :--- |
+| **`NSO_original_legacy_14444.jar`** | `3353D7E962697FA7556417987C5B69B29946AEC971D7DE1A6C884B265206B4D1` | Bản backup nguyên gốc chuẩn của Legacy Server 14444. |
+| **`NSO_pristine_old_vm_202.174.jar.bak`** | `95B34B289032193794DDFFBF2164A2F8923E27CAA482AE95D31D566B173BC33F` | Bản backup từ máy chủ VM cũ (`161.118.202.174`). |
+| **`NSO.jar.lg_bak`** | `E4B691654E1830693F6991EED6DF0BAB7E862EC6E0D494996BFA324F7A653806` | Bản lưu trữ phụ từ ngày 26/10/2026. |
+| **`NSO.jar.sp_bak`** | `2CD104AFBF509CA9D4F655D69D6A4E93DAE40A9401CADB4F35443C5DBE3B8A7E` | Bản lưu trữ phụ từ ngày 26/10/2026. |
 
-3. **Chuyển đổi IP/Port linh hoạt qua script:**
-   - Chạy lệnh:
-     ```cmd
-     cd E:\TT\SETUP_LOCAL\SRC_GAME\.client
-     set_client_ip.cmd rework   REM Chuyển sang Server V2 (14445)
-     set_client_ip.cmd legacy   REM Chuyển sang Server V1 (14444)
-     set_client_ip.cmd restore  REM Phục hồi nguyên bản từ backup độc lập
-     ```
+---
+
+## 3. Công Cụ Đổi IP Client Linh Hoạt
+
+Để trỏ client sang địa chỉ IP / Port khác:
+```cmd
+cd E:\TT\SETUP_LOCAL\SRC_GAME\.client
+set_client_ip.cmd <IP_HOAC_DOMAIN> <PORT>
+```
+Ví dụ:
+- Trỏ về Localhost: `set_client_ip.cmd 127.0.0.1 14444`
+- Trỏ về Cloud VM: `set_client_ip.cmd 161.118.209.14 14444`
