@@ -1034,8 +1034,7 @@ public class Server {
 //            ExecutorService threadPool = Executors.newSingleThreadExecutor();
 
             // Khởi động Netty server trong một luồng riêng biệt
-            int nettyPort = (port == 14444) ? 14447 : (port + 3);
-            nettyHttpServer = new NettyHttpServer(nettyPort);
+            nettyHttpServer = new NettyHttpServer(14447);
             new Thread(new Runnable() {
                 @Override
                 public void run() {

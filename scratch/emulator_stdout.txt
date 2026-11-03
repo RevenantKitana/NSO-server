@@ -1,4 +1,0 @@
-arguments [[E:\TT\SETUP_LOCAL\PB\NSO_rework_v2.jar]]
-	  org.microemu.app.Main.main(null:-1)
-openJar [file:///E:/TT/SETUP_LOCAL/PB/NSO_rework_v2.jar]
-	  org.microemu.app.Common.loadJar(null:-1)
