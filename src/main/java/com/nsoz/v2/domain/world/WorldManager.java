@@ -36,7 +36,7 @@ public class WorldManager {
 
     public synchronized void initialize() {
         maps.clear();
-        String sql = "SELECT id, name, tileId, bgId, type, zone_number, waypoint FROM map ORDER BY id ASC";
+        String sql = "SELECT id, name, tileId, bgId, type, zone_number, waypoint, npc FROM map ORDER BY id ASC";
 
         try (Connection conn = HikariDataSourceProvider.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -44,6 +44,7 @@ public class WorldManager {
 
             int count = 0;
             Type waypointListType = new TypeToken<ArrayList<Waypoint>>() {}.getType();
+            Type npcListType = new TypeToken<ArrayList<NpcPosition>>() {}.getType();
 
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -53,6 +54,7 @@ public class WorldManager {
                 byte type = rs.getByte("type");
                 int zoneNumber = rs.getInt("zone_number");
                 String waypointJson = rs.getString("waypoint");
+                String npcJson = rs.getString("npc");
 
                 List<Waypoint> waypoints = new ArrayList<>();
                 if (waypointJson != null && !waypointJson.trim().isEmpty()) {
@@ -60,6 +62,15 @@ public class WorldManager {
                         waypoints = gson.fromJson(waypointJson, waypointListType);
                     } catch (Exception e) {
                         logger.warn("Could not parse waypoints JSON for map [{}]", id);
+                    }
+                }
+
+                List<NpcPosition> npcs = new ArrayList<>();
+                if (npcJson != null && !npcJson.trim().isEmpty()) {
+                    try {
+                        npcs = gson.fromJson(npcJson, npcListType);
+                    } catch (Exception e) {
+                        logger.warn("Could not parse npc JSON for map [{}]", id);
                     }
                 }
 
@@ -71,6 +82,7 @@ public class WorldManager {
                         .type(type)
                         .zoneNumber(zoneNumber)
                         .waypoints(waypoints != null ? waypoints : new ArrayList<>())
+                        .npcs(npcs != null ? npcs : new ArrayList<>())
                         .build();
 
                 GameMap gameMap = new GameMap(template);

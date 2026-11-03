@@ -38,6 +38,9 @@ public class AuthPacketController {
     public static final byte CMD_LOGIN = -127;
     public static final byte CMD_SELECT_PLAYER = -126;
     public static final byte CMD_CLIENT_INFO = -125;
+    public static final byte CMD_CLIENT_OK = -101;
+    public static final byte CMD_LOAD_RMS = -65;
+    public static final byte CMD_SAVE_RMS = -67;
 
     private final AuthService authService = AuthService.getInstance();
 
@@ -111,6 +114,9 @@ public class AuthPacketController {
                     break;
                 case CMD_REQUEST_MAPTEMPLATE:
                     handleRequestMapTemplate(session, reader);
+                    break;
+                case CMD_CLIENT_OK:
+                    logger.info("Session [{}] sent CLIENT_OK (-101)", session.getSessionId());
                     break;
                 default:
                     logger.info("Received unhandled subCommand [{}] under CMD_NOT_MAP for session [{}]", subCommand, session.getSessionId());
@@ -235,6 +241,11 @@ public class AuthPacketController {
         com.nsoz.v2.domain.world.WorldManager.getInstance().joinZone(
                 session, character.getSpatial().getMapId(), character.getSpatial().getZoneId());
 
+        // Skill Shortcuts (LOAD_RMS -65) required by J2ME GameCanvas to avoid NPE
+        sendSkillShortcut(session, "OSkill", new byte[]{-1, -1, -1, -1, -1}, (byte) 0);
+        sendSkillShortcut(session, "KSkill", new byte[]{-1, -1, -1}, (byte) 0);
+        sendSkillShortcut(session, "CSkill", new byte[]{-1, -1, -1, -1, -1}, (byte) 0);
+
         logger.info("Session [{}] successfully entered world as [{}] (Level {}, Map {}, Zone {})",
                 session.getSessionId(), character.getName(), character.getState().getLevel(),
                 character.getSpatial().getMapId(), character.getSpatial().getZoneId());
@@ -269,6 +280,68 @@ public class AuthPacketController {
         } catch (IOException e) {
             logger.error("Error sending ME_LOAD_ACTIVE to session [{}]", session.getSessionId(), e);
         }
+    }
+
+    public void sendSkillShortcut(V2Session session, String key, byte[] data, byte type) {
+        try {
+            V2Message ms = new V2Message(CMD_SUB_COMMAND);
+            DataOutputStream ds = ms.writer();
+            ds.writeByte(CMD_LOAD_RMS);
+            ds.writeUTF(key);
+            ds.writeInt(data.length);
+            ds.write(data);
+            ds.writeByte(type);
+            ds.flush();
+            session.send(ms);
+            logger.info("Sent skill shortcut [{}] to session [{}]", key, session.getSessionId());
+        } catch (IOException e) {
+            logger.error("Error sending skill shortcut [{}] to session [{}]", key, session.getSessionId(), e);
+        }
+    }
+
+    /**
+     * Handles CMD.SUB_COMMAND (-30) packets from client.
+     */
+    public void handleSubCommand(V2Session session, V2Message msg) {
+        DataInputStream reader = msg.reader();
+        try {
+            byte subCommand = reader.readByte();
+            switch (subCommand) {
+                case CMD_LOAD_RMS:
+                    handleLoadRms(session, reader);
+                    break;
+                case CMD_SAVE_RMS:
+                    handleSaveRms(session, reader);
+                    break;
+                default:
+                    logger.debug("Unhandled subCommand [{}] under CMD_SUB_COMMAND for session [{}]", subCommand, session.getSessionId());
+                    break;
+            }
+        } catch (IOException e) {
+            logger.error("Error processing CMD_SUB_COMMAND for session [{}]", session.getSessionId(), e);
+        }
+    }
+
+    private void handleLoadRms(V2Session session, DataInputStream reader) throws IOException {
+        String key = reader.readUTF();
+        logger.info("Session [{}] requested LOAD_RMS for key [{}]", session.getSessionId(), key);
+        byte[] data = new byte[0];
+        if ("KSkill".equals(key)) {
+            data = new byte[]{-1, -1, -1};
+        } else if ("OSkill".equals(key)) {
+            data = new byte[]{-1, -1, -1, -1, -1};
+        } else if ("CSkill".equals(key)) {
+            data = new byte[]{-1, -1, -1, -1, -1};
+        }
+        sendSkillShortcut(session, key, data, (byte) 0);
+    }
+
+    private void handleSaveRms(V2Session session, DataInputStream reader) throws IOException {
+        String filename = reader.readUTF();
+        int length = reader.readInt();
+        byte[] data = new byte[length];
+        reader.readFully(data);
+        logger.info("Session [{}] saved RMS [{}] (length={})", session.getSessionId(), filename, length);
     }
 
     public void sendLoadAll(V2Session session) {

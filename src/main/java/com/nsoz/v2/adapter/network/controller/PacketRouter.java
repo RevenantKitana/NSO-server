@@ -42,6 +42,10 @@ public class PacketRouter {
                 authController.handleNotMap(session, msg);
                 break;
 
+            case AuthPacketController.CMD_SUB_COMMAND:
+                authController.handleSubCommand(session, msg);
+                break;
+
             case MovementPacketController.CMD_PLAYER_MOVE:
                 movementController.handlePacket(session, msg);
                 break;

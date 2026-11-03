@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,6 +25,7 @@ public class Zone {
     public static final byte CMD_PLAYER_REMOVE = 2;
     public static final byte CMD_PLAYER_ADD = 3;
     public static final byte CMD_MAP_INFO = -18;
+    public static final byte CMD_MAP_ITEM = 117;
     public static final byte CMD_NPC_HP = -1;
     public static final byte CMD_NPC_DIE = -4;
     public static final byte CMD_NPC_MISS = 51;
@@ -50,10 +52,17 @@ public class Zone {
     }
 
     private void initMonsters() {
-        if (map.getId() == 22) { // Làng Tone: 3 starter snails
-            monsters.put(0, new com.nsoz.v2.domain.mob.Mob(0, 0, "Ốc sên", 1, 40, (short) 1908, (short) 264));
-            monsters.put(1, new com.nsoz.v2.domain.mob.Mob(1, 0, "Ốc sên", 1, 40, (short) 1956, (short) 240));
-            monsters.put(2, new com.nsoz.v2.domain.mob.Mob(2, 0, "Ốc sên", 1, 40, (short) 1980, (short) 240));
+        // Safe / Village zones (type == 0 e.g. Làng Tone Map 22) have no attackable field monsters
+        if (map.getTemplate().getType() == 0 || map.getId() == 22) {
+            monsters.clear();
+            return;
+        }
+
+        // Field maps (e.g. Map 1 Đồi Fuki) have starter snails for combat testing
+        if (map.getId() == 1 && id == 0) {
+            monsters.put(0, new com.nsoz.v2.domain.mob.Mob(0, 1, "Ốc sên", 3, 300, (short) 1908, (short) 264));
+            monsters.put(1, new com.nsoz.v2.domain.mob.Mob(1, 1, "Ốc sên", 3, 300, (short) 1956, (short) 240));
+            monsters.put(2, new com.nsoz.v2.domain.mob.Mob(2, 1, "Ốc sên", 3, 300, (short) 1980, (short) 240));
         }
     }
 
@@ -74,6 +83,7 @@ public class Zone {
 
         // 1. Send Map & Tile info to the entering player
         sendMapInfo(session);
+        sendItemMap(session);
 
         // 2. Broadcast this player's presence to existing players in this zone
         V2Message addMsg = buildPlayerAddMessage(character);
@@ -165,30 +175,43 @@ public class Zone {
             }
 
             // Monsters count and metadata
-            ds.writeByte(monsters.size());
-            for (com.nsoz.v2.domain.mob.Mob mob : monsters.values()) {
-                ds.writeBoolean(mob.getStatusEffects().isStunned()); // isDisable
-                ds.writeBoolean(mob.getStatusEffects().isFrozen());  // isDontMove
-                ds.writeBoolean(mob.getStatusEffects().isBurned());  // isFire
-                ds.writeBoolean(mob.getStatusEffects().isFrozen());  // isIce
-                ds.writeBoolean(mob.getStatusEffects().isStunned()); // isWind
-                ds.writeByte(mob.getTemplateId());
-                ds.writeByte(0); // sys
-                ds.writeInt(mob.getHp());
-                ds.writeByte(mob.getLevel());
-                ds.writeInt(mob.getMaxHp());
-                ds.writeShort(mob.getX());
-                ds.writeShort(mob.getY());
-                ds.writeByte(0); // status
-                ds.writeByte(0); // levelBoss
-                ds.writeBoolean(false); // isBoss
+            if (tpl.getType() == 0 || map.getId() == 22) {
+                ds.writeByte(0);
+            } else {
+                ds.writeByte(monsters.size());
+                for (com.nsoz.v2.domain.mob.Mob mob : monsters.values()) {
+                    ds.writeBoolean(mob.getStatusEffects().isStunned()); // isDisable
+                    ds.writeBoolean(mob.getStatusEffects().isFrozen());  // isDontMove
+                    ds.writeBoolean(mob.getStatusEffects().isBurned());  // isFire
+                    ds.writeBoolean(mob.getStatusEffects().isFrozen());  // isIce
+                    ds.writeBoolean(mob.getStatusEffects().isStunned()); // isWind
+                    ds.writeByte(mob.getTemplateId());
+                    ds.writeByte(0); // sys
+                    ds.writeInt(mob.getHp());
+                    ds.writeByte(mob.getLevel());
+                    ds.writeInt(mob.getMaxHp());
+                    ds.writeShort(mob.getX());
+                    ds.writeShort(mob.getY());
+                    ds.writeByte(0); // status
+                    ds.writeByte(0); // levelBoss
+                    ds.writeBoolean(false); // isBoss
+                }
             }
 
             // Bu Nhin count
             ds.writeByte(0);
 
             // NPCs count
-            ds.writeByte(0);
+            List<NpcPosition> npcs = tpl.getNpcs();
+            ds.writeByte(npcs != null ? npcs.size() : 0);
+            if (npcs != null) {
+                for (NpcPosition npc : npcs) {
+                    ds.writeByte(npc.getStatus());
+                    ds.writeShort(npc.getX());
+                    ds.writeShort(npc.getY());
+                    ds.writeByte(npc.getTemplateId());
+                }
+            }
 
             // Items on ground count
             ds.writeByte(0);
@@ -201,6 +224,22 @@ public class Zone {
             session.send(ms);
         } catch (IOException e) {
             logger.error("Error sending MAP_INFO to session [{}]", session.getSessionId(), e);
+        }
+    }
+
+    private void sendItemMap(V2Session session) {
+        try {
+            V2Message ms = new V2Message(CMD_MAP_ITEM);
+            DataOutputStream ds = ms.writer();
+            ds.writeByte(0); // map items count
+            ds.writeByte(0); // behind trees count
+            ds.writeByte(0); // between trees count
+            ds.writeByte(0); // front trees count
+            ds.flush();
+            session.send(ms);
+            logger.info("Sent MAP_ITEM (117) to session [{}]", session.getSessionId());
+        } catch (IOException e) {
+            logger.error("Error sending MAP_ITEM to session [{}]", session.getSessionId(), e);
         }
     }
 

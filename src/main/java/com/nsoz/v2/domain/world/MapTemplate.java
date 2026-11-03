@@ -25,5 +25,8 @@ public class MapTemplate {
 
     @Builder.Default
     private List<Waypoint> waypoints = new ArrayList<>();
+
+    @Builder.Default
+    private List<NpcPosition> npcs = new ArrayList<>();
 }
 
