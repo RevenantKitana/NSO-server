@@ -1,5 +1,8 @@
 package com.nsoz2.combat;
 
+import com.nsoz2.combat.engine.CharacterStatsSnapshot;
+import com.nsoz2.combat.engine.DamageReductionCalculator;
+import com.nsoz2.combat.engine.SingleRollCombatResolver;
 import com.nsoz2.constants.MobName;
 import com.nsoz2.effect.Effect;
 import com.nsoz2.mob.Mob;
@@ -37,19 +40,18 @@ public class CombatService {
             dameHit += dameBasic;
         }
 
-        // Step 3: Critical Strike (Bạo kích)
+        // Step 3: Critical Strike (Bạo kích với Kháng ST Chí Mạng ID 31 & 32/121)
         int dameFatal = 0;
-        if (isFatal) {
-            dameFatal += dameBasic;
-            dameFatal += (dameBasic * (attacker.percentFatalDame + attacker.optionsSupportSkill[65])) / 100;
-            dameFatal += attacker.fatalDame;
+        int optCritDmgRed = (target.options != null && target.options.length > 32) ? target.options[32] : 0;
+        if (target.options != null && target.options.length > 121 && target.options[121] > 0) {
+            optCritDmgRed = Math.max(optCritDmgRed, target.options[121]);
         }
-
-        // Trừ % Kháng Sát thương Chí mạng (Canonical Option 121) - Áp trần tối đa 100%
-        int kstcm = Math.min(100, Math.max(0, target.options[121]));
-        dameFatal -= dameFatal * kstcm / 100;
-        if (dameFatal < 0) {
-            dameFatal = 0;
+        if (isFatal) {
+            double critMult = SingleRollCombatResolver.calculateCritMultiplier(
+                attacker.percentFatalDame + attacker.optionsSupportSkill[65],
+                optCritDmgRed
+            );
+            dameFatal = (int) Math.round(dameBasic * (critMult - 1.0)) + attacker.fatalDame;
         }
 
         // Step 4: Elemental & Counter (Thuộc tính hệ & Khắc hệ)
@@ -143,12 +145,14 @@ public class CombatService {
             }
         }
 
-        // Step 8: Accuracy vs Evasion Check
-        int randMiss = NinjaUtils.nextInt(target.miss + 100);
-        int randExactly = NinjaUtils.nextInt(attacker.exactly + 100);
-        boolean isMiss = randMiss > randExactly || target.isMiss;
+        // Step 8: Accuracy vs Evasion Check (Single-Roll Resolver)
+        int optCritRes = (target.options != null && target.options.length > 31) ? target.options[31] : 0;
+        SingleRollCombatResolver.CombatOutcome outcome = SingleRollCombatResolver.resolve(
+            attacker.exactly, target.miss, attacker.fatal, optCritRes, 0.0
+        );
+        boolean isMiss = outcome.isMiss() || target.isMiss;
 
-        // Step 9: Trạng thái bất lợi & Giảm trừ cố định (dameDown)
+        // Step 9: Trạng thái bất lợi & Giảm trừ sát thương (Multiplicative Stacking)
         if (attacker.isEffDameDown) {
             Effect eff2 = target.getEm().findByID((byte) 37);
             if (eff2 != null) {
@@ -162,18 +166,16 @@ public class CombatService {
             dameHit -= dameHit * 50 / 100;
         }
 
-        // Trừ giảm trừ cố định (dameDown)
-        dameHit -= target.dameDown;
-        if (dameHit < 0) {
-            dameHit = 0;
-        }
+        // Áp dụng Multiplicative Damage Reduction: Trừ Flat dameDown trước, nhân tích % sau (ID 33: Miễn thương %)
+        double opt33 = (target.options != null && target.options.length > 33) ? ((double) Math.max(0, target.options[33]) / 100.0) : 0.0;
+        dameHit = DamageReductionCalculator.applyDamageReduction(dameHit, target.dameDown, opt33);
 
         // Thêm Sát thương lên người (Option 103)
-        dameHit += attacker.options[103];
+        dameHit += (attacker.options != null && attacker.options.length > 103) ? attacker.options[103] : 0;
 
         // CHUẨN HÓA: CỘNG SÁT THƯƠNG CHUẨN (Option 113) SAU CÙNG
-        // Sát thương chuẩn không bị cản bởi dameDown, suy yếu hay đóng băng
-        dameHit += attacker.options[113];
+        // Sát thương chuẩn không bị cản bởi dameDown, suy yếu hay đóng băng hay miễn thương %
+        dameHit += (attacker.options != null && attacker.options.length > 113) ? attacker.options[113] : 0;
 
         if (isMiss) {
             dameHit = 0;

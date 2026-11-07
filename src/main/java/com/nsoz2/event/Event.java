@@ -42,7 +42,6 @@ public abstract class Event {
     public static final int WOMENS_DAY = 6;
     public static final int CO_HON = 7;
 
-
     public static final byte DOI_BANG_LUONG = 0;
     public static final byte DOI_BANG_XU = 1;
 
@@ -86,7 +85,6 @@ public abstract class Event {
     protected Set<String> keyEventPoint;
     protected Calendar endTime = Calendar.getInstance();
 
-
     public Event() {
         itemsThrownFromMonsters = new RandomCollection<>();
         itemsOanhonThrownFromMonsters = new RandomCollection<>();
@@ -107,7 +105,7 @@ public abstract class Event {
                 String eventClass = eventName.trim().replace("com.nsoz.event.", "com.nsoz2.event.");
                 instance = (Event) Class.forName(eventClass).newInstance();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-                 Log.logException("Init event err", Event.class, ex);
+                Log.logException("Init event err", Event.class, ex);
             }
         }
     }
@@ -159,7 +157,7 @@ public abstract class Event {
         return null;
     }
 
-    //  item sự kiện trong class random
+    // item sự kiện trong class random
     public static void useVipEventItem(Char _char, int type, RandomCollection<Integer> rc) {
         int itemId = rc.next();
         Item itm = ItemFactory.getInstance().newItem(itemId);
@@ -279,7 +277,7 @@ public abstract class Event {
             rs.close();
             ps.close();
         } catch (SQLException ex) {
-            Log.logException("Lỗi load event point:", Event.class,ex);
+            Log.logException("Lỗi load event point:", Event.class, ex);
 
         }
     }
@@ -311,27 +309,27 @@ public abstract class Event {
 
     // sử dụng 1 item
     public boolean useEventItem(Char p, int itemId, RandomCollection<Integer> rc) {
-        int[][] itemRequires = new int[][]{{itemId, 1}};
+        int[][] itemRequires = new int[][] { { itemId, 1 } };
         return useEventItem(p, 1, itemRequires, 0, 0, 0, rc);
     }
 
     public boolean useEventItem(Char p, int number, int[][] itemRequire, int gold, int coin, int yen,
-                                RandomCollection<Integer> rc) {
+            RandomCollection<Integer> rc) {
         return makeEventItem(p, number, itemRequire, gold, coin, yen, rc, -1);
     }
 
     public boolean useEventItem(Char p, int number, int gold, int coin, RandomCollection<Integer> rc) {
-        return makeEventItem(p, number, new int[][]{}, gold, coin, 0, rc, -1);
+        return makeEventItem(p, number, new int[][] {}, gold, coin, 0, rc, -1);
     }
 
     public boolean makeEventItem(Char p, int number, int[][] itemRequire, int gold, int coin, int yen,
-                                 int itemIdReceive) {
+            int itemIdReceive) {
         return makeEventItem(p, number, itemRequire, gold, coin, yen, null, itemIdReceive);
     }
 
     // menu nhập số lượng tiên nữ
     public boolean makeEventItem(Char p, int number, int[][] itemRequire, int gold, int coin, int yen,
-                                 RandomCollection<Integer> rc, int itemIdReceive) {
+            RandomCollection<Integer> rc, int itemIdReceive) {
         if (number < 1) {
             p.getService().npcChat(NpcName.TIEN_NU, "Số lượng tối thiểu là 1.");
             return false;
@@ -388,15 +386,15 @@ public abstract class Event {
             int itemId = itemRequire[i][0];
             Item itm = ItemFactory.getInstance().newItem(itemId);
             // gọi tên vật phẩm sự kiện
-//            if (itm.id == ItemName.DIEU_GIAY || itm.id == ItemName.DIEU_VAI || itm.id == ItemName.HU_KEM_DAM || itm.id == ItemName.CAN_CAU_CA) {
+            // if (itm.id == ItemName.DIEU_GIAY || itm.id == ItemName.DIEU_VAI || itm.id ==
+            // ItemName.HU_KEM_DAM || itm.id == ItemName.CAN_CAU_CA) {
             itemName = itm.template.name;
-//            }
+            // }
             itemRequite = itm;
             int amount = itemRequire[i][1] * number;
             int index = p.getIndexItemByIdInBag(itemId);
             p.removeItem(index, amount, true);
         }
-
 
         // todo : exp sự kiện và quà lên ktg
         if (rc != null) {
@@ -426,47 +424,61 @@ public abstract class Event {
                 if (itm.id == ItemName.THONG_LINH_THAO) {
                     itm.setQuantity(NinjaUtils.nextInt(5, 10));
 
-
                     // todo : nếu nick chưa kích hoạt sẽ thay item dưới thành exp
-                } else if (p.user.activated == 0 && (itm.id == ItemName.RUONG_HUYEN_BI || itm.id == ItemName.RUONG_BACH_NGAN
-                        || itm.id == ItemName.THE_BAI_KINH_NGHIEM_GIA_TOC_SO || itm.id == ItemName.THE_BAI_KINH_NGHIEM_GIA_TOC_TRUNG || itm.id == ItemName.THE_BAI_KINH_NGHIEM_GIA_TOC_CAO)) {
+                } else if (p.user.activated == 0
+                        && (itm.id == ItemName.RUONG_HUYEN_BI || itm.id == ItemName.RUONG_BACH_NGAN
+                                || itm.id == ItemName.THE_BAI_KINH_NGHIEM_GIA_TOC_SO
+                                || itm.id == ItemName.THE_BAI_KINH_NGHIEM_GIA_TOC_TRUNG
+                                || itm.id == ItemName.THE_BAI_KINH_NGHIEM_GIA_TOC_CAO)) {
                     p.addExp(exp);
                     // todo : ăn sự kiện hiện kênh thế giới
-                } else if (p.user.activated == 1 && (itm.id == ItemName.RUONG_HUYEN_BI || itm.id == ItemName.RUONG_BACH_NGAN || itm.id == ItemName.BAT_BAO)) {
-                    GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name);
+                } else if (p.user.activated == 1 && (itm.id == ItemName.RUONG_HUYEN_BI
+                        || itm.id == ItemName.RUONG_BACH_NGAN || itm.id == ItemName.BAT_BAO)) {
+                    GlobalService.getInstance().chat("server",
+                            "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name);
                     p.addItemToBag(itm);
                 } else {
                     if (p.user.activated == 1) {
-                        if (itemId == ItemName.LAN_SU_VU ) {
-                            if (NinjaUtils.nextInt(0, 10000) < 10) {  // todo : tỉ lệ mở ,ví dụ nó random 0 tới 10000, thì vào số từ 1 tới 10 thì sẽ nhận vv, vậy mình giảm số 10 đi - tỉ lệ sẽ khó hơn
+                        if (itemId == ItemName.LAN_SU_VU) {
+                            if (NinjaUtils.nextInt(0, 10000) < 10) { // todo : tỉ lệ mở ,ví dụ nó random 0 tới 10000,
+                                                                     // thì vào số từ 1 tới 10 thì sẽ nhận vv, vậy mình
+                                                                     // giảm số 10 đi - tỉ lệ sẽ khó hơn
                                 itm.expire = -1;
-                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name + " vĩnh viễn");
+                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName
+                                        + " nhận được " + itm.template.name + " vĩnh viễn");
                             }
                         }
                         if (itemId == ItemName.GAY_MAT_TRANG || itemId == ItemName.GAY_TRAI_TIM) {
                             if (NinjaUtils.nextInt(0, 10000) < 10) {
                                 itm.expire = -1;
-                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name + " vĩnh viễn");
+                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName
+                                        + " nhận được " + itm.template.name + " vĩnh viễn");
                             }
                         }
-                        if (itemId == ItemName.BACH_HO || itemId == ItemName.PHUONG_HOANG_BANG || itemId == ItemName.HOA_KY_LAN ) {
+                        if (itemId == ItemName.BACH_HO || itemId == ItemName.PHUONG_HOANG_BANG
+                                || itemId == ItemName.HOA_KY_LAN) {
                             if (NinjaUtils.nextInt(0, 10000) < 3) {
                                 itm.expire = -1;
-                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name + " vĩnh viễn");
+                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName
+                                        + " nhận được " + itm.template.name + " vĩnh viễn");
                             }
                         }
 
-                        if (itemId == ItemName.BACH_NGAN_LANG || itemId == ItemName.BACH_SU_VUONG ) { // thêm pet mới
+                        if (itemId == ItemName.BACH_NGAN_LANG || itemId == ItemName.BACH_SU_VUONG) { // thêm pet mới
                             if (NinjaUtils.nextInt(0, 10000) < 3) {
                                 itm.expire = -1;
-                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name + " vĩnh viễn");
+                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName
+                                        + " nhận được " + itm.template.name + " vĩnh viễn");
                             }
                         }
 
-                        if (itemId == ItemName.MAT_NA_SHIN_AH || itemId == ItemName.MAT_NA_VO_DIEN || itemId == ItemName.MAT_NA_ONI || itemId == ItemName.MAT_NA_KUMA || itemId == ItemName.MAT_NA_INU) {
+                        if (itemId == ItemName.MAT_NA_SHIN_AH || itemId == ItemName.MAT_NA_VO_DIEN
+                                || itemId == ItemName.MAT_NA_ONI || itemId == ItemName.MAT_NA_KUMA
+                                || itemId == ItemName.MAT_NA_INU) {
                             if (NinjaUtils.nextInt(0, 10000) < 5) {
                                 itm.expire = -1;
-                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName + " nhận được " + itm.template.name + " vĩnh viễn");
+                                GlobalService.getInstance().chat("server", "Chúc mừng " + p.name + " mở " + itemName
+                                        + " nhận được " + itm.template.name + " vĩnh viễn");
                             }
                         }
 
@@ -482,7 +494,7 @@ public abstract class Event {
         } else if (itemIdReceive != -1) {
             Item itm = ItemFactory.getInstance().newItem(itemIdReceive);
             itm.setQuantity(number);
-//            itm.setLock(true); // fix làm item sk khóa
+            // itm.setLock(true); // fix làm item sk khóa
             p.addItemToBag(itm);
             if (priceGold > 0) {
                 p.getEventPoint().addPoint(EventPoint.DIEM_TIEU_XAI, 1);
@@ -525,23 +537,22 @@ public abstract class Event {
 
         return "xx_" + middleTwoChars + "_xx";
     }
-//    public int getPoint(Char p, String key) {
-//        List<EventPoint> list = eventPoints.stream().sorted((o1, o2) -> {
-//            int p1 = o1.getPoint(key);
-//            int p2 = o2.getPoint(key);
-//            return p2 - p1;
-//        }).limit(10).filter(t -> t.getPoint(key) > 0).collect(Collectors.toList());
-//        StringBuilder sb = new StringBuilder();
-//
-//        for (EventPoint t : list) {
-//            if (t.getPlayerName().equals(p.name)) {
-//                return t.getPoint(key);
-//            }
-//
-//        }
-//        return 0;
-//    }
-
+    // public int getPoint(Char p, String key) {
+    // List<EventPoint> list = eventPoints.stream().sorted((o1, o2) -> {
+    // int p1 = o1.getPoint(key);
+    // int p2 = o2.getPoint(key);
+    // return p2 - p1;
+    // }).limit(10).filter(t -> t.getPoint(key) > 0).collect(Collectors.toList());
+    // StringBuilder sb = new StringBuilder();
+    //
+    // for (EventPoint t : list) {
+    // if (t.getPlayerName().equals(p.name)) {
+    // return t.getPoint(key);
+    // }
+    //
+    // }
+    // return 0;
+    // }
 
     public int getPoint(Char p, String key) {
         for (EventPoint t : eventPoints) {
@@ -552,22 +563,22 @@ public abstract class Event {
         return 0;
     }
 
-//    public int getPontAll(String key) {
-//        List<EventPoint> list = eventPoints.stream().sorted((o1, o2) -> {
-//            int p1 = o1.getPoint(key);
-//            int p2 = o2.getPoint(key);
-//            return p2 - p1;
-//        }).limit(10).filter(t -> t.getPoint(key) > 0).collect(Collectors.toList());
-//        StringBuilder sb = new StringBuilder();
-//
-//        for (EventPoint t : list) {
-//
-//            return t.getPoint(key);
-//
-//
-//        }
-//        return 0;
-//    }
+    // public int getPontAll(String key) {
+    // List<EventPoint> list = eventPoints.stream().sorted((o1, o2) -> {
+    // int p1 = o1.getPoint(key);
+    // int p2 = o2.getPoint(key);
+    // return p2 - p1;
+    // }).limit(10).filter(t -> t.getPoint(key) > 0).collect(Collectors.toList());
+    // StringBuilder sb = new StringBuilder();
+    //
+    // for (EventPoint t : list) {
+    //
+    // return t.getPoint(key);
+    //
+    //
+    // }
+    // return 0;
+    // }
 
     public int getPontAll(String key) {
         int point = 0;
@@ -596,7 +607,5 @@ public abstract class Event {
     public boolean isEnded() {
         return endTime.getTime().getTime() - System.currentTimeMillis() <= 0;
     }
-
-
 
 }

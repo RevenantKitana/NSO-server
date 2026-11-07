@@ -15,6 +15,8 @@ import com.nsoz2.clan.ClanDAO;
 import com.nsoz2.clan.Member;
 import com.nsoz2.combat.CombatResult;
 import com.nsoz2.combat.CombatService;
+import com.nsoz2.combat.engine.CharacterStatsSnapshot;
+import com.nsoz2.combat.engine.SingleRollCombatResolver;
 import com.nsoz2.constants.*;
 import com.nsoz2.convert.Converter;
 import com.nsoz2.db.jdbc.DbManager;
@@ -328,6 +330,18 @@ public class Char {
     public long timeChangeMap; // fix map lc
 
     private boolean isGiftCodeUnpaid;
+    private volatile CharacterStatsSnapshot statsSnapshot;
+
+    public CharacterStatsSnapshot getStatsSnapshot() {
+        if (this.statsSnapshot == null) {
+            this.statsSnapshot = CharacterStatsSnapshot.from(this);
+        }
+        return this.statsSnapshot;
+    }
+
+    public void invalidateStatsSnapshot() {
+        this.statsSnapshot = null;
+    }
 
     public byte typeVXMM; // chanle
     public int xuWin; // chanle
@@ -7745,9 +7759,15 @@ public class Char {
                             }
                         }
 
-                        int miss = NinjaUtils.nextInt(mob.level + 10);
-                        int exactly = NinjaUtils.nextInt(this.exactly + 100);
-                        boolean isMiss = miss > exactly;
+                        SingleRollCombatResolver.CombatOutcome outcome = SingleRollCombatResolver.resolve(
+                            this.exactly,
+                            (int) mob.level * 2,
+                            this.fatal,
+                            0,
+                            0.0
+                        );
+                        boolean isMiss = outcome.isMiss();
+                        boolean mobIsFatal = isFatal || outcome.isCrit();
 
                         // boolean isMiss = NinjaUtil.nextInt(this.exactly + 10) < 4;
                         if (skillTemplateId == 7 || skillTemplateId == 25 || skillTemplateId == 34 || skillTemplateId == 43) {
@@ -7789,7 +7809,7 @@ public class Char {
                                     mob.effects.put(eff2.template.type, eff2);
                                 }
                             }
-                            int dameHit = CombatService.calculatePvEDamage(this, mob, isFatal, add);
+                            int dameHit = CombatService.calculatePvEDamage(this, mob, mobIsFatal, add);
                             if (dameHit > 0) {
                                 mob.Fight(this, dameHit); // fix dame boss
                                 int preHP = mob.hp;
@@ -7828,7 +7848,7 @@ public class Char {
                                     zone.getService().addEffectAuto((byte) 8, mob.x, mob.y, (byte) 0, (short) 1);
                                 }
 
-                                zone.getService().attackMonster(dameHit, isFatal, mob);
+                                zone.getService().attackMonster(dameHit, mobIsFatal, mob);
                                 this.mobAtk = mob.id;
                                 if (zone.tilemap.isDungeoClan()) {
                                     Territory.checkEveryAttack(this);
@@ -8560,7 +8580,15 @@ public class Char {
                         }
                     }
 
-                    CombatResult result = CombatService.calculatePvPDamage(this, pl, isFatal);
+                    SingleRollCombatResolver.CombatOutcome outcome = SingleRollCombatResolver.resolve(
+                        this.exactly,
+                        pl.miss,
+                        this.fatal,
+                        (pl.options != null && pl.options.length > 31) ? pl.options[31] : 0,
+                        0.0
+                    );
+                    boolean playerIsFatal = isFatal || outcome.isCrit();
+                    CombatResult result = CombatService.calculatePvPDamage(this, pl, playerIsFatal);
 
                     if (!isNhanBan && result.getReactDamage() > 0) {
                         int reactDame = result.getReactDamage();

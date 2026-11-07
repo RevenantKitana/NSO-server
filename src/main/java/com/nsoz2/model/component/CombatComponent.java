@@ -63,4 +63,8 @@ public class CombatComponent extends AbstractComponent {
     public int calculatePvE(Mob mob, boolean isFatal, int add) {
         return CombatService.calculatePvEDamage(owner, mob, isFatal, add);
     }
+
+    public com.nsoz2.combat.engine.CharacterStatsSnapshot getStatsSnapshot() {
+        return owner.getStatsSnapshot();
+    }
 }
