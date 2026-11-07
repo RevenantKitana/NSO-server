@@ -43,6 +43,7 @@ import com.nsoz2.mob.Mob;
 import com.nsoz2.mob.MobManager;
 import com.nsoz2.mob.MobTemplate;
 import com.nsoz2.model.Invite.PlayerInvite;
+import com.nsoz2.model.component.*;
 import com.nsoz2.network.Controller;
 import com.nsoz2.network.Message;
 import com.nsoz2.network.Service;
@@ -319,6 +320,7 @@ public class Char {
     @Setter
     private int topThanNong;
     @Getter
+    @Setter
     private Group group;
     private boolean isUnpaid;
     private boolean isYenUnpaid;
@@ -409,9 +411,20 @@ public class Char {
     public int[] giftOnline = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     /// điểm danh tân thủ
     public int[] giftTongnap = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    // 5 Domain Components (Milestone 3 Architecture)
+    public SpatialComponent spatial;
+    public CharacterStateComponent state;
+    public InventoryComponent inventory;
+    public CombatComponent combat;
+    public SocialComponent social;
 
     public Char(int id) {
         this.id = id;
+        this.spatial = new SpatialComponent(this);
+        this.state = new CharacterStateComponent(this);
+        this.inventory = new InventoryComponent(this);
+        this.combat = new CombatComponent(this);
+        this.social = new SocialComponent(this);
         this.options = new int[ItemManager.getInstance().getOptionSize()];
         this.isHuman = true;
         this.isNhanBan = false;
