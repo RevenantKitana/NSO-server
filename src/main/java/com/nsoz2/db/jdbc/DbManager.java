@@ -742,7 +742,7 @@ public class DbManager {
                 config.addDataSourceProperty("cacheServerConfiguration", "true");
                 config.addDataSourceProperty("elideSetAutoCommits", "true");
                 config.addDataSourceProperty("maintainTimeStats", "false");
-//                config.setLeakDetectionThreshold(20000);
+                config.setLeakDetectionThreshold(20000L);
                 ds = new HikariDataSource(config);
                 System.out.println("DB Connection Pool has created.");
                 return true;

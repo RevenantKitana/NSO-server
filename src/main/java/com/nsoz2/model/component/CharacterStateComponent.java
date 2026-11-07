@@ -66,3 +66,4 @@ public class CharacterStateComponent extends AbstractComponent {
         setMp(owner.mp + amount);
     }
 }
+

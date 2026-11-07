@@ -20,15 +20,31 @@ public class Trade {
 
     public void closeUITrade() {
         try {
+            if (traders == null || traders[0] == null || traders[1] == null) {
+                return;
+            }
             Char _char1 = traders[0].player;
             Char _char2 = traders[1].player;
-            _char1.getService().tradeCancel();
-            _char2.getService().tradeCancel();
-            _char1.cleanTrade();
-            _char2.cleanTrade();
-            _char1.invite.removeInvite(Invite.GIAO_DICH); /// dev fix 13/8
-            _char2.invite.removeInvite(Invite.GIAO_DICH);
-            isFinish = true;
+            if (_char1 == null || _char2 == null) {
+                return;
+            }
+            // 2-Way Lock in deterministic order to prevent race conditions during trade cancel
+            Char firstLock = (_char1.id < _char2.id) ? _char1 : _char2;
+            Char secondLock = (_char1.id < _char2.id) ? _char2 : _char1;
+            synchronized (firstLock) {
+                synchronized (secondLock) {
+                    if (isFinish) {
+                        return;
+                    }
+                    isFinish = true;
+                    _char1.getService().tradeCancel();
+                    _char2.getService().tradeCancel();
+                    _char1.cleanTrade();
+                    _char2.cleanTrade();
+                    _char1.invite.removeInvite(Invite.GIAO_DICH);
+                    _char2.invite.removeInvite(Invite.GIAO_DICH);
+                }
+            }
         } catch (Exception e) {
             Log.logException("Lỗi đóng bảng giao dịch: ", Trade.class, e);
 
@@ -56,143 +72,159 @@ public class Trade {
 
     public void update() {
         try {
-            if (!this.isFinish && traders[0].accept && traders[1].accept) {
-                Char _char1 = traders[0].player;
-                Char _char2 = traders[1].player;
-                boolean isError = false;
-                String error1 = "";
-                String error2 = "";
-                _char1.invite.removeInvite(Invite.GIAO_DICH);
-                _char2.invite.removeInvite(Invite.GIAO_DICH);
-                try {
-                    int num = _char1.getSlotNull();
-                    if (traders[1].itemTradeOrder.size() > num) {
-                        isError = true;
-                        error1 = "Hành trang của bạn không đủ chỗ trống";
-                        error2 = "Hành trang của đối phương không đủ chỗ trống";
-                        return;
-                    }
-                    num = _char2.getSlotNull();
-                    if (traders[0].itemTradeOrder.size() > num) {
-                        isError = true;
-                        error2 = "Hành trang của bạn không đủ chỗ trống";
-                        error1 = "Hành trang của đối phương không đủ chỗ trống";
-                        return;
-                    }
-                    if (traders[0].coinTradeOrder > _char1.coin) {
-                        isError = true;
-                        error1 = "Bạn không đủ xu để giao dịch";
-                        error2 = "Đối phương không đủ xu để giao dịch";
-                        return;
-                    }
-                    if (traders[1].coinTradeOrder > _char2.coin) {
-                        isError = true;
-                        error2 = "Bạn không đủ xu để giao dịch";
-                        error1 = "Đối phương không đủ xu để giao dịch";
-                        return;
-                    }
-                    if (traders[0].coinTradeOrder > 1000000000) {
-                        isError = true;
-                        error1 = "Số xu tối đa có thể giao dịch là 1.000.000.000xu.";
-                        error2 = "Đối phương đã giao dịch quá giới hạn 1.000.000.000xu.";
-                        return;
-                    }
-                    if (traders[1].coinTradeOrder > 1000000000) {
-                        isError = true;
-                        error2 = "Số xu tối đa có thể giao dịch là 1.000.000.000xu.";
-                        error1 = "Đối phương đã giao dịch quá giới hạn 1.000.000.000xu.";
-                        return;
-                    }
-                    History history1 = new History(_char1.id, History.GIAO_DICH);
-                    History history2 = new History(_char2.id, History.GIAO_DICH);
-                    history1.setPartnerID(_char2.name);
-                    history2.setPartnerID(_char1.name);
-                    int numberItem = traders[1].itemTradeOrder.size();
-                    if (numberItem > 0) {
-                        for (Item item : traders[1].itemTradeOrder) {
-                            int id = item.id;
-                            int index = item.index;
-                            int quantity = item.getQuantity();
-                            if (_char2.bag[index] == null || _char2.bag[index].id != id
-                                    || _char2.bag[index].getQuantity() != quantity || _char2.bag[index].isLock) {
-                                isError = true;
-                                error2 = "Vật phẩm ở ô " + (index + 1) + " không hợp lệ.";
-                                error1 = "Đối phương giao dịch vật phẩm không hợp lệ.";
-                                return;
-                            }
-                        }
-                    }
-                    numberItem = traders[0].itemTradeOrder.size();
-                    if (numberItem > 0) {
-                        for (Item item : traders[0].itemTradeOrder) {
-                            int id = item.id;
-                            int index = item.index;
-                            int quantity = item.getQuantity();
-                            if (_char1.bag[index] == null || _char1.bag[index].id != id
-                                    || _char1.bag[index].getQuantity() != quantity || _char1.bag[index].isLock) {
-                                isError = true;
-                                error1 = "Vật phẩm ở ô " + (index + 1) + " không hợp lệ.";
-                                error2 = "Đối phương giao dịch vật phẩm không hợp lệ.";
-                                return;
-                            }
-                        }
-                    }
-                    numberItem = traders[1].itemTradeOrder.size();
-                    if (numberItem > 0) {
-                        for (Item item : traders[1].itemTradeOrder) {
-                            int index = item.index;
-                            int quantity = item.getQuantity();
-                            if (_char2.bag[index] != null && _char2.bag[index].has(quantity)) {
-                                history1.addItem(History.GIAO_DICH_NHAN, item);
-                                history2.addItem(History.GIAO_DICH_GUI, item);
-                                _char1.addItemToBag(item);
-                                _char2.bag[index] = null;
-                                _char2.getService().removeItem(index);
-                            }
-                        }
-                    }
-                    numberItem = traders[0].itemTradeOrder.size();
-                    if (numberItem > 0) {
-                        for (Item item : traders[0].itemTradeOrder) {
-                            int index = item.index;
-                            int quantity = item.getQuantity();
-                            if (_char1.bag[index] != null && _char1.bag[index].has(quantity)) {
-                                history1.addItem(History.GIAO_DICH_GUI, item);
-                                history2.addItem(History.GIAO_DICH_NHAN, item);
-                                _char2.addItemToBag(item);
-                                _char1.bag[index] = null;
-                                _char1.getService().removeItem(index);
-                            }
-                        }
-                    }
-                    history1.setBefore(_char1.coin, _char1.user.gold, _char1.yen);
-                    history2.setBefore(_char2.coin, _char2.user.gold, _char2.yen);
-                    _char1.coin += traders[1].coinTradeOrder - traders[0].coinTradeOrder;
-                    if (_char1.coin > _char1.coinMax) {
-                        _char1.coin = _char1.coinMax;
-                    }
-                    _char2.coin += traders[0].coinTradeOrder - traders[1].coinTradeOrder;
-                    if (_char2.coin > _char2.coinMax) {
-                        _char2.coin = _char2.coinMax;
-                    }
-                    history1.setAfter(_char1.coin, _char1.user.gold, _char1.yen);
-                    history2.setAfter(_char2.coin, _char2.user.gold, _char2.yen);
-                    long now = System.currentTimeMillis();
-                    history1.setTime(now);
-                    history2.setTime(now);
-                    History.insert(history1);
-                    History.insert(history2);
+            if (this.isFinish || traders == null || traders[0] == null || traders[1] == null || !traders[0].accept || !traders[1].accept) {
+                return;
+            }
+            Char _char1 = traders[0].player;
+            Char _char2 = traders[1].player;
+            if (_char1 == null || _char2 == null) {
+                return;
+            }
 
-                    _char1.getService().tradeOk();
-                    _char2.getService().tradeOk();
-                    _char1.updateWithBalanceMessage();
-                    _char2.updateWithBalanceMessage();
-                    this.isFinish = true;
-                } finally {
-                    if (isError) {
-                        closeUITrade();
-                        _char1.serverMessage(error1);
-                        _char2.serverMessage(error2);
+            // 2-Way Deterministic Ordered Lock to prevent race-condition item dupe and deadlock
+            Char firstLock = (_char1.id < _char2.id) ? _char1 : _char2;
+            Char secondLock = (_char1.id < _char2.id) ? _char2 : _char1;
+
+            synchronized (firstLock) {
+                synchronized (secondLock) {
+                    if (this.isFinish || !traders[0].accept || !traders[1].accept) {
+                        return;
+                    }
+                    boolean isError = false;
+                    String error1 = "";
+                    String error2 = "";
+                    _char1.invite.removeInvite(Invite.GIAO_DICH);
+                    _char2.invite.removeInvite(Invite.GIAO_DICH);
+                    try {
+                        int num = _char1.getSlotNull();
+                        if (traders[1].itemTradeOrder.size() > num) {
+                            isError = true;
+                            error1 = "Hành trang của bạn không đủ chỗ trống";
+                            error2 = "Hành trang của đối phương không đủ chỗ trống";
+                            return;
+                        }
+                        num = _char2.getSlotNull();
+                        if (traders[0].itemTradeOrder.size() > num) {
+                            isError = true;
+                            error2 = "Hành trang của bạn không đủ chỗ trống";
+                            error1 = "Hành trang của đối phương không đủ chỗ trống";
+                            return;
+                        }
+                        if (traders[0].coinTradeOrder > _char1.coin) {
+                            isError = true;
+                            error1 = "Bạn không đủ xu để giao dịch";
+                            error2 = "Đối phương không đủ xu để giao dịch";
+                            return;
+                        }
+                        if (traders[1].coinTradeOrder > _char2.coin) {
+                            isError = true;
+                            error2 = "Bạn không đủ xu để giao dịch";
+                            error1 = "Đối phương không đủ xu để giao dịch";
+                            return;
+                        }
+                        if (traders[0].coinTradeOrder > 1000000000) {
+                            isError = true;
+                            error1 = "Số xu tối đa có thể giao dịch là 1.000.000.000xu.";
+                            error2 = "Đối phương đã giao dịch quá giới hạn 1.000.000.000xu.";
+                            return;
+                        }
+                        if (traders[1].coinTradeOrder > 1000000000) {
+                            isError = true;
+                            error2 = "Số xu tối đa có thể giao dịch là 1.000.000.000xu.";
+                            error1 = "Đối phương đã giao dịch quá giới hạn 1.000.000.000xu.";
+                            return;
+                        }
+                        History history1 = new History(_char1.id, History.GIAO_DICH);
+                        History history2 = new History(_char2.id, History.GIAO_DICH);
+                        history1.setPartnerID(_char2.name);
+                        history2.setPartnerID(_char1.name);
+                        int numberItem = traders[1].itemTradeOrder.size();
+                        if (numberItem > 0) {
+                            for (Item item : traders[1].itemTradeOrder) {
+                                int id = item.id;
+                                int index = item.index;
+                                int quantity = item.getQuantity();
+                                if (_char2.bag[index] == null || _char2.bag[index].id != id
+                                        || _char2.bag[index].getQuantity() != quantity || _char2.bag[index].isLock) {
+                                    isError = true;
+                                    error2 = "Vật phẩm ở ô " + (index + 1) + " không hợp lệ.";
+                                    error1 = "Đối phương giao dịch vật phẩm không hợp lệ.";
+                                    return;
+                                }
+                            }
+                        }
+                        numberItem = traders[0].itemTradeOrder.size();
+                        if (numberItem > 0) {
+                            for (Item item : traders[0].itemTradeOrder) {
+                                int id = item.id;
+                                int index = item.index;
+                                int quantity = item.getQuantity();
+                                if (_char1.bag[index] == null || _char1.bag[index].id != id
+                                        || _char1.bag[index].getQuantity() != quantity || _char1.bag[index].isLock) {
+                                    isError = true;
+                                    error1 = "Vật phẩm ở ô " + (index + 1) + " không hợp lệ.";
+                                    error2 = "Đối phương giao dịch vật phẩm không hợp lệ.";
+                                    return;
+                                }
+                            }
+                        }
+                        numberItem = traders[1].itemTradeOrder.size();
+                        if (numberItem > 0) {
+                            for (Item item : traders[1].itemTradeOrder) {
+                                int index = item.index;
+                                int quantity = item.getQuantity();
+                                if (_char2.bag[index] != null && _char2.bag[index].has(quantity)) {
+                                    history1.addItem(History.GIAO_DICH_NHAN, item);
+                                    history2.addItem(History.GIAO_DICH_GUI, item);
+                                    _char1.addItemToBag(item);
+                                    _char2.bag[index] = null;
+                                    _char2.getService().removeItem(index);
+                                }
+                            }
+                        }
+                        numberItem = traders[0].itemTradeOrder.size();
+                        if (numberItem > 0) {
+                            for (Item item : traders[0].itemTradeOrder) {
+                                int index = item.index;
+                                int quantity = item.getQuantity();
+                                if (_char1.bag[index] != null && _char1.bag[index].has(quantity)) {
+                                    history1.addItem(History.GIAO_DICH_GUI, item);
+                                    history2.addItem(History.GIAO_DICH_NHAN, item);
+                                    _char2.addItemToBag(item);
+                                    _char1.bag[index] = null;
+                                    _char1.getService().removeItem(index);
+                                }
+                            }
+                        }
+                        history1.setBefore(_char1.coin, _char1.user.gold, _char1.yen);
+                        history2.setBefore(_char2.coin, _char2.user.gold, _char2.yen);
+                        _char1.coin += traders[1].coinTradeOrder - traders[0].coinTradeOrder;
+                        if (_char1.coin > _char1.coinMax) {
+                            _char1.coin = _char1.coinMax;
+                        }
+                        _char2.coin += traders[0].coinTradeOrder - traders[1].coinTradeOrder;
+                        if (_char2.coin > _char2.coinMax) {
+                            _char2.coin = _char2.coinMax;
+                        }
+                        history1.setAfter(_char1.coin, _char1.user.gold, _char1.yen);
+                        history2.setAfter(_char2.coin, _char2.user.gold, _char2.yen);
+                        long now = System.currentTimeMillis();
+                        history1.setTime(now);
+                        history2.setTime(now);
+                        History.insert(history1);
+                        History.insert(history2);
+
+                        _char1.getService().tradeOk();
+                        _char2.getService().tradeOk();
+                        _char1.updateWithBalanceMessage();
+                        _char2.updateWithBalanceMessage();
+                        this.isFinish = true;
+                    } finally {
+                        if (isError) {
+                            closeUITrade();
+                            _char1.serverMessage(error1);
+                            _char2.serverMessage(error2);
+                        }
                     }
                 }
             }

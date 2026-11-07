@@ -16,3 +16,4 @@ if ($content -match $pattern) {
 } else {
     Write-Warning "Pattern not matched in $path"
 }
+

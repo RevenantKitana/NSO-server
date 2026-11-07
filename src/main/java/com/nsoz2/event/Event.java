@@ -101,9 +101,11 @@ public abstract class Event {
     }
 
     public static void init() {
-        if (Config.getInstance().getEvent() != null) {
+        String eventName = Config.getInstance().getEvent();
+        if (eventName != null && !eventName.trim().isEmpty() && !eventName.trim().endsWith(".")) {
             try {
-                instance = (Event) Class.forName(Config.getInstance().getEvent()).newInstance();
+                String eventClass = eventName.trim().replace("com.nsoz.event.", "com.nsoz2.event.");
+                instance = (Event) Class.forName(eventClass).newInstance();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
                  Log.logException("Init event err", Event.class, ex);
             }

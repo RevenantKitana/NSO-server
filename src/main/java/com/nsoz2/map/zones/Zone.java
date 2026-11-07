@@ -425,16 +425,40 @@ public class Zone extends Thread {
 
     public void addChar(Char _char) {
         if (players != null) {
+            boolean wasEmpty = false;
             lockChar.writeLock().lock();
             try {
+                wasEmpty = this.players.isEmpty();
                 this.players.add(_char);
             } finally {
                 lockChar.writeLock().unlock();
+            }
+            if (wasEmpty) {
+                wakeUpMonsters();
             }
             try {
                 this.interrupt();
             } catch (Exception ignored) {
             }
+        }
+    }
+
+    public void wakeUpMonsters() {
+        try {
+            synchronized (waitingListRecoveries) {
+                if (!this.waitingListRecoveries.isEmpty()) {
+                    for (Mob mob : this.waitingListRecoveries) {
+                        mob.recovery();
+                        addMobForRespawnList(mob);
+                    }
+                    this.waitingListRecoveries.clear();
+                    if (!listRecoveries.isEmpty()) {
+                        recoveryMonster();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.logException("Lỗi wakeUpMonsters: ", Zone.class, e);
         }
     }
 
@@ -1230,14 +1254,30 @@ public class Zone extends Thread {
         }
     }
 
+    public void updateHibernated() {
+        if (!isClosed) {
+            updateBuNhin();
+            updateItemMap();
+        }
+    }
+
     @Override
     public void run() {
         while (this.running) {
             try {
-                // Toi uu CPU: Neu khu khong co nguoi choi thi nghi 2000ms, khi co nguoi choi hoat dong 500ms
-                long delay = (this.players == null || this.players.isEmpty()) ? 2000L : 500L;
+                boolean hasPlayers = (this.players != null && !this.players.isEmpty());
+                boolean isSpecialZone = (tilemap != null && (tilemap.isChienTruong() || tilemap.isGTC() || tilemap.isMapVithu()));
+
+                long delay;
                 long l1 = System.currentTimeMillis();
-                update();
+                if (hasPlayers || isSpecialZone) {
+                    delay = 500L;
+                    update();
+                } else {
+                    // Zone Hibernation: Khu vuc trong khong co nguoi choi chi quet don dep item/bu nhin, dung vong lap mob de tiet kiem CPU
+                    delay = 5000L;
+                    updateHibernated();
+                }
                 long l2 = System.currentTimeMillis();
                 long l3 = l2 - l1;
                 if (l3 > delay) {

@@ -5046,7 +5046,7 @@ public class Char {
         }
     }
 
-    public void itemBagToBox(Message ms) {
+    public synchronized void itemBagToBox(Message ms) {
         try {
             int commandBox = getCommandBox();
             if (commandBox != RUONG_DO) {
@@ -5084,7 +5084,7 @@ public class Char {
         }
     }
 
-    public void itemBoxToBag(Message ms) {
+    public synchronized void itemBoxToBag(Message ms) {
         try {
             if (trade != null) {
                 warningTrade();
@@ -6133,7 +6133,7 @@ public class Char {
         return false;
     }
 
-    public void itemBagToBox(Item item) {
+    public synchronized void itemBagToBox(Item item) {
         int index = getIndexItemByIdInBox(item.id, item.isLock);
         if (index == -1 || !box[index].template.isUpToUp || box[index].hasExpire() || item.isLock != box[index].isLock) {
             for (int i = 0; i < this.numberCellBox; i++) {
@@ -6154,7 +6154,7 @@ public class Char {
         }
     }
 
-    public void itemBoxToBag(Item item) {
+    public synchronized void itemBoxToBag(Item item) {
         int index = getIndexItemByIdInBag(item.id, item.isLock);
         if (index == -1 || !bag[index].template.isUpToUp || bag[index].hasExpire() || item.isLock != bag[index].isLock) {
             for (int i = 0; i < this.numberCellBag; i++) {
@@ -6187,7 +6187,7 @@ public class Char {
         }
     }
 
-    public void boxSort() {
+    public synchronized void boxSort() {
         try {
             Vector items = new Vector();
             for (int i = 0; i < this.box.length; i++) {
@@ -6227,7 +6227,7 @@ public class Char {
         }
     }
 
-    public void bagSort() {
+    public synchronized void bagSort() {
         if (trade != null) {
             warningTrade();
             return;
