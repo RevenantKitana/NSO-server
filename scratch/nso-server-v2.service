@@ -1,0 +1,20 @@
+[Unit]
+Description=NSO Game Server V2 (com.nsoz2 Modernized Sandbox)
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nso-server-v2
+ExecStart=/usr/bin/java -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms128M -Xmx320M -Xss192k -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=32M -cp /home/ubuntu/nso-server-v2/Nso-v2.jar com.nsoz2.server.NinjaSchool
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/ubuntu/nso-server-v2/logs/service.log
+StandardError=append:/home/ubuntu/nso-server-v2/logs/service_error.log
+LimitNOFILE=65535
+LimitNPROC=65535
+TasksMax=infinity
+
+[Install]
+WantedBy=multi-user.target
