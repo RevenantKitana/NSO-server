@@ -99,7 +99,8 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
                 }
                 new Thread(() -> {
                     try {
-                        HttpBridge.start(80);
+                        int httpPort = (Config.getInstance().getPort() == 14444) ? 80 : 8081;
+                        HttpBridge.start(httpPort);
                     } catch (Exception ex) {
                         System.err.println("Could not start HttpBridge: " + ex.getMessage());
                     }
