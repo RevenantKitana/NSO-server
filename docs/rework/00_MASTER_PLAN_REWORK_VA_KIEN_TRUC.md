@@ -1,22 +1,24 @@
 # KẾ HOẠCH TÁI CẤU TRÚC TOÀN DIỆN (MASTER PLAN REWORK & MODERNIZATION)
-## DỰ ÁN: NSO GAME SERVER (BACKEND TO DATABASE)
+## DỰ ÁN: NSO GAME SERVER V2 (EVOLUTIONARY CLONE & REFACTOR)
 
 ---
 
 ## 1. TỔNG QUAN & TẦM NHÌN DỰ ÁN
 
 ### 1.1. Bối cảnh
-Dự án kế thừa mã nguồn máy chủ cộng đồng Ninja School Online (NSO). Mặc dù hệ thống đã vận hành được, nhưng codebase hiện tại đang đối mặt với những vấn đề nghiêm trọng về nợ kỹ thuật (Technical Debt):
-- **God Class siêu khổng lồ:** `Char.java` chiếm tới ~25.000 dòng code (~34% toàn bộ mã nguồn Java), ôm đồm từ mạng, cơ sở dữ liệu, túi đồ, nhiệm vụ đến luồng xử lý.
+Dự án kế thừa mã nguồn máy chủ cộng đồng Ninja School Online (NSO). Mặc dù hệ thống gốc đã vận hành ổn định trên môi trường máy chủ VM, nhưng codebase hiện tại đang đối mặt với những vấn đề nghiêm trọng về nợ kỹ thuật (Technical Debt):
+- **God Class siêu khổng lồ:** `Char.java` chiếm tới ~25.000 dòng code (~34% toàn bộ mã nguồn Java), ôm đồm từ mạng, cơ sở dữ liệu, túi đồ, nhiệm vụ, kỹ năng đến luồng xử lý.
 - **Tầng mạng gắn chặt vào nghiệp vụ (Inverted Layering):** Đối tượng socket nhị phân (`Message mss`) bị truyền sâu vào từng hàm của nhân vật, không có ranh giới phân tách.
 - **Cơ sở dữ liệu phình to và chứa rác:** Hơn 70 bảng cơ sở dữ liệu, trong đó hơn 50% là tàn dư từ các hệ thống web nạp thẻ/CMS cũ (`charging_*`, `comments`, `napatm`, `momo_accounts`...), dữ liệu nhân vật bị nhồi nhét vào các chuỗi JSON tự do không có schema kiểm soát.
-- **Rủi ro cạn kiệt luồng (Thread Starvation):** Tồn tại các đoạn mã `threadPool.submit(new Thread(... Thread.sleep ...))` gây tắc nghẽn luồng xử lý khi lượng người chơi tăng.
+- **Rủi ro cạn kiệt luồng (Thread Starvation) & Dupe đồ:** Tồn tại các đoạn mã `threadPool.submit(new Thread(... Thread.sleep ...))` và các khối lock chưa chuẩn hóa dễ dẫn đến lỗi race-condition khi giao dịch hoặc cất đồ.
 
-### 1.2. Mục tiêu Tái cấu trúc
-1. **Dọn rác triệt để từ Backend đến Database:** Tinh giản cấu trúc, loại bỏ toàn bộ code chết và bảng rác.
-2. **Bảo toàn 100% Giao thức Client (Zero Client Impact):** Giữ nguyên vẹn định dạng gói tin byte stream với game client JAR/APK hiện có. Client không cần biết backend bên dưới được viết lại.
-3. **Mô hình hóa theo Clean Architecture & Domain-Driven Design (DDD):** Phân chia rõ ràng thành 4 tầng (Protocol Adapter -> Domain Logic -> Data Access -> Database Schema).
-4. **Dựng song song (Dual-Stack Sandbox):** Vừa phát triển server mới trên port riêng (`14445`) và database mới (`nso_v2`), vừa kiểm thử liên tục với client thật bằng công cụ patch IP có sẵn trong `manage.bat`.
+### 1.2. Chiến Lược Cốt Lõi: Bản Sao Độc Lập Tiến Hóa (Evolutionary Twin Sandbox)
+Khác với phương pháp "Greenfield Rewrite" (đập đi xây mới hoàn toàn từ đầu bị thất bại do vướng phải hộp đen 20-30 packet ngầm định của J2ME Client), dự án áp dụng chiến lược **Clone-and-Modernize (Strangler Fig Pattern)**:
+
+> [!IMPORTANT]
+> **2 CỘT MỐC HỆ THỐNG BẤT BIẾN:**
+> 1. **Server Gốc V1 (Port `14444`, DB `nso_test`):** Là mốc đối chứng an toàn tuyệt đối (Pristine Reference Anchor). Tuyệt đối **không sửa code, không đè dữ liệu, không can thiệp**.
+> 2. **Server Cải Tiến V2 (Port `14445`, DB `nso_v2`):** Được clone nguyên bản từ V1 sang một môi trường độc lập hoàn toàn. Toàn bộ các cải tiến kiến trúc Clean Architecture, cân bằng gameplay (`update_skills.sql`), công thức sát thương mới, và tối ưu kết nối đều được thực thi và kiểm thử tại đây.
 
 ### 1.3. Định vị Portfolio & Tiêu chuẩn Thiết kế của Tác giả (Author's Core Guidelines)
 Dự án được định hướng như một **Showpiece Portfolio** chứng minh năng lực kỹ thuật thực chiến ở cấp độ Senior Backend / System Architect:
@@ -28,7 +30,7 @@ Dự án được định hướng như một **Showpiece Portfolio** chứng mi
    * **Không sa vào cái bẫy Over-engineering:** Không chia vụn vặt mỗi hành động một class, không tạo ra hàng trăm file li ti gây áp lực dọn rác (GC Pressure) và khó trace code.
    * **Tập hợp phần tử tương đồng (High Cohesion):** Gom các tính năng có chung ngữ cảnh và thao tác trên cùng một tập dữ liệu thành **5 Tập Hợp Vai Trò (5 Cohesive Sets)**.
 3. **Bảo tồn "Di sản" (Game DNA) của Ninja School Online:**
-   * Không khắt khe ở các ID nhỏ lẻ hay công thức toán học vi mô (tác giả tự do refactor/cân bằng).
+   * Không khắt khe ở các ID nhỏ lẻ hay công thức vi mô (tác giả tự do refactor/cân bằng).
    * Phải giữ trọn vẹn 5 Cột trụ Bản sắc (Tam trường lục phái, Hào quang Kenshiko +16, Avatar Part, Phân thân & Vĩ thú, Map tuổi thơ) để người chơi/người xem demo nhận ra ngay đây là Ninja School.
 4. **Kế thừa Thực dụng (Pragmatic Inheritance):**
    * Kế thừa 100% Quái vật (bảng `monster`, tọa độ spawn) kết hợp kỹ thuật **Zone Hibernation** (ngủ đông zone trống, tiết kiệm 90% CPU).
@@ -38,7 +40,7 @@ Dự án được định hướng như một **Showpiece Portfolio** chứng mi
 
 ## 2. NGUYÊN TẮC CỐT LÕI: CHIẾN LƯỢC 80/20 (PARETO)
 
-Để công cuộc rework không biến thành gánh nặng vô tận, dự án áp dụng nguyên lý: **Kế thừa 20% cốt lõi giải quyết 80% độ phức tạp, và vứt bỏ 80% vỏ bọc spaghetti**.
+Để công cuộc cải tiến không biến thành gánh nặng vô tận, dự án áp dụng nguyên lý: **Kế thừa 20% cốt lõi giải quyết 80% độ phức tạp, và vứt bỏ 80% vỏ bọc spaghetti**.
 
 ```mermaid
 graph TD
@@ -57,35 +59,36 @@ graph TD
         B1[Công thức Cường hóa đập đồ: Đá +1 đến +16, tỷ lệ %]
         B2[Quy tắc Trang bị: Điều kiện mặc class/level/nam/nữ]
         B3[Công thức chia EXP Tổ đội & Điều kiện Gia tộc]
+        B4[Cân bằng Kỹ năng 25 của 6 phái theo update_skills.sql]
     end
 
     subgraph VỨT BỎ HOÀN TOÀN - DỌN RÁC
         C1[Hơn 40 bảng DB rác: charging, momo, ctv_money, comments]
-        C2[File Char.java 25.000 dòng]
+        C2[God Class Char.java 25.000 dòng]
         C3[Toàn bộ Thread.sleep trong Worker Thread Pool]
-        C4[Switch-case 135 nhánh trong Controller.java]
+        C4[Switch-case khổng lồ trong Controller.java]
         C5[Các file Event copy-paste: Noel, LunarNewYear, He...]
-        C6[Thư viện rác: log4j 1.x, poi Excel, json-simple]
+        C6[Thư viện rác cũ: log4j 1.x, poi Excel, json-simple]
     end
 ```
 
 ---
 
-## 3. MÔ HÌNH KIẾN TRÚC MỤC TIÊU (4 TẦNG PHÂN LẬP)
+## 3. MÔ HÌNH KIẾN TRÚC MỤC TIÊU V2 (4 TẦNG PHÂN LẬP)
 
 ```
 ┌────────────────────────────────────────────────────────┐
 │               GAME CLIENT (JAR / APK)                  │
 │       (Hộp đen giao tiếp qua TCP Socket Byte)          │
 └───────────────────────────▲────────────────────────────┘
-                            │ (Raw Byte Stream)
+                            │ (Raw Byte Stream - Giữ nguyên 100%)
 ┌───────────────────────────▼────────────────────────────┐
 │ 1. PROTOCOL ADAPTER LAYER                              │
 │    - Packet Codec (Inbound Reader & Outbound Writer)   │
 │    - 5 Controller Routers theo nhóm vai trò:           │
-│      + AuthPacketHandler      + MovementPacketHandler  │
-│      + InventoryPacketHandler + CombatPacketHandler    │
-│      + SocialPacketHandler                             │
+│      + AuthPacketController   + SpatialPacketController│
+│      + CombatPacketController + InventoryPacketController│
+│      + SocialPacketController                          │
 │    - Chuyển đổi Byte <---> DTO / Command sạch          │
 └───────────────────────────▲────────────────────────────┘
                             │ (Clean Request/Response DTOs)
@@ -108,60 +111,71 @@ graph TD
 └───────────────────────────▲────────────────────────────┘
                             │ (Clean SQL / HikariCP Pool)
 ┌───────────────────────────▼────────────────────────────┐
-│ 4. DATABASE V2 SCHEMA (TINH GỌN ~18 BẢNG)              │
-│    - Chuẩn hóa UTF8MB4 toàn diện, Foreign Key rõ ràng  │
+│ 4. DATABASE V2 SCHEMA (TINH GỌN TRÊN NSO_V2)           │
+│    - Kế thừa schema hoạt động từ nso_test sang nso_v2  │
+│    - Dọn dẹp an toàn các bảng rác nạp thẻ/CMS          │
 │    - Tách biệt rõ: Static Templates vs Dynamic State   │
 └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. LỘ TRÌNH THỰC HIỆN 4 GIAI ĐOẠN
+## 4. LỘ TRÌNH 4 GIAI ĐOẠN TIẾN HÓA TRÊN BẢN CLONE V2
 
 ```mermaid
 flowchart LR
-    G1["Giai đoạn 1\nĐặc tả & Thiết kế\n(Hiện tại)"]
-    G2["Giai đoạn 2\nDatabase V2 &\nSkeleton Server"]
-    G3["Giai đoạn 3\nCore Handshake &\nClient Fetching"]
-    G4["Giai đoạn 4\nGameplay Modules\n& Migration"]
+    G1["Giai đoạn 1\nDual-Stack Sandbox\n(Port 14445, nso_v2)"]
+    G2["Giai đoạn 2\nController Decoupling\n(5 Packet Controllers)"]
+    G3["Giai đoạn 3\nDomain Decomposition\n(Tách Char.java) & Skill Balance"]
+    G4["Giai đoạn 4\nHạ Tầng HikariCP\n& Chống Dupe/Crash"]
 
     G1 --> G2 --> G3 --> G4
 ```
 
-### Giai đoạn 1: Đặc tả Bối cảnh, Hệ sinh thái & Chuẩn bị (Tuần 1)
-- Viết trọn bộ 4 tài liệu kiến trúc tại `docs/rework/`.
-- Phân định rõ 8 trụ cột hệ sinh thái NSO ("Game này có gì").
-- Thiết kế Database V2 tinh gọn (~18 bảng) và tài liệu hóa giao thức Client.
+### Giai đoạn 1: Thiết lập Dual-Stack Sandbox V2 Chạy Song Song
+- Nhân bản an toàn cấu hình và DB `nso_test` sang `nso_v2`.
+- Cấu hình server chạy độc lập tại Port `14445` (Embedded HTTP Bridge port `8081`).
+- **Tiêu chí nghiệm thu (DoD):** Mở client kết nối port 14445, đăng nhập tài khoản test `admin / admin123`, vào thẳng Làng Tone (Map 22), di chuyển đánh quái mượt mà 100%. Server V1 gốc trên port 14444 vẫn chạy bình thường không bị ảnh hưởng.
 
-### Giai đoạn 2: Database V2 & Skeleton Server V2 (Tuần 2)
-- Tạo schema `nso_v2` độc lập trên MariaDB local.
-- Viết script nạp dữ liệu Static Templates từ database cũ sang `nso_v2`.
-- Khởi tạo project Maven V2 (Java 17 sạch, Netty, HikariCP, Gson/Jackson, Logback).
-- Cấu hình server chạy độc lập tại Port `14445`.
+### Giai đoạn 2: Bóc Tách Tầng Mạng (Controller Decoupling)
+- Thu gọn `Controller.java` khổng lồ thành Facade Router gọn nhẹ.
+- Tách thành 5 Controller chuyên biệt:
+  1. `AuthPacketController`: Login, chọn/tạo nhân vật, khóa bảo vệ.
+  2. `SpatialPacketController`: Di chuyển, đổi map, đổi zone, request template.
+  3. `CombatPacketController`: Đánh quái/người, kỹ năng, PK, lôi đài, hồi sinh.
+  4. `InventoryPacketController`: Túi, rương, mua bán, nâng cấp, vĩ thú.
+  5. `SocialPacketController`: Chat, gia tộc, party, bạn bè, trade.
+- **Tiêu chí nghiệm thu (DoD):** Biên dịch Maven sạch sẽ, toàn bộ thao tác di chuyển, nhặt đồ, tung chiêu trên server V2 chạy trơn tru 100%.
 
-### Giai đoạn 3: Bắt tay Client & Hoàn tất chuỗi Fetching (Tuần 3)
-- Triển khai `PacketCodec` và Handler cho chuỗi gói tin mở màn:
-  * `CMD -27`: Key exchange & mã hóa socket.
-  * `CMD -122`: Resource version.
-  * `CMD -121`: Game template metadata (Items, Skills, Maps).
-  * `CMD -127` / `CMD 2`: Đăng nhập & Hiển thị danh sách nhân vật.
-- **Cột mốc kiểm chứng (Milestone 1):** Dùng `manage.bat` patch client test trỏ port 14445, mở client lên nạp 100%, đăng nhập thành công vào sảnh chọn nhân vật.
+### Giai đoạn 3: Tái Cấu Trúc Domain (`Char.java`) & Cân Bằng Kỹ Năng
+- Áp dụng Component Pattern để giải phẫu `Char.java` (~25.000 dòng):
+  * Chuyển tọa độ sang `SpatialComponent`.
+  * Chuyển chỉ số HP/MP/EXP sang `CharacterStateComponent`.
+  * Chuyển hệ thống trang bị sang `InventoryComponent`.
+  * Chuyển cơ chế sát thương sang `CombatComponent` kết hợp bộ công thức mới (`docs/rework/09, 10`).
+- Áp dụng bộ cân bằng kỹ năng 25 của 6 phái ([`update_skills.sql`](file:///e:/TT/SETUP_LOCAL/SRC_GAME/update_skills.sql)) trên database `nso_v2`.
+- **Tiêu chí nghiệm thu (DoD):** Nhân vật sử dụng chiêu thức mới mượt mà, công thức dame đối xứng tính toán chính xác không bị bug bất tử.
 
-### Giai đoạn 4: Di chuyển Module Nghiệp vụ & Dữ liệu (Tuần 4 - 6)
-- Bê từng module sang theo thứ tự ưu tiên:
-  1. `World & Zone`: Vào map (`CMD -107 Me Load All`), di chuyển, đồng bộ người chơi xung quanh.
-  2. `Inventory & Equipment`: Túi đồ, rương, mặc/tháo trang bị, dùng bình máu.
-  3. `Combat & Mobs`: Tích hợp `NewDamageEngine`, spawn quái, đánh quái, nhặt vật phẩm rơi.
-  4. `Social & Chat`: Chat kênh, tổ đội, bạn bè.
-- Viết script ETL (Extract-Transform-Load) chuyển dữ liệu tài khoản/nhân vật từ database cũ sang database mới.
+### Giai đoạn 4: Tối Ưu Hạ Tầng, HikariCP & Phòng Chống Dupe/Crash
+- Nâng cấp connection pool từ DBCP thô sang **HikariCP** với cơ chế rò rỉ timeout an toàn.
+- Vá các lỗ hổng Race-condition kinh điển tại các điểm nóng:
+  * Giao dịch P2P giữa 2 người chơi.
+  * Cất / rút đồ từ Rương và Hòm thư.
+  * Nâng cấp / phân tách trang bị.
+- Kích hoạt **Zone Hibernation** (ngủ đông quái ở các map không có người chơi) giúp giảm 80-90% tải CPU máy chủ.
 
 ---
 
-## 5. BỘ TÀI LIỆU KIẾN TRÚC TRONG THƯ MỤC `docs/rework/`
+## 5. BỘ TÀI LIỆU KIẾN TRÚC ĐI KÈM
 
-1. **`00_MASTER_PLAN_REWORK_VA_KIEN_TRUC.md`** *(Tài liệu này)*: Tổng quan kế hoạch, nguyên tắc 80/20 và lộ trình.
-2. **`01_BAN_DO_HE_SINH_THAI_GAME_NAY_CO_GI.md`**: Bản đồ chi tiết 8 trụ cột hệ sinh thái và danh mục tính năng.
-3. **`02_THIET_KE_DATABASE_V2_TINH_GON.md`**: Thiết kế schema database V2 rút gọn từ 70+ bảng xuống ~18 bảng.
-4. **`03_QUY_CHUAN_GIAO_THUC_CLIENT_ADAPTER.md`**: Đặc tả giao thức mạng nhị phân, vòng đời client fetching và thiết kế Adapter.
-5. **`04_DAC_TA_DI_SAN_VA_KE_THUA.md`**: Bản sắc 5 cột trụ DNA NSO, chiến lược kế thừa Quái vật (Zone Hibernation) và Nhiệm vụ (Observer Pattern).
-
+1. **`00_MASTER_PLAN_REWORK_VA_KIEN_TRUC.md`** *(Tài liệu này)*: Kế hoạch tổng thể và lộ trình cải tiến V2.
+2. **`01_BAN_DO_HE_SINH_THAI_GAME_NAY_CO_GI.md`**: Bản đồ chi tiết 8 trụ cột hệ sinh thái NSO.
+3. **`02_THIET_KE_DATABASE_V2_TINH_GON.md`**: Tối ưu và dọn dẹp cơ sở dữ liệu `nso_v2`.
+4. **`03_QUY_CHUAN_GIAO_THUC_CLIENT_ADAPTER.md`**: Quy chuẩn giao thức mạng nhị phân và kiến trúc Controller Adapter.
+5. **`04_DAC_TA_DI_SAN_VA_KE_THUA.md`**: 5 Cột trụ Bản sắc DNA NSO, Zone Hibernation & Nhiệm vụ Observer.
+6. **`05_DAC_TA_CHI_TIET_5_TAP_HOP_VAI_TRO.md`**: Đặc tả chi tiết 5 Component phân rã từ `Char.java`.
+7. **`06_CAC_CAU_HOI_VA_QUYET_DINH_KIEN_TRUC.md`**: Bản khảo sát và các quyết định kiến trúc cốt lõi (ADR).
+8. **`07_CHIEN_LUOC_MILESTONE_VA_UOC_LUONG_PHIEN_BAN.md`**: Chi tiết tiêu chuẩn nghiệm thu (DoD) của 4 Milestone cục bộ.
+9. **`08_THIET_KE_HE_THONG_TRANG_BI_5_TIER.md`**: Thiết kế hệ thống trang bị 5 phẩm chất rời rạc.
+10. **`09_THIET_KE_ENGINE_CHI_SO_VA_CAN_BANG_COMBAT.md`**: Engine chỉ số và công thức tính sát thương 3 tầng.
+11. **`10_GIAI_THUAT_XAC_SUAT_SINGLE_ROLL_MULTI_VARIABLE.md`**: Giải thuật xác suất Single-Roll triệt tiêu bug bất tử.

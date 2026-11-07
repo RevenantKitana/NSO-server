@@ -1,7 +1,15 @@
 # THIẾT KẾ DATABASE V2 TINH GỌN & KẾ HOẠCH DỌN RÁC DỮ LIỆU
 ## TỪ 70+ BẢNG LEGACY XUỐNG ~18 BẢNG CHUẨN MỰC
 **Dự án:** NSO Game Server Modernization  
-**Mục tiêu:** Loại bỏ toàn bộ bảng rác, chuẩn hóa cấu trúc dữ liệu người chơi, xóa bỏ anti-pattern "nhồi JSON", thiết lập quan hệ khóa ngoại (Foreign Key) và quy chuẩn Collation UTF8MB4.
+**Mục tiêu:** Loại bỏ toàn bộ bảng rác, chuẩn hóa cấu trúc dữ liệu người chơi, tối ưu hiệu năng connection pool với HikariCP, và đảm bảo an toàn tuyệt đối cho database gốc `nso_test`.
+
+---
+
+> [!IMPORTANT]
+> ### CHIẾN LƯỢC CLONE ĐỘC LẬP & AN TOÀN TUYỆT ĐỐI
+> 1. **Database Gốc (`nso_test`):** Không bao giờ bị sửa đổi hay xóa dữ liệu.
+> 2. **Database Cải Tiến (`nso_v2`):** Được clone nguyên bản từ `nso_test` làm môi trường Sandbox cho Server V2 (Port 14445).
+> 3. **Lộ trình dọn rác tiến hóa:** Thay vì thay thế schema mới làm gãy server ngay ngày đầu, Server V2 khởi động trên nền bản clone đầy đủ, sau đó tiến hành dọn dẹp các bảng rác (web thẻ cào, momo) và chuẩn hóa dần từng bảng trong các giai đoạn tiếp theo.
 
 ---
 
