@@ -710,6 +710,14 @@ public abstract class CharBase {
     public abstract int checkThangNguong(Item item);
     public abstract int checkThangCap(Item item);
         public abstract Item getItemInCollectionBox(int id);
+        public abstract void addWarClanPoint(short point);
+    public abstract void addWarPoint(short point);
+    public abstract Char getOriginChar();
+    public abstract boolean isBot();
+    public abstract boolean isCool();
+    public abstract boolean isInvisible();
+    public abstract boolean isNonCombatState();
+
     public abstract int checkTypeItem(Item item);
     public abstract void updateItemKhaiHoa(Item item);
     public abstract void updateHPMount(int hp);
