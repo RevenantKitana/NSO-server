@@ -22,6 +22,8 @@ import com.nsoz2.db.mongodb.MongoDbConnection;
 import com.nsoz2.effect.Effect;
 import com.nsoz2.effect.EffectManager;
 import com.nsoz2.event.*;
+import com.nsoz2.event.bus.EventBus;
+import com.nsoz2.event.bus.event.ItemPickedEvent;
 import com.nsoz2.event.eventpoint.EventPoint;
 import com.nsoz2.event.eventpoint.Point;
 import com.nsoz2.fashion.FashionCustom;
@@ -1459,7 +1461,7 @@ public abstract class CharInventoryHandler extends CharCombatHandler {
                                                 itm.setQuantity(1);
                                                 itm.isLock = false;
                                                 addItemToBag(itm);
-//                                                updateTaskPickItem(itm);
+//                                                EventBus.publish(new ItemPickedEvent((Char) this, itm));
                                                 zone.getService().pickItem(o, itemMap);
                                                 zone.removeItem(itemMap);
                                             }
@@ -1627,7 +1629,7 @@ public abstract class CharInventoryHandler extends CharCombatHandler {
                             if (item.id != ItemName.CAY_NAM && item.id != ItemName.TRUNG_VI_THU) {
                                 zone.getService().pickItem((Char) this, itemMap);
                                 zone.removeItem(itemMap);
-                                updateTaskPickItem(item);
+                                EventBus.publish(new ItemPickedEvent((Char) this, item));
                                 if (item.template.id == ItemName.YEN) {
                                     if (this.gloryTask != null && this.gloryTask.type == GloryTask.NHAT_YEN) {
                                         this.gloryTask.updateProgress(item.getQuantity());
@@ -1641,7 +1643,7 @@ public abstract class CharInventoryHandler extends CharCombatHandler {
                                                 if (_char.taskMain != null) {
                                                     if (_char.taskMain.taskId == this.taskMain.taskId && _char.taskMain.index == this.taskMain.index) {
                                                         _char.addItemToBag(Converter.getInstance().newItem(item));
-                                                        _char.updateTaskPickItem(item);
+                                                        EventBus.publish(new ItemPickedEvent(_char, item));
 
                                                     }
                                                 }

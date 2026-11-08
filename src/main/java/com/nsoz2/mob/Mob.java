@@ -20,6 +20,8 @@ import com.nsoz2.event.Halloween;
 import com.nsoz2.event.KoroKing;
 import com.nsoz2.event.Noel;
 import com.nsoz2.item.Item;
+import com.nsoz2.event.bus.EventBus;
+import com.nsoz2.event.bus.event.MonsterKilledEvent;
 import com.nsoz2.item.ItemStatCalculator;
 import com.nsoz2.item.ItemFactory;
 import com.nsoz2.lib.RandomCollection;
@@ -1172,63 +1174,8 @@ public class Mob {
                     ((KoroKing) Event.getEvent()).infection(killer);
                 }
             }
-            if (killer.taskOrders != null) {
-                for (TaskOrder task : killer.taskOrders) {
-                    if (task.isComplete()) {
-                        continue;
-                    }
-                    if (task.killId == this.template.id) {
-                        if (task.taskId == TaskOrder.TASK_DAY) {
-                            task.updateTask(1);
-                        }
-                        if (task.taskId == TaskOrder.TASK_BOSS) {
-                            if (this.levelBoss == 3) {
-                                task.updateTask(1);
-                                //
-                                Group group = killer.getGroup();
-                                if (group != null) {
-                                    List<Char> chars = group.getCharsInZone(killer.mapId, zone.id);
-                                    for (Char _char : chars) {
-                                        if (_char != null && _char != killer && !_char.isDead) {
-                                            if (_char.taskOrders != null) {
-                                                for (TaskOrder task2 : _char.taskOrders) {
-                                                    if (task2.isComplete()) {
-                                                        continue;
-                                                    }
-                                                    if (task2.killId == this.template.id) {
-                                                        if (task2.taskId == TaskOrder.TASK_BOSS) {
-                                                            task2.updateTask(1);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-            if (killer.taskMain != null) {
-                if (killer.taskId != TaskName.NV_BAT_KHA_THI || ((killer.taskMain.index == 1 && this.levelBoss == 1) || (killer.taskMain.index == 2 && this.levelBoss == 2))) {
-                    killer.updateTaskKillMonster(this);
-                    Group group = killer.getGroup();
-                    if (group != null) {
-                        List<Char> chars = group.getCharsInZone(killer.mapId, zone.id);
-                        for (Char _char : chars) {
-                            if (_char != null && _char != killer && !_char.isDead) {
-                                if (_char.taskMain != null) {
-                                    if (_char.taskMain.taskId == killer.taskMain.taskId && _char.taskMain.index == killer.taskMain.index) {
-                                        _char.updateTaskKillMonster(this);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            // Observer Pattern: Ban Domain Event den QuestEventListener (Spec 04 Muc 4.2)
+            EventBus.publish(new MonsterKilledEvent(killer, this));
             if (this.template.id == MobName.NGUOI_TUYET) {
                 if (killer.clan != null) {
                     for (Char mem : killer.clan.getOnlineMembers()) {

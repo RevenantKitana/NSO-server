@@ -24,6 +24,8 @@ import com.nsoz2.db.mongodb.MongoDbConnection;
 import com.nsoz2.effect.Effect;
 import com.nsoz2.effect.EffectManager;
 import com.nsoz2.event.*;
+import com.nsoz2.event.bus.EventBus;
+import com.nsoz2.event.bus.event.PlayerLevelUpEvent;
 import com.nsoz2.event.eventpoint.EventPoint;
 import com.nsoz2.event.eventpoint.Point;
 import com.nsoz2.fashion.FashionCustom;
@@ -4043,7 +4045,7 @@ public class Char extends CharPersistenceHandler {
                     this.skillPoint += num;
                 }
 
-                updateTaskLevelUp();
+                EventBus.publish(new PlayerLevelUpEvent(this, this.level));
                 getService().levelUp();
                 zone.getService().loadLevel(this);
                 setAbility();

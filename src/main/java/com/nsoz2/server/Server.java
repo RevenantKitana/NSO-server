@@ -24,6 +24,7 @@ import com.nsoz2.option.SkillOption;
 import com.nsoz2.skill.*;
 import com.nsoz2.stall.StallManager;
 import com.nsoz2.store.StoreManager;
+import com.nsoz2.event.bus.listener.QuestEventListener;
 import com.nsoz2.store.StoreUpgradeManager; // shop 16
 import com.nsoz2.task.Task;
 import com.nsoz2.task.TaskTemplate;
@@ -118,6 +119,7 @@ public class Server {
 
             getTask();
             getTaskTemplate();
+            QuestEventListener.getInstance().init();
             getOther();
             MountDataManager.getInstance().init();
             EffectTemplateManager.getInstance().init();
