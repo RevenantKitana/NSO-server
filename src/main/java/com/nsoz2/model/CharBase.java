@@ -709,6 +709,7 @@ public abstract class CharBase {
     public abstract void tayKyNang(short npcId);
     public abstract int checkThangNguong(Item item);
     public abstract int checkThangCap(Item item);
+        public abstract Item getItemInCollectionBox(int id);
     public abstract int checkTypeItem(Item item);
     public abstract void updateItemKhaiHoa(Item item);
     public abstract void updateHPMount(int hp);
