@@ -1599,6 +1599,9 @@ public abstract class CharInventoryHandler extends CharCombatHandler {
                                     addItemToBag(itm);
                                 } else {
                                     addItemToBag(item);
+                                    if (item.template != null && item.template.isTypeBody() && item.tier == ItemStatCalculator.TIER_5_PERFECT) {
+                                        serverMessage("Bạn vừa nhặt được " + item.template.name + " phẩm chất HOÀN MỸ (A5)!");
+                                    }
                                     if (item.has(500)) {
                                         History history = new History(this.id, History.NHAT_VAT_PHAM);
                                         history.setBefore(this.coin, user.gold, this.yen);

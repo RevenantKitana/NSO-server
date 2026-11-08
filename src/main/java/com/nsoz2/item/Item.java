@@ -25,6 +25,7 @@ public class Item {
     public long expire;
     public byte upgrade;
     public byte sys;
+    public byte tier = ItemStatCalculator.TIER_3_SUPERIOR;
     public boolean isLock;
     public int yen;
     public ArrayList<ItemOption> options;
@@ -50,6 +51,7 @@ public class Item {
         this.quantity = 1;
         this.upgrade = 0;
         this.sys = 0;
+        this.tier = ItemStatCalculator.TIER_3_SUPERIOR;
         this.options = new ArrayList<>();
         if (this.template.isTypeAdorn() || this.template.isTypeClothe() || this.template.isTypeWeapon()) {
             this.gems = new ArrayList<>();
@@ -847,6 +849,7 @@ public class Item {
 //            System.out.println(this.template.name);
             this.sys = parse.containsKey("sys") ? parse.getByte("sys") : 0;
             this.upgrade = parse.containsKey("upgrade") ? parse.getByte("upgrade") : 0;
+            this.tier = parse.containsKey("tier") ? parse.getByte("tier") : ItemStatCalculator.TIER_3_SUPERIOR;
             if (parse.containsKey("options")) {
                 JSONArray ability = parse.getJSONArray("options");
                 if (ability != null) {
@@ -1067,6 +1070,7 @@ public class Item {
                 || this.template.isTypeEquipmentBijuu()) {
             obj.put("sys", this.sys);
             obj.put("upgrade", this.upgrade);
+            obj.put("tier", (int) this.tier);
             JSONArray abilitys = new JSONArray();
             if (this.options != null) {
                 for (ItemOption option : this.options) {
@@ -1506,6 +1510,11 @@ public class Item {
 
     // random trang bị 9x
     public void randomOptionItem9x(boolean isMaxOption) {
+        randomOptionItem9x(isMaxOption ? ItemStatCalculator.TIER_5_PERFECT : ItemStatCalculator.rollTierForCraft());
+    }
+
+    public void randomOptionItem9x(byte tier) {
+        this.tier = tier;
         this.isLock = false;
         if (id >= 618 && id <= 627) { // quần áo
             int[][][] itemOptionIds = {
@@ -1558,7 +1567,7 @@ public class Item {
             }
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
+                int param = ItemStatCalculator.calculate(option_min[i][1], option_max[i][1], this.tier);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
             this.sys = randomSys;
@@ -1594,7 +1603,7 @@ public class Item {
             }
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
+                int param = ItemStatCalculator.calculate(option_min[i][1], option_max[i][1], this.tier);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
             this.sys = randomSys;
@@ -1629,7 +1638,7 @@ public class Item {
             option_max[7][1] = 40;
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
+                int param = ItemStatCalculator.calculate(option_min[i][1], option_max[i][1], this.tier);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
             this.sys = s;
@@ -1638,6 +1647,11 @@ public class Item {
     }
 
     public void randomOptionItem10x(boolean isMaxOption) {
+        randomOptionItem10x(isMaxOption ? ItemStatCalculator.TIER_5_PERFECT : ItemStatCalculator.rollTierForCraft());
+    }
+
+    public void randomOptionItem10x(byte tier) {
+        this.tier = tier;
         this.isLock = false;
         if (id >= 1163 && id <= 1172) { // quần áo
             int[][][] itemOptionIds = {
@@ -1690,7 +1704,7 @@ public class Item {
             }
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
+                int param = ItemStatCalculator.calculate(option_min[i][1], option_max[i][1], this.tier);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
             this.sys = randomSys;
@@ -1726,7 +1740,7 @@ public class Item {
             }
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
+                int param = ItemStatCalculator.calculate(option_min[i][1], option_max[i][1], this.tier);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
             this.sys = randomSys;
@@ -1761,7 +1775,7 @@ public class Item {
             option_max[7][1] = 60;
             int[][] option_min = NinjaUtils.getOptionShop(option_max);
             for (int i = 0; i < option_max.length; i++) {
-                int param = isMaxOption ? option_max[i][1] : NinjaUtils.nextInt(option_min[i][1], option_max[i][1]);
+                int param = ItemStatCalculator.calculate(option_min[i][1], option_max[i][1], this.tier);
                 this.options.add(new ItemOption(option_max[i][0], param));
             }
             this.sys = s;

@@ -20,6 +20,7 @@ import com.nsoz2.event.Halloween;
 import com.nsoz2.event.KoroKing;
 import com.nsoz2.event.Noel;
 import com.nsoz2.item.Item;
+import com.nsoz2.item.ItemStatCalculator;
 import com.nsoz2.item.ItemFactory;
 import com.nsoz2.lib.RandomCollection;
 import com.nsoz2.map.item.ItemMap;
@@ -646,15 +647,10 @@ public class Mob {
                 if (itemStore == null) {
                     return;
                 }
-                itm = Converter.getInstance().toItem(itemStore, Converter.RANDOM_OPTION);
-                int n = NinjaUtils.nextInt(itm.options.size() - 1);
-                for (int i = 0; i < n; i++) {
-                    int index = NinjaUtils.nextInt(itm.options.size());
-                    itm.options.remove(index);
-                }
-                if (n > 0) {
-                    itm.yen = 5;
-                }
+                byte tier = (this.isBoss || this.levelBoss > 0)
+                        ? ItemStatCalculator.rollTierForBoss()
+                        : ItemStatCalculator.rollTierForNormalMob();
+                itm = Converter.getInstance().toItemByTier(itemStore, tier);
             } else if (type == PHIEU_MAY_MAN) {
                 itemId = ItemName.PHIEU_MAY_MAN;
             } else if (type == PHAN_THAN_LENH) {
@@ -677,7 +673,7 @@ public class Mob {
                 if (itemStore == null) {
                     return;
                 }
-                itm = Converter.getInstance().toItem(itemStore, Converter.MAX_OPTION);
+                itm = Converter.getInstance().toItemByTier(itemStore, ItemStatCalculator.TIER_5_PERFECT);
 
 
                 // ecuong fix item boss
@@ -698,7 +694,8 @@ public class Mob {
                 if (itemStore == null) {
                     return;
                 }
-                itm = Converter.getInstance().toItem(itemStore, Converter.RANDOM_OPTION);
+                byte tier = ItemStatCalculator.rollTierForBoss();
+                itm = Converter.getInstance().toItemByTier(itemStore, tier);
             } else if (type == SVCBOSS) {
                 RandomCollection<Integer> SVC = new RandomCollection<>();
                 SVC.add(0.5, ItemName.SACH_VO_CONG_KIEM_100);

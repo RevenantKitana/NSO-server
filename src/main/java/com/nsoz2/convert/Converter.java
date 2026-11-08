@@ -193,7 +193,7 @@ public class Converter {
         return newSkill;
     }
 
-    public Item toItem(ItemStore itemStore, byte type) {
+    public Item toItemByTier(ItemStore itemStore, byte tier) {
         Item newItem = ItemFactory.getInstance().newItem(itemStore.getItemID());
         ItemTemplate template = itemStore.getTemplate();
         long expire = itemStore.getExpire();
@@ -206,6 +206,7 @@ public class Converter {
         if (template.isTypeBody() || template.isTypeNgocKham() || template.isTypeMount()) {
             newItem.setQuantity(1);
             newItem.sys = itemStore.getSys();
+            newItem.tier = tier;
             List<ItemOption> maxOptions = itemStore.getMaxOptions();
             List<ItemOption> minOptions = itemStore.getMinOptions();
             int num = maxOptions.size();
@@ -213,19 +214,24 @@ public class Converter {
                 ItemOption maxOption = maxOptions.get(a);
                 ItemOption minOption = minOptions.get(a);
                 int templateId = maxOption.optionTemplate.id;
-                int param;
-                if (type == RANDOM_OPTION) {
-                    param = NinjaUtils.nextInt(minOption.param, maxOption.param);
-                } else if (type == MAX_OPTION) {
-                    param = maxOption.param;
-                } else {
-                    param = minOption.param;
-                }
+                int param = ItemStatCalculator.calculate(minOption.param, maxOption.param, tier);
                 newItem.options.add(new ItemOption(templateId, param));
             }
             newItem.options = OptionStandardizer.mergeAndStandardize(newItem.options);
         }
         return newItem;
+    }
+
+    public Item toItem(ItemStore itemStore, byte type) {
+        byte tier;
+        if (type == MAX_OPTION) {
+            tier = ItemStatCalculator.TIER_5_PERFECT;
+        } else if (type == MIN_OPTION) {
+            tier = ItemStatCalculator.TIER_1_COMMON;
+        } else {
+            tier = ItemStatCalculator.TIER_3_SUPERIOR;
+        }
+        return toItemByTier(itemStore, tier);
     }
 
     public Item toItem(ItemStore_upgrade itemStore) { // shop 16

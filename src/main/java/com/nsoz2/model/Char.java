@@ -2502,7 +2502,7 @@ public class Char extends CharPersistenceHandler {
                         int[][] min = NinjaUtils.getOptionShop(max);
                         for (int a = 0; a < max.length; a++) {
                             int templateId = max[a][0];
-                            int param = NinjaUtils.nextInt(min[a][1], max[a][1]);
+                            int param = ItemStatCalculator.calculate(min[a][1], max[a][1], item.tier);
                             item.options.add(new ItemOption(templateId, param));
                         }
                     }

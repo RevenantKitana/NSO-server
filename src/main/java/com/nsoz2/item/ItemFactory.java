@@ -29,20 +29,28 @@ public class ItemFactory {
         return newItem9X(id, false);
     }
 
-    public Item newItem9X(int id, boolean isMaxOption) {
+    public Item newItem9X(int id, byte tier) {
         Item itm = newItem(id);
-        itm.randomOptionItem9x(isMaxOption);
+        itm.randomOptionItem9x(tier);
         return itm;
+    }
+
+    public Item newItem9X(int id, boolean isMaxOption) {
+        return newItem9X(id, isMaxOption ? ItemStatCalculator.TIER_5_PERFECT : ItemStatCalculator.rollTierForCraft());
     }
 
     public Item newItem10X(int id) {
         return newItem10X(id, NinjaUtils.nextInt(30) == 1);
     }
 
-    public Item newItem10X(int id, boolean isMaxOption) {
+    public Item newItem10X(int id, byte tier) {
         Item itm = newItem(id);
-        itm.randomOptionItem10x(isMaxOption);
+        itm.randomOptionItem10x(tier);
         return itm;
+    }
+
+    public Item newItem10X(int id, boolean isMaxOption) {
+        return newItem10X(id, isMaxOption ? ItemStatCalculator.TIER_5_PERFECT : ItemStatCalculator.rollTierForCraft());
     }
 
 
