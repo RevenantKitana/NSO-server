@@ -674,14 +674,53 @@ public abstract class CharBase {
     }
 
 
-    // --- Abstract methods implemented in Char ---
-    public abstract void serverDialog(String text);
-    public abstract void serverMessage(String text);
-    public abstract Service getService();
+    // --- Concrete Helper Methods (Universal) ---
+    public Service getService() {
+        return this.service;
+    }
+
+    public void serverMessage(String text) {
+        if (getService() != null) {
+            getService().serverMessage(text);
+        }
+    }
+
+    public void serverDialog(String text) {
+        if (getService() != null) {
+            getService().serverDialog(text);
+        }
+    }
+
+    public void inputInvalid() {
+        serverDialog("Số lượng không hợp lệ!");
+    }
+
+    public void warningClone() {
+        serverMessage("Bạn đang trong chế độ thứ thân không thể dùng được chức năng này.");
+    }
+
+    public void warningTrade() {
+        serverDialog("Không thể thực hiện khi đang giao dịch.");
+    }
+
+    public void warningBagFull() {
+        if (language != null) {
+            serverDialog(language.getString("BAG_FULL"));
+        } else {
+            serverDialog("Hành trang đã đầy.");
+        }
+    }
+
+    public Friend[] getFriends() {
+        return this.friends.values().toArray(new Friend[this.friends.size()]);
+    }
+
+    public Friend[] getEnemies() {
+        return this.enemies.values().toArray(new Friend[this.enemies.size()]);
+    }
+
+    public abstract void setMobMe();
     public abstract int getSlotNull();
-    public abstract void warningTrade();
-    public abstract void warningBagFull();
-    public abstract void warningClone();
     public abstract int getIndexItemByIdInBag(int id);
     public abstract int getIndexItemByIdInBag(int id, boolean isLock);
     public abstract Item getItemByIdInBag(int id);
