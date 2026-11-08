@@ -12,11 +12,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class SingleRollCombatResolver {
 
-    private static final double MIN_HIT_RATE = 0.05;
-    private static final double MAX_HIT_RATE = 0.95;
-    private static final double BASE_CRIT_RATE = 0.05;
-    private static final double MAX_CRIT_RATE = 0.70;
-    private static final double CRIT_HALF_POINT = 1200.0;
+    public static final double BASE_HIT_RATE = 0.85;     // 85% tỷ lệ trúng mặc định khi tương quan cân bằng
+    public static final double MIN_HIT_RATE = 0.15;      // Tối thiểu 15% trúng (không bao giờ bị bất tử né)
+    public static final double MAX_HIT_RATE = 0.98;      // Tối đa 98% trúng (luôn chừa 2% né may mắn)
+    public static final double ACCURACY_SCALE = 300.0;   // Hệ số co giãn tiệm cận
+    public static final double BASE_CRIT_RATE = 0.05;
+    public static final double MAX_CRIT_RATE = 0.70;
+    public static final double CRIT_HALF_POINT = 1200.0;
 
     private SingleRollCombatResolver() {
         // Utility class
@@ -57,10 +59,15 @@ public final class SingleRollCombatResolver {
             int defenderCritRes,
             double effectProcChance) {
 
-        // 1. Tính ngưỡng Né đòn (Hyperbolic Asymptotic Curve)
-        int acc = Math.max(1, attackerAccuracy);
-        int eva = Math.max(0, defenderEvasion);
-        double hitChance = (double) acc / (double) (acc + eva);
+        // 1. Tính ngưỡng Né đòn (Hyperbolic Sigmoid Asymptote với Base Hit Rate 85%)
+        int netAccuracy = attackerAccuracy - defenderEvasion;
+        double hitChance;
+        if (netAccuracy >= 0) {
+            hitChance = BASE_HIT_RATE + (MAX_HIT_RATE - BASE_HIT_RATE) * ((double) netAccuracy / (netAccuracy + ACCURACY_SCALE));
+        } else {
+            int absNet = -netAccuracy;
+            hitChance = BASE_HIT_RATE - (BASE_HIT_RATE - MIN_HIT_RATE) * ((double) absNet / (absNet + ACCURACY_SCALE));
+        }
         hitChance = Math.min(MAX_HIT_RATE, Math.max(MIN_HIT_RATE, hitChance));
         double missThreshold = 1.0 - hitChance;
 

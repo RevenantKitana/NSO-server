@@ -1080,7 +1080,7 @@ public abstract class CharCombatHandler extends CharBlacksmithHandler {
 
                         SingleRollCombatResolver.CombatOutcome outcome = SingleRollCombatResolver.resolve(
                             this.exactly,
-                            (int) mob.level * 2,
+                            (int) mob.level + 10,
                             this.fatal,
                             0,
                             0.0
