@@ -733,4 +733,15 @@ public abstract class CharBase {
     public abstract void addCoin(long xu);
     public abstract void addYen(long yen);
     public abstract void saveData();
+    public abstract boolean addExpForMount(int exp, byte type);
+    public abstract void addPointPk(int p);
+    public abstract void cure();
+    public abstract void doUseBijuu(Item item);
+    public abstract void doUseEquipmentBijuu(Item item);
+    public abstract void expandBag(Item item);
+    public abstract Item getItemInMaskBox(int id);
+    public abstract void learnSkill(Item item);
+    public abstract boolean openMoreOptionForMount();
+    public abstract boolean upgradeMount();
+    public abstract void pieceTogether(Item item);
 }
