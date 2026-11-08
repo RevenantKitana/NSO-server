@@ -36,8 +36,8 @@ public class BlackSaturday {
         for (Char _char : chars) {
             try {
                 if (_char != null) {
-                    if (_char.clan != null && _char.typePk == _char.PK_PHE) {
-                        _char.setTypePk(_char.PK_NORMAL);
+                    if (_char.clan != null && _char.typePk == Char.PK_PHE) {
+                        _char.setTypePk(Char.PK_NORMAL);
                     }
                 }
             } catch (Exception e) {

@@ -91,7 +91,7 @@ public class Principal extends Bot {
         }
         if (TimeUtils.canDoWithTime(lastTimeChat, 5000)) {
             lastTimeChat = now;
-            zone.getService().chat(this.id, (String) NinjaUtils.randomObject(chats));
+            zone.getService().chat(this.id, (String) NinjaUtils.randomObject((Object[]) chats));
         }
     }
 

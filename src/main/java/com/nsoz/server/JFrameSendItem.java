@@ -130,7 +130,7 @@ public class JFrameSendItem extends JFrame {
                                 n = 1;
                             }
                             for (int i = 0; i < n; i++) {
-                                Item newItem = newItem = ItemFactory.getInstance().newItem(item.id);
+                                Item newItem = ItemFactory.getInstance().newItem(item.id);
                                 if (item.template.isUpToUp) {
                                     newItem.setQuantity(Integer.parseInt(quantity.getText()));
                                 } else {

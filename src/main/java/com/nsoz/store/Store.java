@@ -177,7 +177,7 @@ public class Store {
             n = 1;
         }
         for (int i = 0; i < n; i++) {
-            Item newItem = newItem = Converter.getInstance().toItem(item, Converter.RANDOM_OPTION);
+            Item newItem = Converter.getInstance().toItem(item, Converter.RANDOM_OPTION);
             if (template.isUpToUp) {
                 newItem.setQuantity(quantity);
             } else {

@@ -2240,12 +2240,8 @@ public abstract class CharCombatHandler extends CharBlacksmithHandler {
         if (mob == null || this.selectedSkill == null || (this.selectedSkill.template.type == 2 && this.selectedSkill.template.id != 40) || (this.selectedSkill.template.type == 3 && this.selectedSkill.template.id != 40) || (this.selectedSkill.template.type == 4 && !mob.isDead)) {
             return false;
         }
-        if (mob != null) {
-            int templateID = mob.template.id;
-            return !((templateID == MobName.VET_THU_HO && this.typePk == Char.PK_PHE1) || (templateID == MobName.BACH_LONG_TRU && this.typePk == Char.PK_PHE1) || (templateID == MobName.ONG_TU_SI && this.typePk == Char.PK_PHE2) || (templateID == MobName.HAC_LONG_TRU && this.typePk == Char.PK_PHE2) || (templateID == MobName.LAO_NHI && this.typePk == Char.PK_PHE1) || (templateID == MobName.LAO_TAM && this.typePk == Char.PK_PHE2) || (templateID == MobName.LAO_DAI && this.typePk == Char.PK_PHE3) || (templateID == MobName.THUY_TINH && typePk == Char.PK_PHE1) || (templateID == MobName.SON_TINH && typePk == Char.PK_PHE2));
-        }
-
-        return false;
+        int templateID = mob.template.id;
+        return !((templateID == MobName.VET_THU_HO && this.typePk == Char.PK_PHE1) || (templateID == MobName.BACH_LONG_TRU && this.typePk == Char.PK_PHE1) || (templateID == MobName.ONG_TU_SI && this.typePk == Char.PK_PHE2) || (templateID == MobName.HAC_LONG_TRU && this.typePk == Char.PK_PHE2) || (templateID == MobName.LAO_NHI && this.typePk == Char.PK_PHE1) || (templateID == MobName.LAO_TAM && this.typePk == Char.PK_PHE2) || (templateID == MobName.LAO_DAI && this.typePk == Char.PK_PHE3) || (templateID == MobName.THUY_TINH && typePk == Char.PK_PHE1) || (templateID == MobName.SON_TINH && typePk == Char.PK_PHE2));
     }
 
     public boolean isMeCanAttackOtherPlayer(Char cAtt) {
