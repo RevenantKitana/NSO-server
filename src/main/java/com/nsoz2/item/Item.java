@@ -5,6 +5,9 @@ import com.nsoz2.lib.ParseData;
 import com.nsoz2.option.ItemOption;
 import com.nsoz2.server.Config;
 import com.nsoz2.util.NinjaUtils;
+import com.nsoz2.store.StoreManager;
+import com.nsoz2.store.ItemStore;
+import java.util.List;
 import com.nsoz2.model.stat.OptionStandardizer;
 import lombok.Getter;
 import lombok.Setter;
@@ -867,6 +870,8 @@ public class Item {
                         }
                     }
                 }
+            } else if (isStandardTierItem()) {
+                generateStandardOptions();
             }
             if (this.options.isEmpty()) {
                 initOption();
@@ -1058,6 +1063,56 @@ public class Item {
         }
     }
 
+    public boolean isStandardTierItem() {
+        if (this.template == null || !this.template.isTypeBody()) {
+            return false;
+        }
+        if (this.tier < 1 || this.tier > 5) {
+            return false;
+        }
+        if (this.id == 799 || this.id == 800 || this.id == 1156 || this.id == 1157) {
+            return false;
+        }
+        if (this.template.isTypeMount() || this.template.isTypeNgocKham() || this.template.isTypeEquipmentBijuu() || this.template.isTypeBiKip()) {
+            return false;
+        }
+        boolean isStoreItem = StoreManager.getInstance().getItemWithId(this.id) != null;
+        boolean is9x = (this.id >= 618 && this.id <= 637);
+        boolean is10x = (this.id >= 1163 && this.id <= 1176) || (this.id >= ItemName.VU_KHI_KIEM_100 && this.id <= ItemName.VU_KHI_QUAT_100);
+        return isStoreItem || is9x || is10x;
+    }
+
+    public void generateStandardOptions() {
+        this.options.clear();
+        if (this.id >= 618 && this.id <= 637) {
+            randomOptionItem9x(this.tier);
+        } else if ((this.id >= 1163 && this.id <= 1176) || (this.id >= ItemName.VU_KHI_KIEM_100 && this.id <= ItemName.VU_KHI_QUAT_100)) {
+            randomOptionItem10x(this.tier);
+        } else {
+            ItemStore storeItem = StoreManager.getInstance().getItemWithId(this.id);
+            if (storeItem != null) {
+                List<ItemOption> maxOptions = storeItem.getMaxOptions();
+                List<ItemOption> minOptions = storeItem.getMinOptions();
+                if (maxOptions != null && minOptions != null) {
+                    int num = maxOptions.size();
+                    for (int a = 0; a < num; a++) {
+                        ItemOption maxOption = maxOptions.get(a);
+                        ItemOption minOption = minOptions.get(a);
+                        int templateId = maxOption.optionTemplate.id;
+                        int param = ItemStatCalculator.calculate(minOption.param, maxOption.param, this.tier);
+                        this.options.add(new ItemOption(templateId, param));
+                    }
+                }
+            } else {
+                initOption();
+            }
+        }
+        if (this.upgrade > 0) {
+            nextUpdate2(this.upgrade);
+        }
+        this.options = OptionStandardizer.mergeAndStandardize(this.options);
+    }
+
     public JSONObject toJSONObject() {
         JSONObject obj = new JSONObject();
         saveHeader(obj);
@@ -1071,22 +1126,26 @@ public class Item {
             obj.put("sys", this.sys);
             obj.put("upgrade", this.upgrade);
             obj.put("tier", (int) this.tier);
-            JSONArray abilitys = new JSONArray();
-            if (this.options != null) {
-                for (ItemOption option : this.options) {
-                    JSONArray ability = new JSONArray();
-                    ability.add(option.optionTemplate.id);
-                    ability.add(option.param);
-                    abilitys.add(ability);
+            if (!isStandardTierItem()) {
+                JSONArray abilitys = new JSONArray();
+                if (this.options != null) {
+                    for (ItemOption option : this.options) {
+                        JSONArray ability = new JSONArray();
+                        ability.add(option.optionTemplate.id);
+                        ability.add(option.param);
+                        abilitys.add(ability);
+                    }
                 }
+                obj.put("options", abilitys);
             }
-            obj.put("options", abilitys);
             if (this.template.isTypeAdorn() || this.template.isTypeClothe() || this.template.isTypeWeapon()) {
-                JSONArray gems = new JSONArray();
-                for (Item gem : this.gems) {
-                    gems.add(gem.toJSONObject());
+                if (this.gems != null && !this.gems.isEmpty()) {
+                    JSONArray gems = new JSONArray();
+                    for (Item gem : this.gems) {
+                        gems.add(gem.toJSONObject());
+                    }
+                    obj.put("gems", gems);
                 }
-                obj.put("gems", gems);
             }
         }
         if (this.template.isUpToUp) {
@@ -1551,7 +1610,7 @@ public class Item {
 
             };
             int[] itemOptionParams = {40, 60, 150, 150, 60, 60, 16, 9, 550, 180, 500}; // mcs
-            byte randomSys = (byte) NinjaUtils.nextInt(1, 3);
+            byte randomSys = (this.sys > 0 && this.sys <= 3) ? this.sys : (byte) NinjaUtils.nextInt(1, 3);
             int indexItem = id - 618;
             int[] itemOptionId = itemOptionIds[indexItem][randomSys - 1];
             int[][] option_max = new int[itemOptionId.length][2];
@@ -1588,7 +1647,7 @@ public class Item {
 
             };
             int[] itemOptionParams = {20, 60, 150, 150, 60, 60, 16, 9, 550, 180, 800};
-            byte randomSys = (byte) NinjaUtils.nextInt(1, 3);
+            byte randomSys = (this.sys > 0 && this.sys <= 3) ? this.sys : (byte) NinjaUtils.nextInt(1, 3);
             int indexItem = id - 628;
             int[] itemOptionId = itemOptionIds[indexItem][randomSys - 1];
             int[][] option_max = new int[itemOptionId.length][2];
@@ -1688,7 +1747,7 @@ public class Item {
 
             };
             int[] itemOptionParams = {60, 80, 200, 200, 80, 80, 24, 13, 600, 220, 600}; // mcs
-            byte randomSys = (byte) NinjaUtils.nextInt(1, 3);
+            byte randomSys = (this.sys > 0 && this.sys <= 3) ? this.sys : (byte) NinjaUtils.nextInt(1, 3);
             int indexItem = id - 1163;
             int[] itemOptionId = itemOptionIds[indexItem][randomSys - 1];
             int[][] option_max = new int[itemOptionId.length][2];
@@ -1725,7 +1784,7 @@ public class Item {
 
             };
             int[] itemOptionParams = {30, 80, 200, 200, 80, 80, 24, 13, 600, 220, 900};
-            byte randomSys = (byte) NinjaUtils.nextInt(1, 3);
+            byte randomSys = (this.sys > 0 && this.sys <= 3) ? this.sys : (byte) NinjaUtils.nextInt(1, 3);
             int indexItem = id - 1173;
             int[] itemOptionId = itemOptionIds[indexItem][randomSys - 1];
             int[][] option_max = new int[itemOptionId.length][2];

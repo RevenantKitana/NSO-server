@@ -51,6 +51,7 @@ public class StoreManager {
 
     private static final StoreManager instance = new StoreManager();
     private final List<Store> stores = new ArrayList<>();
+    private final java.util.concurrent.ConcurrentHashMap<Integer, ItemStore> equipmentCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static StoreManager getInstance() {
         return instance;
@@ -116,6 +117,10 @@ public class StoreManager {
 
 
     public ItemStore getItemWithId(int itemId) { // shop 16
+        ItemStore cached = equipmentCache.get(itemId);
+        if (cached != null) {
+            return cached;
+        }
         int[] types = {TYPE_WEAPON, TYPE_NECKLACE, TYPE_RING, TYPE_PEARL, TYPE_SPELL, TYPE_MEN_HAT, TYPE_MEN_SHIRT, TYPE_MEN_GLOVES, TYPE_MEN_PANT, TYPE_MEN_SHOES,
                 TYPE_WOMEN_HAT, TYPE_WOMEN_SHIRT, TYPE_WOMEN_GLOVES, TYPE_WOMEN_PANT, TYPE_WOMEN_SHOES};
 
@@ -123,8 +128,9 @@ public class StoreManager {
             Store store = find((byte) type);
             if (store != null) {
                 for (ItemStore t : store.getItems()) {
-                    if (t.getTemplate().id == itemId) {
-                        return t; // Trả về ngay khi tìm thấy
+                    if (t.getTemplate() != null && t.getTemplate().id == itemId) {
+                        equipmentCache.put(itemId, t);
+                        return t;
                     }
                 }
             }
