@@ -11,7 +11,19 @@ public class PatchClient {
             "127.0.0.1",
             "localhost",
             "161.118.202.174",
+            "161.118.209.14",
             "222.255.214.211",
+            "27.0.14.122",
+            "27.0.12.11",
+            "112.213.84.18",
+            "112.213.84.83",
+            "112.213.94.135",
+            "112.213.94.161",
+            "112.213.94.205",
+            "27.0.14.73",
+            "52.221.222.194",
+            "54.151.133.77",
+            "54.255.61.194",
             "sv.nsoblue.com",
             "nsoblue.com"
     ));
@@ -43,30 +55,24 @@ public class PatchClient {
             System.out.println(" Working Dir   : " + baseDir.getCanonicalPath());
             System.out.println("------------------------------------------------------------");
 
-            // Look for jars to patch (Standardized to NSO.jar)
+            // Look for jars to patch (Standardized to NSO.jar and NinjaSchool_251.jar)
             List<File> targetJars = new ArrayList<>();
             if (args.length >= 3) {
                 targetJars.add(new File(args[2]));
             } else {
                 File nsoJar = new File(baseDir, "NSO.jar");
-                if (nsoJar.exists()) {
-                    targetJars.add(nsoJar);
-                } else {
-                    File jarLocal = new File(baseDir, "JAR_local.jar");
-                    if (jarLocal.exists()) targetJars.add(jarLocal);
-                }
+                if (nsoJar.exists()) targetJars.add(nsoJar);
+                File ninja251 = new File(baseDir, "NinjaSchool_251.jar");
+                if (ninja251.exists()) targetJars.add(ninja251);
                 
                 // If baseDir didn't have them, check .client/ subfolder or parent
                 if (targetJars.isEmpty()) {
                     File clientSubdir = new File(baseDir, ".client");
                     if (clientSubdir.exists()) {
                         File j2 = new File(clientSubdir, "NSO.jar");
-                        if (j2.exists()) {
-                            targetJars.add(j2);
-                        } else {
-                            File j1 = new File(clientSubdir, "JAR_local.jar");
-                            if (j1.exists()) targetJars.add(j1);
-                        }
+                        if (j2.exists()) targetJars.add(j2);
+                        File j3 = new File(clientSubdir, "NinjaSchool_251.jar");
+                        if (j3.exists()) targetJars.add(j3);
                     }
                 }
             }
@@ -325,6 +331,32 @@ public class PatchClient {
             // Check if it's not a common version string
             if (!str.equals("0.0.0.0") && !str.equals("255.255.255.255")) {
                 return targetHost;
+            }
+        }
+
+        // 4. Teamobi srvips online fetch URL -> return empty to avoid delay & overwriting custom servers
+        if (str.contains("teamobi.com/srvips/")) {
+            return "";
+        }
+
+        // 5. Server list format (e.g. "Tekkan(New):nj9.teamobi.com:14445:0:0,...")
+        if ((str.contains(".teamobi.com") || str.contains(":nj") || str.contains(":14444:") || str.contains(":14445:")) && str.contains(":")) {
+            String[] servers = str.split(",");
+            StringBuilder sb = new StringBuilder();
+            boolean matched = false;
+            for (int i = 0; i < servers.length; i++) {
+                String[] parts = servers[i].split(":");
+                if (parts.length >= 3) {
+                    matched = true;
+                    if (i > 0) sb.append(",");
+                    sb.append(parts[0]).append(":").append(targetHost).append(":").append(targetPort);
+                    for (int p = 3; p < parts.length; p++) {
+                        sb.append(":").append(parts[p]);
+                    }
+                }
+            }
+            if (matched) {
+                return sb.toString();
             }
         }
 

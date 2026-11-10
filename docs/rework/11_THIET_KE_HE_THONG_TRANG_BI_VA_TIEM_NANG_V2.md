@@ -160,3 +160,4 @@ $$\text{Param}(x) = \text{BaseParam} \times \Big( 1 + \text{ScaleRate}(x) \Big)$
 1. **Thống nhất bảng công thức số học chi tiết:** Giá trị gốc ($min, max$) của Dòng 0, 1, 2, 3 cho từng dải cấp độ trang bị ($10, 20, 30, \dots, 90, 100$).
 2. **Quy tắc hiển thị Client:** Đảm bảo khi gửi packet `itemInfo` xuống Client J2ME, các dòng mới được hiển thị rõ ràng, đúng màu sắc và không bị crash bộ font chữ.
 3. **Tương thích ngược (Backward Compatibility):** Xử lý chuyển đổi an toàn đối với các trang bị cũ đã lưu trong Database trước khi áp dụng cơ chế mới.
+

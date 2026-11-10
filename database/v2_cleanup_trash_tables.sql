@@ -26,3 +26,4 @@ DROP TABLE IF EXISTS `groups`;
 
 -- Xác nhận danh sách bảng còn lại
 SHOW TABLES;
+
