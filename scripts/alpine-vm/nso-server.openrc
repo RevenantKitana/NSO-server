@@ -1,0 +1,54 @@
+#!/sbin/openrc-run
+# ===============================================================================
+# NSO Game Server - OpenRC Init Script for Alpine Linux (AUTO / ADAPTIVE Profile)
+# Dynamically scales JVM Heap & GC based on detected VM RAM
+# ===============================================================================
+
+name="NSO Game Server (Adaptive Auto Profile)"
+description="NSO Game Server Emulator with Embedded HTTP API Bridge (Port 80 & 14444)"
+
+TOTAL_RAM_MB=$(free -m | awk '/^Mem:/{print $2}')
+if [ -z "$TOTAL_RAM_MB" ]; then
+    TOTAL_RAM_MB=1024
+fi
+
+if [ "$TOTAL_RAM_MB" -ge 4000 ]; then
+    JVM_MEM="-Xms1024M -Xmx2048M -Xss512k -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1ReservePercent=15 -XX:InitiatingHeapOccupancyPercent=45 -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
+elif [ "$TOTAL_RAM_MB" -ge 2000 ]; then
+    JVM_MEM="-Xms512M -Xmx1024M -Xss256k -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:G1ReservePercent=15 -XX:InitiatingHeapOccupancyPercent=45 -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
+else
+    JVM_MEM="-Xms128M -Xmx320M -Xss256k -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=32M"
+fi
+
+directory="/opt/nso-server"
+command="$(readlink -f /usr/bin/java 2>/dev/null || echo /usr/bin/java)"
+JVM_OPTS="-server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Ho_Chi_Minh ${JVM_MEM} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/nso-server/logs/oom.hprof"
+command_args="${JVM_OPTS} -jar /opt/nso-server/Nso-jar-with-dependencies.jar"
+
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/opt/nso-server/logs/service.log"
+error_log="/opt/nso-server/logs/service_error.log"
+retry="TERM/15/KILL/5"
+rc_ulimit="-n 65535 -u 65535"
+
+depend() {
+    need net mariadb
+    after firewall iptables
+}
+
+start_pre() {
+    mkdir -p /opt/nso-server/logs
+    if [ -f /usr/lib/libjemalloc.so.2 ]; then
+        export LD_PRELOAD="/usr/lib/libjemalloc.so.2"
+    fi
+}
+
+stop_post() {
+    local lingering_pid
+    lingering_pid=$(pgrep -f "Nso-jar-with-dependencies.jar" || true)
+    if [ -n "$lingering_pid" ]; then
+        kill -9 $lingering_pid 2>/dev/null || true
+    fi
+}
+
