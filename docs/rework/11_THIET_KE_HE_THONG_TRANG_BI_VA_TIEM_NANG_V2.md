@@ -102,9 +102,17 @@ $$\text{BonusResistance} = \text{CalculateBaseRes}(\text{ActiveLevel}) \times \t
 
 ## 5. MA TRẬN ÁNH XẠ TIỀM NĂNG RIÊNG BIỆT 6 MÔN PHÁI (CLASS-SPECIFIC POTENTIAL SCALING)
 
+Quy tắc thiết kế cân bằng V2:
+* **Khác biệt có kiểm soát (Soft-Asymmetry):** Khắc họa bản sắc riêng của từng môn phái nhưng biên độ chênh lệch chỉ kiểm soát ở mức vừa phải (**$\mathbf{15\% \sim 25\%}$** quanh mốc cơ sở), không để xảy ra tình trạng "quá chênh lệch" làm gãy cân bằng PvP/PvE hay khiến phái nào bị "out-meta" triệt để.
+* **Chuẩn hóa đối xứng 3 Hệ Nguyên Tố (Mỗi hệ gồm 1 Phái Ngoại & 1 Phái Nội):**
+  * **Hệ Hỏa (Trường Hirosaki):** Kiếm (Ngoại) — Tiêu (Nội)
+  * **Hệ Băng (Trường Ookaza):** Cung (Ngoại) — Kunai (Nội)
+  * **Hệ Phong (Trường Haruna):** Đao (Ngoại) — Quạt (Nội)
+
 Bảng ma trận quy đổi 1 điểm tiềm năng (STR, AGI, VIT, SPI) sang chỉ số chiến đấu thực tế:
 
 | Môn Phái | Hệ / Vũ Khí | Sức Mạnh (STR) | Thân Pháp (AGI) | Thể Lực (VIT) | Chakra (SPI) | Định Vị Bản Sắc |
+| Môn Phái | Hệ / Loại Công | Sức Mạnh (STR) | Thân Pháp (AGI) | Thể Lực (VIT) | Chakra (SPI) | Định Vị Bản Sắc |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | **1. Kiếm** | Hỏa / Kiếm | **+3.0 Công**, +0.5 Giáp | +1.2 Né, +1.0 CX | **+12 HP** | +6 MP | **Đấu Sĩ Bền Bỉ:** Công thủ toàn diện, lượng máu dày dặn. |
 | **2. Tiêu** | Hỏa / Tiêu | +0.5 Công | **+1.6 CX**, +1.0 Né, +0.05% Crit | +8 HP | **+2.8 Công phép**, +8 MP | **Xạ Thủ Chí Mạng:** Sốc sát thương từ xa cực lớn, máu mỏng. |
@@ -112,6 +120,18 @@ Bảng ma trận quy đổi 1 điểm tiềm năng (STR, AGI, VIT, SPI) sang ch�
 | **4. Quạt** | Băng / Quạt | +0.2 Công | +1.0 Né, +0.8 CX | +7 HP *(Máu giấy)* | **+3.2 Công phép**, **+16 MP** | **Pháp Sư / Trị Liệu:** Kho Mana khổng lồ để nuôi khiên & buff. |
 | **5. Đao** | Phong / Đao | **+3.5 Công**, +1.0 DameDown | +0.8 Né, +0.8 CX | **+16 HP** *(Dày nhất)* | +5 MP | **Cuồng Chiến / Tanker:** Thanh máu khổng lồ, càn quét giao tranh. |
 | **6. Cung** | Phong / Cung | +0.5 Công | **+2.2 Chính Xác** *(Đỉnh nhất)* | +7 HP | **+2.8 Công**, +8 MP | **Thiện Xạ Bắn Tỉa:** Bách phát bách trúng, khắc tinh của né đòn. |
+| **1. Kiếm** | Hỏa / Ngoại | **+2.50 Công VL**<br>+0.3 Giáp | +1.25 Né Đòn<br>+1.20 Chính Xác | **+11.0 HP** | +8 MP | **Đấu Sĩ Bền Bỉ:** Công thủ toàn diện, lượng máu dày, cận chiến ổn định. |
+| **2. Tiêu** | Hỏa / Nội | +0.50 Công VL | +1.30 Né Đòn<br>**+1.35 Chính Xác** | +9.5 HP | **+2.50 Công Phép**<br>+9 MP | **Xạ Thủ Chí Mạng:** Sát thương phép tầm xa, linh hoạt và chuẩn xác. |
+| **3. Kunai** | Băng / Nội | +0.50 Công VL | **+1.60 Né Đòn** *(Đỉnh né)*<br>+1.15 Chính Xác | +10.0 HP | **+2.45 Công Phép**<br>+9 MP | **Sát Thủ Bóng Đêm:** Thân thủ thoăn thoắt, né đòn cao nhất game. |
+| **4. Cung** | Băng / Ngoại | **+2.50 Công VL**<br>+0.2 Xuyên Giáp | +1.20 Né Đòn<br>**+1.50 Chính Xác** *(Đỉnh CX)* | +9.5 HP | +8 MP | **Thiện Xạ Bắn Tỉa:** Sát thương vật lý từ xa, khắc tinh của né đòn. |
+| **5. Đao** | Phong / Ngoại | **+2.70 Công VL**<br>+0.3 Giảm ST (`dameDown`)| +1.10 Né Đòn<br>+1.10 Chính Xác | **+11.5 HP** *(Máu dày nhất)* | +7 MP | **Cuồng Chiến / Tanker:** Công vật lý và máu khủng, càn quét giao tranh. |
+| **6. Quạt** | Phong / Nội | +0.40 Công VL | +1.40 Né Đòn<br>+1.00 Chính Xác | +9.2 HP | **+2.60 Công Phép**<br>**+10 MP** *(Max Mana)* | **Pháp Sư / Trị Liệu:** Công phép cao nhất, kho mana dồi dào nuôi buff/khiên. |
+
+> [!NOTE] Phân tích biên độ cân bằng mới (Khác biệt rõ rệt nhưng không chênh lệch quá lớn):
+> 1. **Thể Lực (VIT $\to$ HP):** Dao động trong khoảng **$9.2 \sim 11.5$ HP** (chênh lệch tối đa $\approx 25\%$). Đao vẫn là tanker dày máu nhất ($11.5$), Quạt mỏng nhất ($9.2$ nhưng bù lại có khiên trị liệu/mana), xóa bỏ hoàn toàn mức chênh lệch tiêu cực $7$ vs $16$ (lệch $128\%$) của bảng cũ.
+> 2. **Thân Pháp (AGI $\to$ Né & CX):** Kunai giữ đỉnh Né ($1.6$), Cung giữ đỉnh CX ($1.5$). Khoảng cách giữa đỉnh cao nhất và phái thấp nhất (Đao $1.1$) chỉ là $\approx 45\%$, đảm bảo Đao vẫn có đủ né/chính xác cơ bản trong giao chiến, không còn bị tình trạng đánh toàn trượt.
+> 3. **Chakra (SPI $\to$ MP):** Dao động từ **$7 \sim 10$ MP**. Quạt sở hữu kho mana lớn nhất ($10$ MP) để nuôi bộ kỹ năng buff/khiên, trong khi phái ít mana nhất (Đao $7$ MP) vẫn có đủ lượng nội lực cần thiết để xoay vòng combo.
+> 4. **Sát thương chính (STR / SPI):** Phái Ngoại (Đao $2.7$, Kiếm $2.5$, Cung $2.5$) và Phái Nội (Quạt $2.6$, Tiêu $2.5$, Kunai $2.45$) bám sát quanh ngưỡng chuẩn $2.5$ điểm công / 1 điểm tiềm năng (chênh lệch chỉ dưới $10\%$), giữ cho tương quan DPS giữa các class luôn cân bằng và phụ thuộc vào trình độ PK/phối đồ.
 
 ---
 
