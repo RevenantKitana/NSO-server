@@ -128,6 +128,7 @@ echo   [3]  Mo SSH Terminal ket noi truc tiep vao Alpine VM
 echo   [4]  Theo doi tai nguyen Alpine VM thoi gian thuc (CPU / RAM / Disk / Ports)
 echo   [5]  Tai ban sao luu Database tu Alpine VM ve may ca nhan (backups/)
 echo   [6]  Khoi chay Web Quan tri Admin cho Alpine VM (Giftcode ^& Ma OTP)
+echo   [15] Tao tai khoan Game truc tiep tren Alpine VM (BCrypt + Tuy chon Admin)
 echo.
 echo   --- [ THIET LAP MAY CHU ALPINE MOI (FIRST SETUP) ] ---
 echo   [7]  Cai dat Alpine VM tu A-Z (Disk/Swap, OpenJDK 17, jemalloc, MariaDB, Data)
@@ -145,7 +146,7 @@ echo   [14] Chuyen doi nhanh Profile Server (Low-Resource / Standard / Auto)
 echo   [0]  Thoat
 echo ===============================================================================
 set "OPT="
-set /p "OPT=>> Nhap lua chon cua ban [0-14]: "
+set /p "OPT=>> Nhap lua chon cua ban [0-15]: "
 
 if "!OPT!"=="1" goto :DEPLOY_VM
 if "!OPT!"=="2" goto :VM_CONTROL
@@ -161,9 +162,10 @@ if "!OPT!"=="11" goto :EDIT_CONFIG
 if "!OPT!"=="12" goto :SETUP_WEB_DB
 if "!OPT!"=="13" goto :OPTIMIZE_VM
 if "!OPT!"=="14" goto :QUICK_SWITCH_PROFILE
+if "!OPT!"=="15" goto :CREATE_ACCOUNT
 if "!OPT!"=="0" exit /b 0
 
-echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 14.
+echo [!] Lua chon khong hop le. Vui long nhap tu 0 den 15.
 timeout /t 2 >nul
 goto :MAIN_MENU
 
@@ -582,4 +584,15 @@ echo.
 echo [OK] Da chuyen sang Profile: !SERVER_PROFILE!
 timeout /t 2 >nul
 goto :LOAD_CONFIG
+
+:: ===============================================================================
+:: 15. CREATE GAME ACCOUNT ON ALPINE VM
+:: ===============================================================================
+:CREATE_ACCOUNT
+cls
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\alpine-local\create_alpine_account.ps1"
+echo.
+pause
+goto :MAIN_MENU
+
 
