@@ -91,7 +91,7 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
             }
             if (NinjaUtils.availablePort(Config.getInstance().getPort())) {
                 if (!java.awt.GraphicsEnvironment.isHeadless()) {
-                    new NinjaSchool(); ///  tắt giao diện khi chạy linux
+                    new NinjaSchool(); /// tắt giao diện khi chạy linux
                 }
                 if (!Server.init()) {
                     System.out.println("Khoi tao that bai!");
@@ -99,7 +99,7 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
                 }
                 new Thread(() -> {
                     try {
-                        int httpPort = (Config.getInstance().getPort() == 14444) ? 80 : 8081;
+                        int httpPort = (Config.getInstance().getPort() == 14444) ? 8000 : 8081;
                         HttpBridge.start(httpPort);
                     } catch (Exception ex) {
                         System.err.println("Could not start HttpBridge: " + ex.getMessage());
@@ -113,8 +113,6 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
             System.out.println("Vui long kiem tra lai cau hinh 1!");
         }
     }
-
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -216,6 +214,5 @@ public class NinjaSchool extends WindowAdapter implements ActionListener {
             System.exit(0);
         }
     }
-
 
 }
